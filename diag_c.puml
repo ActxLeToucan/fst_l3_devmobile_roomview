@@ -1,0 +1,30 @@
+@startuml Diagramme de classe
+title Diagramme de classe
+
+class Batiment {
+    String nom
+}
+
+class Zone {
+    String nom
+    Date dateCapture
+    meteo
+}
+
+class Photo {
+}
+
+class Passage {
+    int x1
+    int y1
+    int x2
+    int y2
+}
+
+
+Batiment "1" --> "*" Zone
+Zone "1" --> "4" Photo
+Photo "1" --> "*" Passage
+Passage "*" --> "1" Zone : autreCoté
+
+@enduml
