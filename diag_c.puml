@@ -12,6 +12,7 @@ class Zone {
     - Date dateCapture
     + prendrePhotos()
 }
+note left: Une zone peut représenter\nune pièce ou un sous-espace\nd'une pièce (cas pour un couloir\nou une grande pièce).
 
 class Meteo {
     - String description
@@ -35,6 +36,7 @@ class Passage {
     - int y2
     + relier(Zone autreCote)
 }
+note left: Un passage peut représenter\nn'importe quelle zone physique.\nUne porte, un escalier, ou encore\ndu vide pour avancer dans\nune même pièce.
 
 
 Batiment "1" --> "*" Zone
