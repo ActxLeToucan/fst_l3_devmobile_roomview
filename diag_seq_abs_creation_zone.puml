@@ -1,0 +1,39 @@
+@startuml diag_seq_abs_creation_zone
+title Création d'une zone
+
+actor "Utilisateur" as user
+participant "Batiment" as bat
+participant Zone
+participant Capteurs
+participant Photo
+
+user -> bat: créer une zone
+activate bat
+    bat -> user: nom ?
+    user --> bat: nom
+    bat -> bat: création zone avec nom, météo et date
+    activate bat
+        bat -> bat: météo
+        bat -> bat: date
+        bat --> bat: zone
+    deactivate bat
+
+    |||
+
+    bat -> Zone: prendre photos
+    activate Zone
+        loop 4 fois
+            Zone -> Capteurs: afficher direction pour photo
+            Zone -> user: prendre la photo dans la direction indiquée
+            user --> Zone: photo
+            Zone -> user: ajouter passage ?
+            alt l'utilisateur veut ajouter un passage
+                Zone -> Photo: ajouter un passage
+            end
+        end
+        Zone --> bat
+    deactivate Zone
+    bat --> user
+deactivate bat
+
+@enduml
