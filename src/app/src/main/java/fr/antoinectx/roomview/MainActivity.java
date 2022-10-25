@@ -1,19 +1,15 @@
-package com.actxletoucan.roomview;
+package fr.antoinectx.roomview;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.actxletoucan.roomview.models.Batiment;
-import com.actxletoucan.roomview.models.Donnees;
-
-import java.util.ArrayList;
-import java.util.List;
+import fr.antoinectx.roomview.models.Batiment;
+import fr.antoinectx.roomview.models.Donnees;
 
 public class MainActivity extends AppCompatActivity implements BatimentRecyclerViewAdapter.ItemClickListener {
     private BatimentRecyclerViewAdapter adapter;

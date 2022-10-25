@@ -1,4 +1,4 @@
-package com.actxletoucan.roomview;
+package fr.antoinectx.roomview;
 
 import org.junit.Test;
 

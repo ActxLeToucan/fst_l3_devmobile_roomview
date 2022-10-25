@@ -1,4 +1,4 @@
-package com.actxletoucan.roomview.models;
+package fr.antoinectx.roomview.models;
 
 import java.util.Date;
 

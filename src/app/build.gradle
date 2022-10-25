@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.actxletoucan.roomview'
+    namespace 'fr.antoinectx.roomview'
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.actxletoucan.roomview"
+        applicationId "fr.antoinectx.roomview"
         minSdk 23
         targetSdk 32
         versionCode 1

@@ -1,4 +1,4 @@
-package com.actxletoucan.roomview;
+package fr.antoinectx.roomview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,9 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.actxletoucan.roomview.models.Batiment;
-
-import org.w3c.dom.Text;
+import fr.antoinectx.roomview.models.Batiment;
 
 import java.util.List;
 
