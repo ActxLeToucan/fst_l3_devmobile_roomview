@@ -3,4 +3,5 @@
     <string name="add_building">Ajouter un bâtiment</string>
     <string name="new_building">Nouveau bâtiment</string>
     <string name="pagename_main">Bâtiments</string>
+    <string name="searchBuilding" >Rechercher un bâtiment</string>
 </resources>
