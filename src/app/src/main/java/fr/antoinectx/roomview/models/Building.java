@@ -1,0 +1,205 @@
+package fr.antoinectx.roomview.models;
+
+import android.content.Context;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+public class Building {
+    private String id = UUID.randomUUID().toString();
+    private String nom;
+    private String description;
+    private final List<Zone> zones;
+
+    /**
+     * Complete constructor, only used when loading a building from a file
+     * @param id The unique ID of the building
+     * @param nom The name of the building
+     * @param description The description of the building
+     * @param zones The zones of the building
+     */
+    private Building(String id, String nom, String description, List<Zone> zones) {
+        this.id = id;
+        this.nom = nom;
+        this.description = description;
+        this.zones = zones;
+    }
+
+    public Building(String nom, String description) {
+        this.nom = nom;
+        this.description = description;
+        this.zones = new ArrayList<>();
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Zone> getZones() {
+        return zones;
+    }
+
+    // --- Save & Load ---
+
+    /**
+     * Save the building to a JSON file
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity),
+     *                used to get the files directory.
+     *                The file will be saved in {@literal /data/data/<package_name>/files/<id>/data.json}
+     *                where {@literal <id>} is the unique ID of the building
+     */
+    public void save(Context context) {
+        File dir = new File(context.getFilesDir() + "/" + id);
+        if (!dir.mkdirs()) {
+            Log.e("Batiment", "save: Impossible de créer le dossier " + dir.getAbsolutePath());
+            return;
+        }
+
+        File file = new File(dir.getAbsolutePath(), "data.json");
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(toJSON().toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("Batiment", "Saved " + nom + " to " + file.getAbsolutePath());
+    }
+
+    /**
+     * Convert the building to a JSON object
+     */
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("id", id);
+            json.put("nom", nom);
+            json.put("description", description);
+            JSONArray zonesJson = new JSONArray();
+            for (Zone zone : zones) {
+                zonesJson.put(zone.toJSON());
+            }
+            json.put("zones", zonesJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    /**
+     * Load all the buildings from the files directory
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity),
+     * @return A list of all the buildings
+     */
+    public static List<Building> loadAll(Context context) {
+        File dir = new File(context.getFilesDir().toString());
+
+        List<Building> buildings = new ArrayList<>();
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
+            if (file.isDirectory()) {
+                Building building = load(context, file.getName());
+                if (building != null) {
+                    buildings.add(building);
+                }
+            }
+        }
+
+        return buildings;
+    }
+
+    /**
+     * Load a building from a JSON file
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @param id The unique ID of the building to load
+     * @return The building
+     */
+    public static Building load(Context context, String id) {
+        File dir = new File(context.getFilesDir() + "/" + id);
+        if (!dir.exists()) {
+            Log.e("Batiment", "load: Impossible de trouver le dossier " + dir.getAbsolutePath());
+            return null;
+        }
+
+        File file = new File(dir.getAbsolutePath(), "data.json");
+
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        try {
+            return fromJSON(new JSONObject(new String(bytes)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Create a building from a JSON object
+     * @param json The JSON object
+     * @return The building
+     */
+    public static Building fromJSON(JSONObject json) {
+        try {
+            List<Zone> zones = new ArrayList<>();
+            for (int i = 0; i < json.getJSONArray("zones").length(); i++) {
+                zones.add(Zone.fromJSON(json.getJSONArray("zones").getJSONObject(i)));
+            }
+
+
+            // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
+            for (Zone zone : zones) {
+                for (Photo photo : zone.getPhotos()) {
+                    for (Passage passage : photo.getPassages()) {
+                        passage.setAutreCote(zones.stream()
+                                .filter(z -> z.getId().equals(passage.getAutreCoteId()))
+                                .findFirst()
+                                .orElse(null));
+                    }
+                }
+            }
+
+
+            return new Building(
+                    json.getString("id"),
+                    json.getString("nom"),
+                    json.getString("description"),
+                    zones
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}

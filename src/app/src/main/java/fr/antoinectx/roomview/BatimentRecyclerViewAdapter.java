@@ -8,17 +8,17 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import fr.antoinectx.roomview.models.Batiment;
+import fr.antoinectx.roomview.models.Building;
 
 import java.util.List;
 
 public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRecyclerViewAdapter.ViewHolder> {
-    private List<Batiment> mData;
+    private List<Building> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    BatimentRecyclerViewAdapter(Context context, List<Batiment> data) {
+    BatimentRecyclerViewAdapter(Context context, List<Building> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -33,9 +33,9 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Batiment batiment = mData.get(position);
-        holder.nomBatiment.setText(batiment.getNom());
-        holder.descriptionBatiment.setText(batiment.getDescription());
+        Building building = mData.get(position);
+        holder.nomBatiment.setText(building.getNom());
+        holder.descriptionBatiment.setText(building.getDescription());
     }
 
     // total number of rows
@@ -64,7 +64,7 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
     }
 
     // convenience method for getting data at click position
-    Batiment getItem(int id) {
+    Building getItem(int id) {
         return mData.get(id);
     }
 
@@ -78,8 +78,8 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
         void onItemClick(View view, int position);
     }
 
-    public void setBatiments(List<Batiment> batiments) {
-        mData = batiments;
+    public void setBatiments(List<Building> buildings) {
+        mData = buildings;
         notifyDataSetChanged();
     }
 }
