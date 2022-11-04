@@ -3,38 +3,23 @@ package fr.antoinectx.roomview.models;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Building {
+public class Building implements Serializable {
     private String id = UUID.randomUUID().toString();
     private String nom;
     private String description;
     private final List<Zone> zones;
-
-    /**
-     * Complete constructor, only used when loading a building from a file
-     * @param id The unique ID of the building
-     * @param nom The name of the building
-     * @param description The description of the building
-     * @param zones The zones of the building
-     */
-    private Building(String id, String nom, String description, List<Zone> zones) {
-        this.id = id;
-        this.nom = nom;
-        this.description = description;
-        this.zones = zones;
-    }
 
     public Building(String nom, String description) {
         this.nom = nom;
@@ -64,14 +49,6 @@ public class Building {
 
     // --- Save & Load ---
 
-    /**
-     * Save the building to a JSON file
-     * @param context The context of the application
-     *                (use getApplicationContext() or getBaseContext() or this in an activity),
-     *                used to get the files directory.
-     *                The file will be saved in {@literal /data/data/<package_name>/files/<id>/data.json}
-     *                where {@literal <id>} is the unique ID of the building
-     */
     public void save(Context context) {
         File dir = new File(context.getFilesDir() + "/" + id);
         if (!dir.mkdirs()) {
@@ -79,35 +56,16 @@ public class Building {
             return;
         }
 
-        File file = new File(dir.getAbsolutePath(), "data.json");
+        File file = new File(dir.getAbsolutePath(), "data.ser");
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(toJSON().toString().getBytes());
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
+            oos.writeObject(this);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
 
         Log.d("Batiment", "Saved " + nom + " to " + file.getAbsolutePath());
-    }
-
-    /**
-     * Convert the building to a JSON object
-     */
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("id", id);
-            json.put("nom", nom);
-            json.put("description", description);
-            JSONArray zonesJson = new JSONArray();
-            for (Zone zone : zones) {
-                zonesJson.put(zone.toJSON());
-            }
-            json.put("zones", zonesJson);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return json;
     }
 
     /**
@@ -133,7 +91,7 @@ public class Building {
     }
 
     /**
-     * Load a building from a JSON file
+     * Load a building with its id
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity)
      * @param id The unique ID of the building to load
@@ -146,60 +104,17 @@ public class Building {
             return null;
         }
 
-        File file = new File(dir.getAbsolutePath(), "data.json");
-
-        int size = (int) file.length();
-        byte[] bytes = new byte[size];
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
+        File file = new File(dir.getAbsolutePath(), "data.ser");
+        if (!file.exists()) {
+            Log.e("Batiment", "load: Impossible de trouver le fichier " + file.getAbsolutePath());
             return null;
         }
 
-        try {
-            return fromJSON(new JSONObject(new String(bytes)));
-        } catch (JSONException e) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            return (Building) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    /**
-     * Create a building from a JSON object
-     * @param json The JSON object
-     * @return The building
-     */
-    public static Building fromJSON(JSONObject json) {
-        try {
-            List<Zone> zones = new ArrayList<>();
-            for (int i = 0; i < json.getJSONArray("zones").length(); i++) {
-                zones.add(Zone.fromJSON(json.getJSONArray("zones").getJSONObject(i)));
-            }
-
-
-            // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
-            for (Zone zone : zones) {
-                for (Photo photo : zone.getPhotos()) {
-                    for (Passage passage : photo.getPassages()) {
-                        passage.setAutreCote(zones.stream()
-                                .filter(z -> z.getId().equals(passage.getAutreCoteId()))
-                                .findFirst()
-                                .orElse(null));
-                    }
-                }
-            }
-
-
-            return new Building(
-                    json.getString("id"),
-                    json.getString("nom"),
-                    json.getString("description"),
-                    zones
-            );
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
