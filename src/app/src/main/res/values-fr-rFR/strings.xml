@@ -4,4 +4,9 @@
     <string name="new_building">Nouveau bâtiment</string>
     <string name="pagename_main">Bâtiments</string>
     <string name="searchBuilding" >Rechercher un bâtiment</string>
+    <string name="searchArea" >Rechercher une zone</string>
+    <string name="pagename_building">Zones</string>
+    <string name="add_area">Ajouter une zone</string>
+    <string name="edit">Modifier</string>
+    <string name="delete">Supprimer</string>
 </resources>

@@ -10,9 +10,9 @@ public class Passage implements Serializable {
     private int x2;
     private int y2;
     @Nullable
-    private Zone autreCote;
+    private Area autreCote;
 
-    public Passage(int x1, int y1, int x2, int y2, @Nullable Zone autreCote) {
+    public Passage(int x1, int y1, int x2, int y2, @Nullable Area autreCote) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -25,11 +25,11 @@ public class Passage implements Serializable {
     }
 
     @Nullable
-    public Zone getAutreCote() {
+    public Area getAutreCote() {
         return autreCote;
     }
 
-    public void setAutreCote(@Nullable Zone autreCote) {
+    public void setAutreCote(@Nullable Area autreCote) {
         this.autreCote = autreCote;
     }
 

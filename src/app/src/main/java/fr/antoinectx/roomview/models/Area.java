@@ -3,23 +3,23 @@ package fr.antoinectx.roomview.models;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Zone implements Serializable {
-    private String nom;
+public class Area implements Serializable {
+    private String name;
     private final Date dateCapture;
     private final Photo[] photos;
 
-    public Zone(String nom, Date dateCapture) {
-        this.nom = nom;
+    public Area(String name, Date dateCapture) {
+        this.name = name;
         this.dateCapture = dateCapture;
         this.photos = new Photo[4];
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getDateCapture() {

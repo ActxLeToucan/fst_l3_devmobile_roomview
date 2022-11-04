@@ -16,23 +16,23 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Building implements Serializable {
-    private String id = UUID.randomUUID().toString();
-    private String nom;
+    private final UUID id = UUID.randomUUID();
+    private String name;
     private String description;
-    private final List<Zone> zones;
+    private final List<Area> areas;
 
-    public Building(String nom, String description) {
-        this.nom = nom;
+    public Building(String name, String description) {
+        this.name = name;
         this.description = description;
-        this.zones = new ArrayList<>();
+        this.areas = new ArrayList<>();
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -43,20 +43,22 @@ public class Building implements Serializable {
         this.description = description;
     }
 
-    public List<Zone> getZones() {
-        return zones;
+    public List<Area> getAreas() {
+        return areas;
     }
 
     // --- Save & Load ---
 
+    /**
+     * Save the building to a file
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity),
+     *                used to get the files directory.
+     *                The file will be saved in {@literal /data/data/<package_name>/files/<id>.building}
+     *                where {@literal <id>} is the unique ID of the building
+     */
     public void save(Context context) {
-        File dir = new File(context.getFilesDir() + "/" + id);
-        if (!dir.mkdirs()) {
-            Log.e("Batiment", "save: Impossible de créer le dossier " + dir.getAbsolutePath());
-            return;
-        }
-
-        File file = new File(dir.getAbsolutePath(), "data.ser");
+        File file = new File(context.getFilesDir(), id + ".building");
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
             oos.writeObject(this);
@@ -65,7 +67,7 @@ public class Building implements Serializable {
             return;
         }
 
-        Log.d("Batiment", "Saved " + nom + " to " + file.getAbsolutePath());
+        Log.d("Batiment", "Saved " + name + " to " + file.getAbsolutePath());
     }
 
     /**
@@ -79,11 +81,8 @@ public class Building implements Serializable {
 
         List<Building> buildings = new ArrayList<>();
         for (File file : Objects.requireNonNull(dir.listFiles())) {
-            if (file.isDirectory()) {
-                Building building = load(context, file.getName());
-                if (building != null) {
-                    buildings.add(building);
-                }
+            if (file.getName().endsWith(".building")) {
+                buildings.add(load(context, file.getName().replace(".building", "")));
             }
         }
 
@@ -98,13 +97,7 @@ public class Building implements Serializable {
      * @return The building
      */
     public static Building load(Context context, String id) {
-        File dir = new File(context.getFilesDir() + "/" + id);
-        if (!dir.exists()) {
-            Log.e("Batiment", "load: Impossible de trouver le dossier " + dir.getAbsolutePath());
-            return null;
-        }
-
-        File file = new File(dir.getAbsolutePath(), "data.ser");
+        File file = new File(context.getFilesDir(), id + ".building");
         if (!file.exists()) {
             Log.e("Batiment", "load: Impossible de trouver le fichier " + file.getAbsolutePath());
             return null;

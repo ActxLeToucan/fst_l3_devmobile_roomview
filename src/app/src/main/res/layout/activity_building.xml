@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".BuildingActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/mainActivity_toolbar"
+        android:id="@+id/buildingActivity_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -18,27 +18,27 @@
         app:subtitleCentered="true" />
 
     <EditText
-        android:id="@+id/mainActivity_searchBar"
+        android:id="@+id/buildingActivity_searchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/searchBuilding"
+        android:hint="@string/searchArea"
         android:minHeight="48dp"
         android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainActivity_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/buildingActivity_toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mainActivity_recyclerView"
+        android:id="@+id/buildingActivity_recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainActivity_searchBar"
+        app:layout_constraintTop_toBottomOf="@+id/buildingActivity_searchBar"
         app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

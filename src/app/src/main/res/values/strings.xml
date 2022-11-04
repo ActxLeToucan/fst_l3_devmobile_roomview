@@ -3,5 +3,10 @@
     <string name="add_building">Add a building</string>
     <string name="new_building">New building</string>
     <string name="pagename_main">Buildings</string>
-    <string name="searchBuilding" >Search a building</string>
+    <string name="searchBuilding">Search a building</string>
+    <string name="searchArea" >Search an area</string>
+    <string name="pagename_building">Areas</string>
+    <string name="add_area">Add an area</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -8,17 +8,17 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import fr.antoinectx.roomview.models.Building;
-
 import java.util.List;
 
-public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRecyclerViewAdapter.ViewHolder> {
-    private List<Building> mData;
+import fr.antoinectx.roomview.models.Area;
+
+public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerViewAdapter.ViewHolder> {
+    private List<Area> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    BatimentRecyclerViewAdapter(Context context, List<Building> data) {
+    AreaRecyclerViewAdapter(Context context, List<Area> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -33,9 +33,8 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Building building = mData.get(position);
-        holder.nomBatiment.setText(building.getNom());
-        holder.descriptionBatiment.setText(building.getDescription());
+        Area area = mData.get(position);
+        holder.areaName.setText(area.getName());
     }
 
     // total number of rows
@@ -47,13 +46,11 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView nomBatiment;
-        TextView descriptionBatiment;
+        TextView areaName;
 
         ViewHolder(View itemView) {
             super(itemView);
-            nomBatiment = itemView.findViewById(R.id.textViewBatimentTileNom);
-            descriptionBatiment = itemView.findViewById(R.id.textViewBatimentTileDescription);
+            areaName = itemView.findViewById(R.id.textViewBatimentTileNom);
             itemView.setOnClickListener(this);
         }
 
@@ -64,7 +61,7 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
     }
 
     // convenience method for getting data at click position
-    Building getItem(int id) {
+    Area getItem(int id) {
         return mData.get(id);
     }
 
@@ -78,8 +75,8 @@ public class BatimentRecyclerViewAdapter extends RecyclerView.Adapter<BatimentRe
         void onItemClick(View view, int position);
     }
 
-    public void setBatiments(List<Building> buildings) {
-        mData = buildings;
+    public void setAreas(List<Area> areas) {
+        mData = areas;
         notifyDataSetChanged();
     }
 }
