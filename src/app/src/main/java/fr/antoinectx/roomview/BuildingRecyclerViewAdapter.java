@@ -78,7 +78,7 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
         void onItemClick(View view, int position);
     }
 
-    public void setBatiments(List<Building> buildings) {
+    public void setBuildings(List<Building> buildings) {
         mData = buildings;
         notifyDataSetChanged();
     }

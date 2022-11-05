@@ -11,8 +11,10 @@ import android.widget.EditText;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
+import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
 
 public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdapter.ItemClickListener {
@@ -69,18 +71,21 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         return true;
     }
 
-    // TODO
     public void createArea(MenuItem item) {
-
+        building.getAreas().add(new Area("New area", new Date()));
+        building.save(this);
+        // TODO show a field to set the name and start the capture
     }
 
     // TODO
     public void editBuilding(MenuItem item) {
-
+        building.setName("New name");
+        building.save(this);
+        toolbar.setTitle(building.getName());
     }
 
-    // TODO
     public void deleteBuilding(MenuItem item) {
-
+        building.delete(this);
+        finish();
     }
 }

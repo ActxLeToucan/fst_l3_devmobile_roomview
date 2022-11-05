@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Building implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final UUID id = UUID.randomUUID();
     private String name;
     private String description;
@@ -108,6 +110,18 @@ public class Building implements Serializable {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void delete(Context context) {
+        File file = new File(context.getFilesDir(), id + ".building");
+        if (!file.exists()) {
+            Log.e("Batiment", "delete: Impossible de trouver le fichier " + file.getAbsolutePath());
+            return;
+        }
+
+        if (!file.delete()) {
+            Log.e("Batiment", "delete: Impossible de supprimer le fichier " + file.getAbsolutePath());
         }
     }
 }

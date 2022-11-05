@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 
 public class Passage implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int x1;
     private int y1;
     private int x2;

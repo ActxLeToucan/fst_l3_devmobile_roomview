@@ -52,7 +52,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.setBatiments(buildings
+                adapter.setBuildings(buildings
                         .stream()
                         .filter(building -> (building.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
                                     building.getDescription().toLowerCase().contains(s.toString().toLowerCase())))
@@ -101,6 +101,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
     public void loadBuildings() {
         buildings.clear();
         buildings.addAll(Building.loadAll(this));
+        adapter.setBuildings(buildings);
     }
 
     public void saveBuildings() {
@@ -137,7 +138,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         bat.save(this);
 
         buildings.add(bat);
-        adapter.setBatiments(buildings);
+        adapter.setBuildings(buildings);
         recyclerView.smoothScrollToPosition(buildings.size() - 1);
     }
 }
