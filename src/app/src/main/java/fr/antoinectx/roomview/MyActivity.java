@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,9 +18,9 @@ public abstract class MyActivity extends AppCompatActivity {
     private boolean showBackButton = false;
     protected MaterialToolbar toolbar;
 
-    protected void applyMaterialToolbar(@IdRes int toolbarId, String title, @Nullable String subtitle, boolean showBackButton) {
+    protected void applyMaterialToolbar(String title, @Nullable String subtitle, boolean showBackButton) {
         this.showBackButton = showBackButton;
-        toolbar = findViewById(toolbarId);
+        toolbar = findViewById(R.id.materialToolbar);
         toolbar.setTitle(title);
         if (subtitle != null) toolbar.setSubtitle(subtitle);
         setSupportActionBar(toolbar);

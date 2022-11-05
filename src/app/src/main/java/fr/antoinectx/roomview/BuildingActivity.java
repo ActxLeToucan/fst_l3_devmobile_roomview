@@ -31,7 +31,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
             return;
         }
 
-        applyMaterialToolbar(R.id.buildingActivity_toolbar, building.getName(), getString(R.string.pagename_building), true);
+        applyMaterialToolbar(building.getName(), getString(R.string.pagename_building), true);
 
         adapter = new AreaRecyclerViewAdapter(this, building.getAreas());
         adapter.setClickListener(this);

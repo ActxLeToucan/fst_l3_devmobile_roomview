@@ -35,7 +35,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        applyMaterialToolbar(R.id.mainActivity_toolbar, getString(R.string.app_name), getString(R.string.pagename_main), false);
+        applyMaterialToolbar(getString(R.string.app_name), getString(R.string.pagename_main), false);
 
         adapter = new BuildingRecyclerViewAdapter(this, buildings);
         adapter.setClickListener(this);

@@ -26,7 +26,7 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.batiment_tile, parent, false);
+        View view = mInflater.inflate(R.layout.big_tile, parent, false);
         return new ViewHolder(view);
     }
 
@@ -52,8 +52,8 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
 
         ViewHolder(View itemView) {
             super(itemView);
-            nomBatiment = itemView.findViewById(R.id.textViewBatimentTileNom);
-            descriptionBatiment = itemView.findViewById(R.id.textViewBatimentTileDescription);
+            nomBatiment = itemView.findViewById(R.id.bigTile_title);
+            descriptionBatiment = itemView.findViewById(R.id.bigTile_description);
             itemView.setOnClickListener(this);
         }
 

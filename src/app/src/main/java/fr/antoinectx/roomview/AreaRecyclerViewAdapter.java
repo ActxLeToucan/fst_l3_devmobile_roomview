@@ -26,7 +26,7 @@ public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerVi
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.batiment_tile, parent, false);
+        View view = mInflater.inflate(R.layout.small_tile, parent, false);
         return new ViewHolder(view);
     }
 
@@ -50,7 +50,7 @@ public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerVi
 
         ViewHolder(View itemView) {
             super(itemView);
-            areaName = itemView.findViewById(R.id.textViewBatimentTileNom);
+            areaName = itemView.findViewById(R.id.smallTile_title);
             itemView.setOnClickListener(this);
         }
 
