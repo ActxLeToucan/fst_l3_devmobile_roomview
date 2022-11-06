@@ -9,4 +9,12 @@
     <string name="add_area">Ajouter une zone</string>
     <string name="edit">Modifier</string>
     <string name="delete">Supprimer</string>
+    <string name="pagename_editbuilding">Modification du bâtiment</string>
+    <string name="buidingName">Nom du bâtiment</string>
+    <string name="searchMatch">élément trouvé</string>
+    <string name="searchMatches">éléments trouvés</string>
+    <string name="buildingDescription">Description du bâtiment</string>
+    <string name="save">Enregistrer</string>
+    <string name="buildingPhoto">Photo du bâtiment</string>
+    <string name="add_photo">Ajouter une photo</string>
 </resources>

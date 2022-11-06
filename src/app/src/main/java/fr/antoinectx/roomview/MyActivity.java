@@ -18,7 +18,7 @@ public abstract class MyActivity extends AppCompatActivity {
     private boolean showBackButton = false;
     protected MaterialToolbar toolbar;
 
-    protected void applyMaterialToolbar(String title, @Nullable String subtitle, boolean showBackButton) {
+    protected void initAppBar(String title, @Nullable String subtitle, boolean showBackButton) {
         this.showBackButton = showBackButton;
         toolbar = findViewById(R.id.materialToolbar);
         toolbar.setTitle(title);

@@ -1,6 +1,7 @@
 package fr.antoinectx.roomview.models;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.io.File;
@@ -22,11 +23,16 @@ public class Building implements Serializable {
     private String name;
     private String description;
     private final List<Area> areas;
+    private Bitmap photo;
 
     public Building(String name, String description) {
         this.name = name;
         this.description = description;
         this.areas = new ArrayList<>();
+    }
+
+    public String getId() {
+        return id.toString();
     }
 
     public String getName() {
@@ -47,6 +53,14 @@ public class Building implements Serializable {
 
     public List<Area> getAreas() {
         return areas;
+    }
+
+    public Bitmap getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Bitmap photo) {
+        this.photo = photo;
     }
 
     // --- Save & Load ---

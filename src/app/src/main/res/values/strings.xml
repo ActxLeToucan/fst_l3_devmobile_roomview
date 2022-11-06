@@ -4,9 +4,17 @@
     <string name="new_building">New building</string>
     <string name="pagename_main">Buildings</string>
     <string name="searchBuilding">Search a building</string>
-    <string name="searchArea" >Search an area</string>
+    <string name="searchArea">Search an area</string>
     <string name="pagename_building">Areas</string>
     <string name="add_area">Add an area</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="pagename_editbuilding">Building modification</string>
+    <string name="buidingName">Building name</string>
+    <string name="searchMatch">item found</string>
+    <string name="searchMatches">items found</string>
+    <string name="buildingDescription">Building description</string>
+    <string name="save">Save</string>
+    <string name="buildingPhoto">Photo of the bulding</string>
+    <string name="add_photo">Add a photo</string>
 </resources>

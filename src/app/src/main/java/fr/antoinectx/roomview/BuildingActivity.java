@@ -1,15 +1,17 @@
 package fr.antoinectx.roomview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -21,6 +23,8 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
     private Building building;
     private AreaRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
+    private TextInputEditText search;
+    private String searchContent = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +37,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
             return;
         }
 
-        applyMaterialToolbar(building.getName(), getString(R.string.pagename_building), true);
+        initAppBar(building.getName(), getString(R.string.pagename_building), true);
 
         adapter = new AreaRecyclerViewAdapter(this, building.getAreas());
         adapter.setClickListener(this);
@@ -41,17 +45,15 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        EditText search = findViewById(R.id.buildingActivity_searchBar);
+        search = findViewById(R.id.buildingActivity_searchBar);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.setAreas(building.getAreas()
-                        .stream()
-                        .filter(area -> area.getName().toLowerCase().contains(s.toString().toLowerCase()))
-                        .collect(Collectors.toList()));
+                searchContent = s.toString();
+                updateSearchResults();
             }
             @Override
             public void afterTextChanged(Editable s) {
@@ -71,17 +73,62 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        update();
+    }
+
+    public void update() {
+        updateData();
+        updateInterface();
+        updateSearchResults();
+    }
+
+    public void updateData() {
+        boolean found = false;
+        for (Building building : Building.loadAll(this)) {
+            if (building.getId().compareTo(this.building.getId()) == 0) {
+                this.building = building;
+                found = true;
+                break;
+            }
+        }
+        // si l'objet n'existe plus, on ferme l'activité
+        if (!found) {
+            finish();
+        }
+    }
+
+    public void updateInterface() {
+        toolbar.setTitle(building.getName());
+    }
+
+    public void updateSearchResults() {
+        adapter.setAreas(building.getAreas()
+                .stream()
+                .filter(area -> area.getName().toLowerCase().contains(searchContent.toLowerCase()))
+                .collect(Collectors.toList()));
+        if (!searchContent.isEmpty()) {
+            toolbar.setSubtitle(adapter.getItemCount() + " " + (adapter.getItemCount() < 2 ?getString(R.string.searchMatch) : getString(R.string.searchMatches)));
+        } else {
+            toolbar.setSubtitle(getString(R.string.pagename_building));
+        }
+    }
+
     public void createArea(MenuItem item) {
+        search.setText("");
         building.getAreas().add(new Area("New area", new Date()));
         building.save(this);
+        update();
+        recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
         // TODO show a field to set the name and start the capture
     }
 
-    // TODO
     public void editBuilding(MenuItem item) {
-        building.setName("New name");
-        building.save(this);
-        toolbar.setTitle(building.getName());
+        Intent intent = new Intent(this, EditBuildingActivity.class);
+        intent.putExtra("building", building);
+        startActivity(intent);
     }
 
     public void deleteBuilding(MenuItem item) {

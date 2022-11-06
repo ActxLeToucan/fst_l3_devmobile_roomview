@@ -7,10 +7,11 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,13 +30,15 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
     private final List<Building> buildings = new ArrayList<>();
     private BuildingRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
+    private TextInputEditText search;
+    private String searchContent = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        applyMaterialToolbar(getString(R.string.app_name), getString(R.string.pagename_main), false);
+        initAppBar(getString(R.string.app_name), getString(R.string.pagename_main), false);
 
         adapter = new BuildingRecyclerViewAdapter(this, buildings);
         adapter.setClickListener(this);
@@ -43,31 +46,21 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        loadBuildings();
+        updateData();
 
-        EditText search = findViewById(R.id.mainActivity_searchBar);
+        search = findViewById(R.id.mainActivity_searchBar);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.setBuildings(buildings
-                        .stream()
-                        .filter(building -> (building.getName().toLowerCase().contains(s.toString().toLowerCase()) ||
-                                    building.getDescription().toLowerCase().contains(s.toString().toLowerCase())))
-                        .collect(Collectors.toList()));
+                searchContent = s.toString();
+                updateSearchResults();
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
-        });
-        search.setOnFocusChangeListener((view, b) -> {
-            if (b) {
-                toolbar.setSubtitle(R.string.searchBuilding);
-            } else {
-                toolbar.setSubtitle(R.string.pagename_main);
-            }
         });
     }
 
@@ -80,7 +73,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
     @Override
     protected void onResume() {
         super.onResume();
-        loadBuildings();
+        update();
     }
 
     @Override
@@ -98,15 +91,32 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         startActivity(intent);
     }
 
-    public void loadBuildings() {
-        buildings.clear();
-        buildings.addAll(Building.loadAll(this));
-        adapter.setBuildings(buildings);
-    }
-
     public void saveBuildings() {
         for (Building building : buildings) {
             building.save(this);
+        }
+    }
+
+    public void update() {
+        updateData();
+        updateSearchResults();
+    }
+
+    public void updateData() {
+        buildings.clear();
+        buildings.addAll(Building.loadAll(this));
+    }
+
+    public void updateSearchResults() {
+        adapter.setBuildings(buildings
+                .stream()
+                .filter(building -> (building.getName().toLowerCase().contains(searchContent.toLowerCase()) ||
+                        building.getDescription().toLowerCase().contains(searchContent.toLowerCase())))
+                .collect(Collectors.toList()));
+        if (!searchContent.isEmpty()) {
+            toolbar.setSubtitle(adapter.getItemCount() + " " + (adapter.getItemCount() < 2 ?getString(R.string.searchMatch) : getString(R.string.searchMatches)));
+        } else {
+            toolbar.setSubtitle(getString(R.string.pagename_main));
         }
     }
 
@@ -137,8 +147,8 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         bat.getAreas().add(area2);
         bat.save(this);
 
-        buildings.add(bat);
-        adapter.setBuildings(buildings);
+        search.setText("");
+        update();
         recyclerView.smoothScrollToPosition(buildings.size() - 1);
     }
 }
