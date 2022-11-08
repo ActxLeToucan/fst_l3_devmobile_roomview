@@ -1,19 +1,33 @@
 package fr.antoinectx.roomview.models;
 
-import java.io.Serializable;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
+import java.util.UUID;
 
-public class Area implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Area {
+    private final String id;
     private String name;
     private final Date dateCapture;
-    private final Photo[] photos;
+    private final OrientationPhoto[] orientationPhotos;
 
-    public Area(String name, Date dateCapture) {
+    private Area(String id, String name, Date dateCapture, OrientationPhoto[] orientationPhotos) {
+        this.id = id;
         this.name = name;
         this.dateCapture = dateCapture;
-        this.photos = new Photo[4];
+        this.orientationPhotos = orientationPhotos;
+    }
+
+    public Area(String name, Date dateCapture) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.dateCapture = dateCapture;
+        this.orientationPhotos = new OrientationPhoto[4];
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -28,39 +42,83 @@ public class Area implements Serializable {
         return dateCapture;
     }
 
-    public Photo[] getPhotos() {
-        return photos;
+    public OrientationPhoto[] getPhotos() {
+        return orientationPhotos;
     }
 
-    public Photo photoNord() {
-        return photos[0];
+    public OrientationPhoto north() {
+        return orientationPhotos[0];
     }
 
-    public Photo photoSud() {
-        return photos[1];
+    public OrientationPhoto east() {
+        return orientationPhotos[1];
     }
 
-    public Photo photoEst() {
-        return photos[2];
+    public OrientationPhoto south() {
+        return orientationPhotos[2];
     }
 
-    public Photo photoOuest() {
-        return photos[3];
+    public OrientationPhoto west() {
+        return orientationPhotos[3];
     }
 
-    public void setPhotoNord(Photo photo) {
-        photos[0] = photo;
+    public void setNorth(OrientationPhoto orientationPhoto) {
+        orientationPhotos[0] = orientationPhoto;
     }
 
-    public void setPhotoSud(Photo photo) {
-        photos[1] = photo;
+    public void setEast(OrientationPhoto orientationPhoto) {
+        orientationPhotos[1] = orientationPhoto;
     }
 
-    public void setPhotoEst(Photo photo) {
-        photos[2] = photo;
+    public void setSouth(OrientationPhoto orientationPhoto) {
+        orientationPhotos[2] = orientationPhoto;
     }
 
-    public void setPhotoOuest(Photo photo) {
-        photos[3] = photo;
+    public void setWest(OrientationPhoto orientationPhoto) {
+        orientationPhotos[3] = orientationPhoto;
+    }
+
+    /**
+     * Convert the area to a JSON object
+     * @return The JSON object
+     */
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("id", id);
+            json.put("name", name);
+            json.put("dateCapture", dateCapture.getTime());
+            json.put("north", north().toJSON());
+            json.put("east", east().toJSON());
+            json.put("south", south().toJSON());
+            json.put("west", west().toJSON());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    /**
+     * Create an area from a JSON object
+     * @param json The JSON object
+     * @return The area
+     */
+    public static Area fromJSON(JSONObject json) {
+        try {
+            return new Area(
+                    json.getString("id"),
+                    json.getString("name"),
+                    new Date(json.getLong("dateCapture")),
+                    new OrientationPhoto[] {
+                            OrientationPhoto.fromJSON(json.getJSONObject("north")),
+                            OrientationPhoto.fromJSON(json.getJSONObject("east")),
+                            OrientationPhoto.fromJSON(json.getJSONObject("south")),
+                            OrientationPhoto.fromJSON(json.getJSONObject("west"))
+                    }
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

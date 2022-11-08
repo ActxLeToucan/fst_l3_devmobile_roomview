@@ -61,7 +61,7 @@ public class EditBuildingActivity extends MyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_building);
 
-        building = (Building) getIntent().getSerializableExtra("building");
+        building = Building.fromJSONString(getIntent().getStringExtra("building"));
         if (building == null) {
             finish();
             return;
@@ -74,8 +74,8 @@ public class EditBuildingActivity extends MyActivity {
         TextInputEditText description = findViewById(R.id.editBuildingActivity_description);
         description.setText(building.getDescription());
         photo = findViewById(R.id.editBuildingActivity_photo);
-        if (building.getPhoto() != null) {
-            photo.setImageBitmap(building.getPhoto());
+        if (building.getPhoto() != null && !building.getPhoto().isEmpty()) {
+            photo.setImageBitmap(BitmapFactory.decodeFile(building.getPhoto()));
         } else {
             photo.setImageResource(R.drawable.ic_baseline_add_a_photo_24);
         }

@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
+import fr.antoinectx.roomview.models.OrientationPhoto;
 import fr.antoinectx.roomview.models.Passage;
-import fr.antoinectx.roomview.models.Photo;
 
 public class MainActivity extends MyActivity implements BuildingRecyclerViewAdapter.ItemClickListener {
     private final List<Building> buildings = new ArrayList<>();
@@ -87,7 +87,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         Building building = buildings.get(position);
 
         Intent intent = new Intent(this, BuildingActivity.class);
-        intent.putExtra("building", building);
+        intent.putExtra("building", building.toJSON().toString());
         startActivity(intent);
     }
 
@@ -128,20 +128,20 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         Area area1 = new Area("Zone 1", new Date());
         Area area2 = new Area("Zone 2", new Date());
 
-        Photo photo1Sud = new Photo();
-        Photo photo2Nord = new Photo();
+        OrientationPhoto orientationPhoto1Sud = new OrientationPhoto("");
+        OrientationPhoto orientationPhoto2Nord = new OrientationPhoto("");
 
-        photo1Sud.getPassages().add(new Passage(0, 0, 0, 0, area2));
-        photo2Nord.getPassages().add(new Passage(0, 0, 0, 0, area1));
+        orientationPhoto1Sud.getPassages().add(new Passage(0, 0, 0, 0, area2));
+        orientationPhoto2Nord.getPassages().add(new Passage(0, 0, 0, 0, area1));
 
-        area1.setPhotoNord(new Photo());
-        area1.setPhotoEst(new Photo());
-        area1.setPhotoSud(photo1Sud);
-        area1.setPhotoOuest(new Photo());
-        area2.setPhotoNord(photo2Nord);
-        area2.setPhotoEst(new Photo());
-        area2.setPhotoSud(new Photo());
-        area2.setPhotoOuest(new Photo());
+        area1.setNorth(new OrientationPhoto(""));
+        area1.setEast(new OrientationPhoto(""));
+        area1.setSouth(orientationPhoto1Sud);
+        area1.setWest(new OrientationPhoto(""));
+        area2.setNorth(orientationPhoto2Nord);
+        area2.setEast(new OrientationPhoto(""));
+        area2.setSouth(new OrientationPhoto(""));
+        area2.setWest(new OrientationPhoto(""));
 
         bat.getAreas().add(area1);
         bat.getAreas().add(area2);

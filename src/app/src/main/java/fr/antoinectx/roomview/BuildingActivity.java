@@ -31,7 +31,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_building);
 
-        building = (Building) getIntent().getSerializableExtra("building");
+        building = Building.fromJSONString(getIntent().getStringExtra("building"));
         if (building == null) {
             finish();
             return;
@@ -127,7 +127,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
 
     public void editBuilding(MenuItem item) {
         Intent intent = new Intent(this, EditBuildingActivity.class);
-        intent.putExtra("building", building);
+        intent.putExtra("building", building.toJSON().toString());
         startActivity(intent);
     }
 
