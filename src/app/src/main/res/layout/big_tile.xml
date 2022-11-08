@@ -10,7 +10,7 @@
     android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="5dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -19,15 +19,19 @@
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            app:srcCompat="@drawable/ic_launcher_background"
+            app:srcCompat="@drawable/ic_baseline_image_24"
             cardView:layout_constraintStart_toStartOf="parent"
-            cardView:layout_constraintTop_toTopOf="parent" />
+            cardView:layout_constraintTop_toTopOf="parent"
+            android:layout_alignTop="@id/bigTile_textPart"
+            android:layout_alignBottom="@id/bigTile_textPart"/>
 
         <LinearLayout
+            android:id="@+id/bigTile_textPart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginVertical="4dp"
+            android:paddingVertical="4dp"
+            android:layout_toEndOf="@+id/bigTile_image"
             android:orientation="vertical">
 
             <TextView
@@ -44,10 +48,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ellipsize="end"
-                android:minLines="3"
-                android:maxLines="3"
+                android:maxLines="4"
+                android:minLines="4"
                 tools:text="description" />
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

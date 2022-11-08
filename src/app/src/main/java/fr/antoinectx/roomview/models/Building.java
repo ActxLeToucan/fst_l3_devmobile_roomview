@@ -70,8 +70,15 @@ public class Building {
         return areas;
     }
 
-    public String getPhoto() {
+    public String getPhotoPath() {
         return photo;
+    }
+
+    public File getPhotoFile(Context context) {
+        if (photo == null || photo.trim().isEmpty()) {
+            return null;
+        }
+        return new File(getDirectory(context), photo);
     }
 
     public void setPhoto(String photo) {
@@ -243,7 +250,7 @@ public class Building {
      *                (use getApplicationContext() or getBaseContext() or this in an activity)
      */
     public void delete(Context context) {
-        File dir = new File(context.getFilesDir() + "/" + id);
+        File dir = getDirectory(context);
         if (!dir.exists()) {
             Log.e("Building", "delete: Impossible de trouver le dossier " + dir.getAbsolutePath());
             return;
@@ -265,5 +272,15 @@ public class Building {
         if (!fileOrDirectory.delete()) {
             Log.e("Building", "deleteRecursive: Impossible de supprimer " + fileOrDirectory.getAbsolutePath());
         }
+    }
+
+    /**
+     * Get the directory of the building
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @return The directory
+     */
+    public File getDirectory(Context context) {
+        return new File(context.getFilesDir() + "/" + id);
     }
 }

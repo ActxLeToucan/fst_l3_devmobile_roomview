@@ -1,13 +1,16 @@
 package fr.antoinectx.roomview;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 
 import fr.antoinectx.roomview.models.Building;
@@ -36,6 +39,13 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
         Building building = mData.get(position);
         holder.nomBatiment.setText(building.getName());
         holder.descriptionBatiment.setText(building.getDescription());
+        Context context = holder.photoBatiment.getContext();
+        File photo = building.getPhotoFile(context);
+        if (photo != null && photo.exists()) {
+            holder.photoBatiment.setImageBitmap(BitmapFactory.decodeFile(photo.getAbsolutePath()));
+        } else {
+            holder.photoBatiment.setImageResource(R.drawable.ic_baseline_image_24);
+        }
     }
 
     // total number of rows
@@ -49,11 +59,13 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView nomBatiment;
         TextView descriptionBatiment;
+        ImageView photoBatiment;
 
         ViewHolder(View itemView) {
             super(itemView);
             nomBatiment = itemView.findViewById(R.id.bigTile_title);
             descriptionBatiment = itemView.findViewById(R.id.bigTile_description);
+            photoBatiment = itemView.findViewById(R.id.bigTile_image);
             itemView.setOnClickListener(this);
         }
 

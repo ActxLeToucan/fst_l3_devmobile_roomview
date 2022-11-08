@@ -19,11 +19,18 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import fr.antoinectx.roomview.models.Building;
 
 public class EditBuildingActivity extends MyActivity {
     private Building building;
     private ImageButton photo;
+    private File initPhoto;
+    private File lastPhotoSelected;
+
     ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (result) -> {
@@ -44,10 +51,28 @@ public class EditBuildingActivity extends MyActivity {
                                     filePathColumn, null, null, null);
                             if (cursor != null) {
                                 cursor.moveToFirst();
-
                                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
                                 String picturePath = cursor.getString(columnIndex);
-                                photo.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                                File file = new File(picturePath);
+
+                                File buildingDir = building.getDirectory(this);
+                                File newFile = new File(buildingDir, file.getName());
+
+                                // remove the last photo selected
+                                if (lastPhotoSelected != null) lastPhotoSelected.delete();
+
+                                // copy file to app's private storage
+                                try {
+                                    Files.copy(file.toPath(), newFile.toPath());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                // update building's photo
+                                building.setPhoto(newFile.getName());
+                                lastPhotoSelected = newFile;
+                                photo.setImageBitmap(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
                                 cursor.close();
                             }
                         }
@@ -66,6 +91,7 @@ public class EditBuildingActivity extends MyActivity {
             finish();
             return;
         }
+        initPhoto = building.getPhotoFile(this);
 
         initAppBar(building.getName(), getString(R.string.pagename_editbuilding), true);
 
@@ -74,8 +100,8 @@ public class EditBuildingActivity extends MyActivity {
         TextInputEditText description = findViewById(R.id.editBuildingActivity_description);
         description.setText(building.getDescription());
         photo = findViewById(R.id.editBuildingActivity_photo);
-        if (building.getPhoto() != null && !building.getPhoto().isEmpty()) {
-            photo.setImageBitmap(BitmapFactory.decodeFile(building.getPhoto()));
+        if (building.getPhotoPath() != null && !building.getPhotoPath().isEmpty()) {
+            photo.setImageBitmap(BitmapFactory.decodeFile(building.getPhotoFile(this).getAbsolutePath()));
         } else {
             photo.setImageResource(R.drawable.ic_baseline_add_a_photo_24);
         }
@@ -90,11 +116,38 @@ public class EditBuildingActivity extends MyActivity {
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (lastPhotoSelected != null) {
+            lastPhotoSelected.delete();
+        }
+    }
+
     public void saveBuilding(MenuItem item) {
+        // set name
         TextInputEditText name = findViewById(R.id.editBuildingActivity_name);
-        TextInputEditText description = findViewById(R.id.editBuildingActivity_description);
         building.setName(name.getText() != null ? name.getText().toString() : "");
+
+        // set description
+        TextInputEditText description = findViewById(R.id.editBuildingActivity_description);
         building.setDescription(description.getText() != null ? description.getText().toString() : "");
+
+        // photo
+        File photoFile = building.getPhotoFile(this);
+        if (photoFile != null) {
+            if (initPhoto != null && !initPhoto.getPath().equals(photoFile.getPath())) {
+                initPhoto.delete();
+            }
+            // rename the photo to make it unique and avoid conflicts during the selection
+            File newFileName = new File(building.getDirectory(this), building.getId() + '_' + photoFile.getName());
+            photoFile.renameTo(newFileName);
+            building.setPhoto(newFileName.getName());
+            // reset the temporary photo file to avoid deletion
+            lastPhotoSelected = null;
+        }
+
+
         building.save(this);
         finish();
     }
