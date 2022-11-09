@@ -16,9 +16,9 @@
     <string name="buildingDescription">Description du bâtiment</string>
     <string name="save">Enregistrer</string>
     <string name="buildingPhoto">Photo du bâtiment</string>
-    <string name="add_photo">Ajouter une orientationPhoto</string>
-    <string name="takePhoto">Prendre une orientationPhoto</string>
+    <string name="add_photo">Ajouter une photo</string>
+    <string name="takePhoto">Prendre une photo</string>
     <string name="fromGallery">Choisir depuis la gallerie</string>
     <string name="cancel">Annuler</string>
-    <string name="addPhoto">Ajouter une orientationPhoto</string>
+    <string name="addPhoto">Ajouter une photo</string>
 </resources>

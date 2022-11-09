@@ -16,9 +16,9 @@
     <string name="buildingDescription">Building description</string>
     <string name="save">Save</string>
     <string name="buildingPhoto">Photo of the bulding</string>
-    <string name="add_photo">Add a orientationPhoto</string>
-    <string name="takePhoto">Take orientationPhoto</string>
+    <string name="add_photo">Add a photo</string>
+    <string name="takePhoto">Take photo</string>
     <string name="fromGallery">Choose from gallery</string>
     <string name="cancel">Cancel</string>
-    <string name="addPhoto">Add a orientationPhoto</string>
+    <string name="addPhoto">Add a photo</string>
 </resources>

@@ -8,7 +8,9 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
@@ -16,6 +18,7 @@ import android.widget.ImageButton;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -30,12 +33,16 @@ public class EditBuildingActivity extends MyActivity {
     private ImageButton photo;
     private File initPhoto;
     private File lastPhotoSelected;
+    private String pathPhotoFromCamera;
 
     ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (result) -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    // TODO: handle photo
+                    Intent data = result.getData();
+                    if (data != null) {
+                        applyPhoto(pathPhotoFromCamera);
+                    }
                 }
             });
     ActivityResultLauncher<Intent> chooseFromGalleryLauncher = registerForActivityResult(
@@ -54,25 +61,8 @@ public class EditBuildingActivity extends MyActivity {
                                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 
                                 String picturePath = cursor.getString(columnIndex);
-                                File file = new File(picturePath);
 
-                                File buildingDir = building.getDirectory(this);
-                                File newFile = new File(buildingDir, file.getName());
-
-                                // remove the last photo selected
-                                if (lastPhotoSelected != null) lastPhotoSelected.delete();
-
-                                // copy file to app's private storage
-                                try {
-                                    Files.copy(file.toPath(), newFile.toPath());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                // update building's photo
-                                building.setPhoto(newFile.getName());
-                                lastPhotoSelected = newFile;
-                                photo.setImageBitmap(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
+                                applyPhoto(picturePath);
                                 cursor.close();
                             }
                         }
@@ -163,7 +153,14 @@ public class EditBuildingActivity extends MyActivity {
                 if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{android.Manifest.permission.CAMERA}, 50);
                 } else {
+                    File f = createImageFile();
                     Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri photoUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", f);
+                    takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                    takePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    pathPhotoFromCamera = f.getAbsolutePath();
+
                     takePhotoLauncher.launch(takePicture);
                 }
             } else if (options[item].equals(getString(R.string.fromGallery))) {
@@ -176,5 +173,41 @@ public class EditBuildingActivity extends MyActivity {
             }
         });
         builder.show();
+    }
+
+    private void applyPhoto(String picturePath) {
+        File file = new File(picturePath);
+        if (!file.exists()) {
+            Log.e("EditBuildingActivity", "File does not exist");
+            return;
+        }
+
+        File buildingDir = building.getDirectory(this);
+        File newFile = new File(buildingDir, file.getName());
+
+        // remove the last photo selected
+        if (lastPhotoSelected != null) lastPhotoSelected.delete();
+
+        // copy file to app's private storage
+        try {
+            Files.copy(file.toPath(), newFile.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // update building's photo
+        building.setPhoto(newFile.getName());
+        lastPhotoSelected = newFile;
+        photo.setImageBitmap(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
+    }
+
+    private File createImageFile() {
+        String imageFileName = "temp_" + System.currentTimeMillis() + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = null;
+        try {
+            image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (Exception e) {}
+        return image;
     }
 }
