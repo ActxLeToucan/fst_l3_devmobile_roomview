@@ -18,6 +18,12 @@ public abstract class MyActivity extends AppCompatActivity {
     private boolean showBackButton = false;
     protected MaterialToolbar toolbar;
 
+    /**
+     * Initialize the app bar
+     * @param title The title of the app bar
+     * @param subtitle The subtitle of the app bar
+     * @param showBackButton Whether to show the back button
+     */
     protected void initAppBar(String title, @Nullable String subtitle, boolean showBackButton) {
         this.showBackButton = showBackButton;
         toolbar = findViewById(R.id.materialToolbar);
@@ -30,6 +36,11 @@ public abstract class MyActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method is called when the user clicks on the back button in the app bar.
+     * @param item The item that was clicked.
+     * @return True if the event was handled, false otherwise.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (this.showBackButton && item.getItemId() == android.R.id.home) finish();
@@ -38,7 +49,7 @@ public abstract class MyActivity extends AppCompatActivity {
 
     /**
      * Clear focus on the search bar when the user clicks outside of it
-     * from https://stackoverflow.com/a/61290481
+     * (from <a href="https://stackoverflow.com/a/61290481">StackOverflow</a>)
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {

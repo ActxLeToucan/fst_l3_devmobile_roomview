@@ -1,7 +1,12 @@
 package fr.antoinectx.roomview.models;
 
+import static fr.antoinectx.roomview.Tools.getBitmapFromPath;
+
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,21 +22,37 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Building {
+    /**
+     * Unique ID of the building
+     */
     private final String id;
+    /**
+     * Name of the building
+     */
     private String name;
+    /**
+     * Description of the building
+     */
     private String description;
+    /**
+     * Areas of the building (rooms, hallways, etc.)
+     */
     private final List<Area> areas;
+    /**
+     * Photo filename of the building
+     */
+    @Nullable
     private String photo;
 
     /**
-     * Complete constructor, only used when loading a building from a file
+     * Complete constructor, only used when restoring a building from a file
      * @param id The unique ID of the building
      * @param name The name of the building
      * @param description The description of the building
      * @param areas The zones of the building
      * @param photo The file name of the photo of the building
      */
-    private Building(String id, String name, String description, List<Area> areas, String photo) {
+    private Building(String id, String name, String description, List<Area> areas, @Nullable String photo) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -45,6 +66,35 @@ public class Building {
         this.description = description;
         this.areas = new ArrayList<>();
     }
+
+    /**
+     * Get the photo file
+     * @param context The context of the application
+     *                (used to get the directory of the application)
+     * @return The photo file
+     */
+    public File getPhotoFile(Context context) {
+        if (photo == null || photo.trim().isEmpty()) {
+            return null;
+        }
+        return new File(getDirectory(context), photo);
+    }
+
+    /**
+     * Get the photo bitmap
+     * @param context The context of the application
+     *                (used to get the directory of the application)
+     * @return The photo bitmap
+     */
+    public Bitmap getPhotoBitmap(Context context) {
+        if (photo == null || photo.trim().isEmpty()) {
+            return null;
+        }
+
+        String path = getPhotoFile(context).getAbsolutePath();
+        return getBitmapFromPath(path);
+    }
+
 
     public String getId() {
         return id;
@@ -74,14 +124,7 @@ public class Building {
         return photo;
     }
 
-    public File getPhotoFile(Context context) {
-        if (photo == null || photo.trim().isEmpty()) {
-            return null;
-        }
-        return new File(getDirectory(context), photo);
-    }
-
-    public void setPhoto(String photo) {
+    public void setPhoto(@Nullable String photo) {
         this.photo = photo;
     }
 

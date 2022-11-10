@@ -1,13 +1,13 @@
 package fr.antoinectx.roomview;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -17,7 +17,7 @@ import fr.antoinectx.roomview.models.Building;
 
 public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRecyclerViewAdapter.ViewHolder> {
     private List<Building> mData;
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
@@ -27,8 +27,9 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
     }
 
     // inflates the row layout from xml when needed
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.big_tile, parent, false);
         return new ViewHolder(view);
     }
@@ -42,7 +43,7 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
         Context context = holder.photoBatiment.getContext();
         File photo = building.getPhotoFile(context);
         if (photo != null && photo.exists()) {
-            holder.photoBatiment.setImageBitmap(BitmapFactory.decodeFile(photo.getAbsolutePath()));
+            holder.photoBatiment.setImageBitmap(building.getPhotoBitmap(context));
         } else {
             holder.photoBatiment.setImageResource(R.drawable.ic_baseline_image_24);
         }

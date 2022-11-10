@@ -7,11 +7,30 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Area {
+    /**
+     * The area unique ID
+     */
     private final String id;
+    /**
+     * The area name
+     */
     private String name;
+    /**
+     * The date of capture
+     */
     private final Date dateCapture;
+    /**
+     * The orientation photos (one for each direction) [N, E, S, W]
+     */
     private final OrientationPhoto[] orientationPhotos;
 
+    /**
+     * Complete constructor, only used when loading an area from JSON
+     * @param id The area unique ID
+     * @param name The area name
+     * @param dateCapture The date of capture
+     * @param orientationPhotos The orientation photos [N, E, S, W]
+     */
     private Area(String id, String name, Date dateCapture, OrientationPhoto[] orientationPhotos) {
         this.id = id;
         this.name = name;

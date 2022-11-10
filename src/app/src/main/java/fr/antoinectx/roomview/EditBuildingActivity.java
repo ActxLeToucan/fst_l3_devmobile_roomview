@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,7 +34,7 @@ public class EditBuildingActivity extends MyActivity {
     private File lastPhotoSelected;
     private String pathPhotoFromCamera;
 
-    ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
+    final private ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (result) -> {
                 if (result.getResultCode() == RESULT_OK) {
@@ -45,7 +44,7 @@ public class EditBuildingActivity extends MyActivity {
                     }
                 }
             });
-    ActivityResultLauncher<Intent> chooseFromGalleryLauncher = registerForActivityResult(
+    final private ActivityResultLauncher<Intent> chooseFromGalleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (result) -> {
                 if (result.getResultCode() == RESULT_OK) {
@@ -91,7 +90,7 @@ public class EditBuildingActivity extends MyActivity {
         description.setText(building.getDescription());
         photo = findViewById(R.id.editBuildingActivity_photo);
         if (building.getPhotoPath() != null && !building.getPhotoPath().isEmpty()) {
-            photo.setImageBitmap(BitmapFactory.decodeFile(building.getPhotoFile(this).getAbsolutePath()));
+            photo.setImageBitmap(building.getPhotoBitmap(this));
         } else {
             photo.setImageResource(R.drawable.ic_baseline_add_a_photo_24);
         }
@@ -198,7 +197,7 @@ public class EditBuildingActivity extends MyActivity {
         // update building's photo
         building.setPhoto(newFile.getName());
         lastPhotoSelected = newFile;
-        photo.setImageBitmap(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
+        photo.setImageBitmap(building.getPhotoBitmap(this));
     }
 
     private File createImageFile() {
