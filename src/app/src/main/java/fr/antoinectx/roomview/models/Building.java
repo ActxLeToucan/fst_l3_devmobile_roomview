@@ -265,7 +265,7 @@ public class Building {
             // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
             for (Area area : areas) {
                 for (OrientationPhoto orientationPhoto : area.getPhotos()) {
-                    for (Passage passage : orientationPhoto.getPassages()) {
+                    if (orientationPhoto != null) for (Passage passage : orientationPhoto.getPassages()) {
                         passage.setAutreCote(areas.stream()
                                 .filter(z -> z.getId().equals(passage.getAutreCoteId()))
                                 .findFirst()

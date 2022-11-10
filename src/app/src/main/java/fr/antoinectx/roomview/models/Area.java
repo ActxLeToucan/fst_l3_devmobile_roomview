@@ -107,10 +107,10 @@ public class Area {
             json.put("id", id);
             json.put("name", name);
             json.put("dateCapture", dateCapture.getTime());
-            json.put("north", north().toJSON());
-            json.put("east", east().toJSON());
-            json.put("south", south().toJSON());
-            json.put("west", west().toJSON());
+            if (north() != null) json.put("north", north().toJSON());
+            if (east() != null) json.put("east", east().toJSON());
+            if (south() != null) json.put("south", south().toJSON());
+            if (west() != null) json.put("west", west().toJSON());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -129,10 +129,10 @@ public class Area {
                     json.getString("name"),
                     new Date(json.getLong("dateCapture")),
                     new OrientationPhoto[] {
-                            OrientationPhoto.fromJSON(json.getJSONObject("north")),
-                            OrientationPhoto.fromJSON(json.getJSONObject("east")),
-                            OrientationPhoto.fromJSON(json.getJSONObject("south")),
-                            OrientationPhoto.fromJSON(json.getJSONObject("west"))
+                            OrientationPhoto.fromJSON(json.optJSONObject("north")),
+                            OrientationPhoto.fromJSON(json.optJSONObject("east")),
+                            OrientationPhoto.fromJSON(json.optJSONObject("south")),
+                            OrientationPhoto.fromJSON(json.optJSONObject("west"))
                     }
             );
         } catch (JSONException e) {

@@ -1,5 +1,7 @@
 package fr.antoinectx.roomview.models;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +51,10 @@ public class OrientationPhoto {
      * @param json The JSON object
      * @return The OrientationPhoto object
      */
-    public static OrientationPhoto fromJSON(JSONObject json) {
+    @Nullable
+    public static OrientationPhoto fromJSON(@Nullable JSONObject json) {
+        if (json == null) return null;
+
         try {
             List<Passage> passages = new ArrayList<>();
             for (int i = 0; i < json.getJSONArray("passages").length(); i++) {

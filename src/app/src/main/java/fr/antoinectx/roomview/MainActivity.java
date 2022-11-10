@@ -1,5 +1,6 @@
 package fr.antoinectx.roomview;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,18 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
-import fr.antoinectx.roomview.models.OrientationPhoto;
-import fr.antoinectx.roomview.models.Passage;
 
 public class MainActivity extends MyActivity implements BuildingRecyclerViewAdapter.ItemClickListener {
     private final List<Building> buildings = new ArrayList<>();
@@ -121,6 +115,27 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
     }
 
     public void createBuilding(MenuItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.add_building));
+        View layout = getLayoutInflater().inflate(R.layout.dialog_create_building, null);
+        builder.setView(layout);
+
+        builder.setPositiveButton("OK", (dialogInterface, which) -> {
+            TextInputEditText fieldName = layout.findViewById(R.id.building_field_name);
+            String name = fieldName.getText() == null || fieldName.getText().toString().trim().isEmpty() ? getString(R.string.new_building) : fieldName.getText().toString().trim();
+            TextInputEditText fieldDescription = layout.findViewById(R.id.building_field_description);
+            String description = fieldDescription.getText() == null ? "" : fieldDescription.getText().toString().trim();
+
+            Building building = new Building(name, description);
+            building.save(this);
+            update();
+            recyclerView.scrollToPosition(buildings.size() - 1);
+        });
+
+        builder.setNegativeButton(getString(R.string.cancel), (dialogInterface, which) -> dialogInterface.cancel());
+
+        builder.show();
+/*
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
         LocalDateTime now = LocalDateTime.now();
 
@@ -149,6 +164,6 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
 
         search.setText("");
         update();
-        recyclerView.smoothScrollToPosition(buildings.size() - 1);
+        recyclerView.smoothScrollToPosition(buildings.size() - 1);*/
     }
 }

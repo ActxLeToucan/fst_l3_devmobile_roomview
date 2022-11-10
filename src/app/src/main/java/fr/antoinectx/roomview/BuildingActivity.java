@@ -118,7 +118,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
 
     public void createArea(MenuItem item) {
         search.setText("");
-        building.getAreas().add(new Area("New area", new Date()));
+        building.getAreas().add(new Area(getString(R.string.new_area), new Date()));
         building.save(this);
         update();
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);

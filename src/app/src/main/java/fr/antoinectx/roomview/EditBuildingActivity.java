@@ -84,9 +84,9 @@ public class EditBuildingActivity extends MyActivity {
 
         initAppBar(building.getName(), getString(R.string.pagename_editbuilding), true);
 
-        TextInputEditText name = findViewById(R.id.editBuildingActivity_name);
+        TextInputEditText name = findViewById(R.id.building_field_name);
         name.setText(building.getName());
-        TextInputEditText description = findViewById(R.id.editBuildingActivity_description);
+        TextInputEditText description = findViewById(R.id.building_field_description);
         description.setText(building.getDescription());
         photo = findViewById(R.id.editBuildingActivity_photo);
         if (building.getPhotoPath() != null && !building.getPhotoPath().isEmpty()) {
@@ -115,11 +115,11 @@ public class EditBuildingActivity extends MyActivity {
 
     public void saveBuilding(MenuItem item) {
         // set name
-        TextInputEditText name = findViewById(R.id.editBuildingActivity_name);
-        building.setName(name.getText() != null ? name.getText().toString() : "");
+        TextInputEditText name = findViewById(R.id.building_field_name);
+        building.setName(name.getText() != null ? name.getText().toString().trim() : "");
 
         // set description
-        TextInputEditText description = findViewById(R.id.editBuildingActivity_description);
+        TextInputEditText description = findViewById(R.id.building_field_description);
         building.setDescription(description.getText() != null ? description.getText().toString() : "");
 
         // photo
