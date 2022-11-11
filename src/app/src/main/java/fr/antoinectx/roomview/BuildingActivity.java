@@ -50,11 +50,13 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchContent = s.toString();
                 updateSearchResults();
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -110,7 +112,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
                 .filter(area -> area.getName().toLowerCase().contains(searchContent.toLowerCase()))
                 .collect(Collectors.toList()));
         if (!searchContent.isEmpty()) {
-            toolbar.setSubtitle(adapter.getItemCount() + " " + (adapter.getItemCount() < 2 ?getString(R.string.searchMatch) : getString(R.string.searchMatches)));
+            toolbar.setSubtitle(adapter.getItemCount() + " " + (adapter.getItemCount() < 2 ? getString(R.string.searchMatch) : getString(R.string.searchMatches)));
         } else {
             toolbar.setSubtitle(getString(R.string.pagename_building));
         }
@@ -118,7 +120,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
 
     public void createArea(MenuItem item) {
         search.setText("");
-        building.getAreas().add(new Area(getString(R.string.new_area), new Date()));
+        building.getAreas().add(new Area(getString(R.string.area_new), new Date()));
         building.save(this);
         update();
         recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);

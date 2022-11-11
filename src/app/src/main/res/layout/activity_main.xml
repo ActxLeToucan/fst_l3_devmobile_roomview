@@ -8,9 +8,9 @@
 
     <include
         android:id="@+id/materialToolbar"
+        layout="@layout/appbar"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/appbar" />
+        android:layout_height="wrap_content" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/mainActivity_layout_searchBar"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/create_area"
+        android:id="@+id/menu_building_create_area"
         android:onClick="createArea"
         android:title="@string/add_area" />
     <item
@@ -9,7 +9,7 @@
         android:onClick="showBuildingDetails"
         android:title="@string/details" />
     <item
-        android:id="@+id/delete_building"
+        android:id="@+id/menu_building_delete"
         android:onClick="deleteBuilding"
-        android:title="@string/delete" />
+        android:title="@string/action_delete" />
 </menu>

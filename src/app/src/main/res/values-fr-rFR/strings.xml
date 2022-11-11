@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_building">Ajouter un bâtiment</string>
-    <string name="new_building">Nouveau bâtiment</string>
+    <string name="building_new">Nouveau bâtiment</string>
     <string name="pagename_main">Bâtiments</string>
-    <string name="searchBuilding" >Rechercher un bâtiment</string>
-    <string name="searchArea" >Rechercher une zone</string>
+    <string name="searchBuilding">Rechercher un bâtiment</string>
+    <string name="searchArea">Rechercher une zone</string>
     <string name="pagename_building">Zones</string>
     <string name="add_area">Ajouter une zone</string>
-    <string name="edit">Modifier</string>
-    <string name="delete">Supprimer</string>
+    <string name="action_edit">Modifier</string>
+    <string name="action_delete">Supprimer</string>
     <string name="building_editing">Modification du bâtiment</string>
-    <string name="buildingName">Nom du bâtiment</string>
+    <string name="building_name">Nom du bâtiment</string>
     <string name="searchMatch">élément trouvé</string>
     <string name="searchMatches">éléments trouvés</string>
-    <string name="buildingDescription">Description du bâtiment</string>
-    <string name="save">Enregistrer</string>
-    <string name="buildingPhoto">Photo du bâtiment</string>
+    <string name="building_description">Description du bâtiment</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="building_photo">Photo du bâtiment</string>
     <string name="add_photo">Ajouter une photo</string>
     <string name="takePhoto">Prendre une photo</string>
     <string name="fromGallery">Choisir depuis la gallerie</string>
-    <string name="cancel">Annuler</string>
-    <string name="addPhoto">Ajouter une photo</string>
-    <string name="new_area">Nouvelle zone</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="area_new">Nouvelle zone</string>
+    <string name="building_info">Informations du bâtiment</string>
     <string name="details">Détails</string>
 </resources>

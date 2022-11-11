@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:actionbarcompat_mse="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/create_building"
+        android:id="@+id/menu_main_create_building"
         android:icon="@drawable/ic_baseline_add_24"
         android:onClick="createBuilding"
         android:title="@string/add_building"

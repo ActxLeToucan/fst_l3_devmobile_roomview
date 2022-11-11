@@ -18,21 +18,21 @@
             android:id="@+id/bigTile_image"
             android:layout_width="120dp"
             android:layout_height="match_parent"
+            android:layout_alignTop="@id/bigTile_textPart"
+            android:layout_alignBottom="@id/bigTile_textPart"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_baseline_image_24"
             cardView:layout_constraintStart_toStartOf="parent"
-            cardView:layout_constraintTop_toTopOf="parent"
-            android:layout_alignTop="@id/bigTile_textPart"
-            android:layout_alignBottom="@id/bigTile_textPart"/>
+            cardView:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/bigTile_textPart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:paddingVertical="4dp"
             android:layout_toEndOf="@+id/bigTile_image"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingVertical="4dp">
 
             <TextView
                 android:id="@+id/bigTile_title"

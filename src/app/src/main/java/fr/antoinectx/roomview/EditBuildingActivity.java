@@ -148,7 +148,7 @@ public class EditBuildingActivity extends MyActivity {
             String timestamp = String.valueOf(System.currentTimeMillis()); // to invalidate cache
             File newFileName = new File(building.getDirectory(this), building.getId() + "_" + timestamp + extension);
             photoFile.renameTo(newFileName);
-            building.setPhoto(newFileName.getName());
+            building.setPhotoPath(newFileName.getName());
             // reset the temporary photo file to avoid deletion
             lastPhotoSelected = null;
             initPhoto = newFileName;
@@ -189,7 +189,7 @@ public class EditBuildingActivity extends MyActivity {
         final CharSequence[] options = {getString(R.string.takePhoto), getString(R.string.fromGallery)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(getString(R.string.addPhoto));
+        builder.setTitle(getString(R.string.add_photo));
         builder.setIcon(R.drawable.ic_baseline_add_a_photo_24);
         builder.setItems(options, (dialog, item) -> {
             if (options[item].equals(getString(R.string.takePhoto))) {
@@ -239,7 +239,7 @@ public class EditBuildingActivity extends MyActivity {
         }
 
         // update building's photo
-        building.setPhoto(newFile.getName());
+        building.setPhotoPath(newFile.getName());
         lastPhotoSelected = newFile;
         Glide.with(this)
                 .load(building.getPhotoFile(this))

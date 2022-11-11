@@ -26,9 +26,10 @@ public class Area {
 
     /**
      * Complete constructor, only used when loading an area from JSON
-     * @param id The area unique ID
-     * @param name The area name
-     * @param dateCapture The date of capture
+     *
+     * @param id                The area unique ID
+     * @param name              The area name
+     * @param dateCapture       The date of capture
      * @param orientationPhotos The orientation photos [N, E, S, W]
      */
     private Area(String id, String name, Date dateCapture, OrientationPhoto[] orientationPhotos) {
@@ -99,6 +100,7 @@ public class Area {
 
     /**
      * Convert the area to a JSON object
+     *
      * @return The JSON object
      */
     public JSONObject toJSON() {
@@ -119,6 +121,7 @@ public class Area {
 
     /**
      * Create an area from a JSON object
+     *
      * @param json The JSON object
      * @return The area
      */
@@ -128,7 +131,7 @@ public class Area {
                     json.getString("id"),
                     json.getString("name"),
                     new Date(json.getLong("dateCapture")),
-                    new OrientationPhoto[] {
+                    new OrientationPhoto[]{
                             OrientationPhoto.fromJSON(json.optJSONObject("north")),
                             OrientationPhoto.fromJSON(json.optJSONObject("east")),
                             OrientationPhoto.fromJSON(json.optJSONObject("south")),

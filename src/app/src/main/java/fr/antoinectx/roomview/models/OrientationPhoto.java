@@ -29,6 +29,7 @@ public class OrientationPhoto {
 
     /**
      * Convert the object to a JSON object
+     *
      * @return The JSON object
      */
     public JSONObject toJSON() {
@@ -48,6 +49,7 @@ public class OrientationPhoto {
 
     /**
      * Convert a JSON object to an OrientationPhoto object
+     *
      * @param json The JSON object
      * @return The OrientationPhoto object
      */

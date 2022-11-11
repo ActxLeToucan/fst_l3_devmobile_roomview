@@ -44,7 +44,8 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         TextInputEditText search = findViewById(R.id.mainActivity_searchBar);
         search.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -53,7 +54,8 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -107,7 +109,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
                         building.getDescription().toLowerCase().contains(searchContent.toLowerCase())))
                 .collect(Collectors.toList()));
         if (!searchContent.isEmpty()) {
-            toolbar.setSubtitle(adapter.getItemCount() + " " + (adapter.getItemCount() < 2 ?getString(R.string.searchMatch) : getString(R.string.searchMatches)));
+            toolbar.setSubtitle(adapter.getItemCount() + " " + (adapter.getItemCount() < 2 ? getString(R.string.searchMatch) : getString(R.string.searchMatches)));
         } else {
             toolbar.setSubtitle(getString(R.string.pagename_main));
         }
@@ -121,7 +123,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
 
         builder.setPositiveButton("OK", (dialogInterface, which) -> {
             TextInputEditText fieldName = layout.findViewById(R.id.building_field_name);
-            String name = fieldName.getText() == null || fieldName.getText().toString().trim().isEmpty() ? getString(R.string.new_building) : fieldName.getText().toString().trim();
+            String name = fieldName.getText() == null || fieldName.getText().toString().trim().isEmpty() ? getString(R.string.building_new) : fieldName.getText().toString().trim();
             TextInputEditText fieldDescription = layout.findViewById(R.id.building_field_description);
             String description = fieldDescription.getText() == null ? "" : fieldDescription.getText().toString().trim();
 
@@ -131,7 +133,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
             recyclerView.scrollToPosition(buildings.size() - 1);
         });
 
-        builder.setNegativeButton(getString(R.string.cancel), (dialogInterface, which) -> dialogInterface.cancel());
+        builder.setNegativeButton(getString(R.string.action_cancel), (dialogInterface, which) -> dialogInterface.cancel());
 
         builder.show();
 /*

@@ -38,7 +38,7 @@ public class Passage {
     }
 
     public int[] getCoordonnees() {
-        return new int[] {x1, y1, x2, y2};
+        return new int[]{x1, y1, x2, y2};
     }
 
     @Nullable
@@ -56,6 +56,7 @@ public class Passage {
 
     /**
      * Convert the object to a JSON object
+     *
      * @return The JSON object
      */
     public JSONObject toJSON() {
@@ -76,6 +77,7 @@ public class Passage {
 
     /**
      * Convert a JSON object to a Passage object
+     *
      * @param json The JSON object
      * @return The Passage object
      */

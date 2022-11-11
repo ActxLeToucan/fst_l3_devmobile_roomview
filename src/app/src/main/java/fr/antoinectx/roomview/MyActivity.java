@@ -20,8 +20,9 @@ public abstract class MyActivity extends AppCompatActivity {
 
     /**
      * Initialize the app bar
-     * @param title The title of the app bar
-     * @param subtitle The subtitle of the app bar
+     *
+     * @param title          The title of the app bar
+     * @param subtitle       The subtitle of the app bar
      * @param showBackButton Whether to show the back button
      */
     protected void initAppBar(String title, @Nullable String subtitle, boolean showBackButton) {
@@ -38,6 +39,7 @@ public abstract class MyActivity extends AppCompatActivity {
 
     /**
      * This method is called when the user clicks on the back button in the app bar.
+     *
      * @param item The item that was clicked.
      * @return True if the event was handled, false otherwise.
      */

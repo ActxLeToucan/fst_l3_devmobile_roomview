@@ -39,22 +39,23 @@ public class Building {
      * Photo filename of the building
      */
     @Nullable
-    private String photo;
+    private String photoPath;
 
     /**
      * Complete constructor, only used when restoring a building from a file
-     * @param id The unique ID of the building
-     * @param name The name of the building
+     *
+     * @param id          The unique ID of the building
+     * @param name        The name of the building
      * @param description The description of the building
-     * @param areas The zones of the building
-     * @param photo The file name of the photo of the building
+     * @param areas       The zones of the building
+     * @param photoPath   The file name of the photo of the building
      */
-    private Building(String id, String name, String description, List<Area> areas, @Nullable String photo) {
+    private Building(String id, String name, String description, List<Area> areas, @Nullable String photoPath) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.areas = areas;
-        this.photo = photo;
+        this.photoPath = photoPath;
     }
 
     public Building(String name, String description) {
@@ -66,15 +67,16 @@ public class Building {
 
     /**
      * Get the photo file
+     *
      * @param context The context of the application
      *                (used to get the directory of the application)
      * @return The photo file
      */
     public File getPhotoFile(Context context) {
-        if (photo == null || photo.trim().isEmpty()) {
+        if (photoPath == null || photoPath.trim().isEmpty()) {
             return null;
         }
-        return new File(getDirectory(context), photo);
+        return new File(getDirectory(context), photoPath);
     }
 
 
@@ -102,18 +104,20 @@ public class Building {
         return areas;
     }
 
+    @Nullable
     public String getPhotoPath() {
-        return photo;
+        return photoPath;
     }
 
-    public void setPhoto(@Nullable String photo) {
-        this.photo = photo;
+    public void setPhotoPath(@Nullable String photoPath) {
+        this.photoPath = photoPath;
     }
 
     // --- Save & Load ---
 
     /**
      * Save the building to a JSON file
+     *
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity),
      *                used to get the files directory.
@@ -149,7 +153,7 @@ public class Building {
             json.put("id", id);
             json.put("name", name);
             json.put("description", description);
-            json.put("photo", photo);
+            json.put("photo", photoPath);
             JSONArray areasJSON = new JSONArray();
             for (Area area : areas) {
                 areasJSON.put(area.toJSON());
@@ -163,6 +167,7 @@ public class Building {
 
     /**
      * Load all the buildings from the files directory
+     *
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity),
      * @return A list of all the buildings
@@ -185,15 +190,16 @@ public class Building {
 
     /**
      * Load a building from a JSON file
+     *
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity)
-     * @param id The unique ID of the building to load
+     * @param id      The unique ID of the building to load
      * @return The building
      */
     public static Building load(Context context, String id) {
         File dir = new File(context.getFilesDir() + "/" + id);
         if (!dir.exists()) {
-            Log.e("Building", "load: Impossible de trouver le dossier " + dir.getAbsolutePath());
+            Log.e("Building", "load: Can not find directory " + dir.getAbsolutePath());
             return null;
         }
 
@@ -210,16 +216,17 @@ public class Building {
 
         Building building = fromJSONString(new String(bytes));
         if (building == null) {
-            Log.e("Building", "load: Impossible de charger le fichier " + file.getAbsolutePath());
+            Log.e("Building", "load: Can not parse JSON file " + file.getAbsolutePath());
             return null;
         } else {
-            Log.d("Building", "load: Chargé depuis " + file.getAbsolutePath());
+            Log.d("Building", "load: Loaded " + building.getName() + " from " + file.getAbsolutePath());
             return building;
         }
     }
 
     /**
      * Convert a JSON string to a building
+     *
      * @param json The JSON string
      * @return The building
      */
@@ -234,6 +241,7 @@ public class Building {
 
     /**
      * Create a building from a JSON object
+     *
      * @param json The JSON object
      * @return The building
      */
@@ -247,12 +255,13 @@ public class Building {
             // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
             for (Area area : areas) {
                 for (OrientationPhoto orientationPhoto : area.getPhotos()) {
-                    if (orientationPhoto != null) for (Passage passage : orientationPhoto.getPassages()) {
-                        passage.setAutreCote(areas.stream()
-                                .filter(z -> z.getId().equals(passage.getAutreCoteId()))
-                                .findFirst()
-                                .orElse(null));
-                    }
+                    if (orientationPhoto != null)
+                        for (Passage passage : orientationPhoto.getPassages()) {
+                            passage.setAutreCote(areas.stream()
+                                    .filter(z -> z.getId().equals(passage.getAutreCoteId()))
+                                    .findFirst()
+                                    .orElse(null));
+                        }
                 }
             }
 
@@ -271,13 +280,14 @@ public class Building {
 
     /**
      * Delete a building from the files directory
+     *
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity)
      */
     public void delete(Context context) {
         File dir = getDirectory(context);
         if (!dir.exists()) {
-            Log.e("Building", "delete: Impossible de trouver le dossier " + dir.getAbsolutePath());
+            Log.e("Building", "delete: Can not find directory " + dir.getAbsolutePath());
             return;
         }
 
@@ -286,6 +296,7 @@ public class Building {
 
     /**
      * Delete a file or a directory recursively
+     *
      * @param fileOrDirectory The file or directory to delete
      */
     private void deleteRecursive(File fileOrDirectory) {
@@ -295,12 +306,13 @@ public class Building {
             }
         }
         if (!fileOrDirectory.delete()) {
-            Log.e("Building", "deleteRecursive: Impossible de supprimer " + fileOrDirectory.getAbsolutePath());
+            Log.e("Building", "deleteRecursive: Can not delete " + fileOrDirectory.getAbsolutePath());
         }
     }
 
     /**
      * Get the directory of the building
+     *
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity)
      * @return The directory
