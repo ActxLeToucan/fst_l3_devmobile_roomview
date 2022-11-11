@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:actionbarcompat_mse="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/create_building"
-        android:icon="@drawable/ic_baseline_save_24"
-        android:onClick="saveBuilding"
+        android:id="@+id/menu_edit_building_editSave"
+        android:icon="@drawable/ic_baseline_edit_24"
+        android:onClick="editSaveBuilding"
         android:title="@string/save"
         actionbarcompat_mse:showAsAction="always" />
 </menu>

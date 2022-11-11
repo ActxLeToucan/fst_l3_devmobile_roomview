@@ -125,7 +125,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         // TODO show a field to set the name and start the capture
     }
 
-    public void editBuilding(MenuItem item) {
+    public void showBuildingDetails(MenuItem item) {
         Intent intent = new Intent(this, EditBuildingActivity.class);
         intent.putExtra("building", building.toJSON().toString());
         startActivity(intent);

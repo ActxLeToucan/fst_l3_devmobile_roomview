@@ -9,7 +9,7 @@
     <string name="add_area">Add an area</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="pagename_editbuilding">Building modification</string>
+    <string name="building_editing">Building modification</string>
     <string name="buildingName">Building name</string>
     <string name="searchMatch">item found</string>
     <string name="searchMatches">items found</string>
@@ -22,4 +22,5 @@
     <string name="cancel">Cancel</string>
     <string name="addPhoto">Add a photo</string>
     <string name="new_area">New area</string>
+    <string name="details">Details</string>
 </resources>

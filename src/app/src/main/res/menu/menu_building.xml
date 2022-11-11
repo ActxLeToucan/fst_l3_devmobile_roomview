@@ -5,9 +5,9 @@
         android:onClick="createArea"
         android:title="@string/add_area" />
     <item
-        android:id="@+id/edit_building"
-        android:onClick="editBuilding"
-        android:title="@string/edit" />
+        android:id="@+id/menu_building_info"
+        android:onClick="showBuildingDetails"
+        android:title="@string/details" />
     <item
         android:id="@+id/delete_building"
         android:onClick="deleteBuilding"

@@ -30,6 +30,7 @@ import fr.antoinectx.roomview.models.Building;
 
 public class EditBuildingActivity extends MyActivity {
     private Building building;
+    private boolean editMode = false;
     private ImageButton photo;
     private File initPhoto;
     private File lastPhotoSelected;
@@ -51,7 +52,7 @@ public class EditBuildingActivity extends MyActivity {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent data = result.getData();
                     if (data != null) {
-                        Uri selectedImage =  data.getData();
+                        Uri selectedImage = data.getData();
                         String[] filePathColumn = {MediaStore.Images.Media.DATA};
                         if (selectedImage != null) {
                             Cursor cursor = getContentResolver().query(selectedImage,
@@ -83,24 +84,34 @@ public class EditBuildingActivity extends MyActivity {
         }
         initPhoto = building.getPhotoFile(this);
 
-        initAppBar(building.getName(), getString(R.string.pagename_editbuilding), true);
+        initAppBar(building.getName(), getString(R.string.building_editing), true);
 
-        TextInputEditText name = findViewById(R.id.building_field_name);
-        name.setText(building.getName());
-        TextInputEditText description = findViewById(R.id.building_field_description);
-        description.setText(building.getDescription());
         photo = findViewById(R.id.editBuildingActivity_photo);
-        Glide.with(this)
-                .load(building.getPhotoFile(this))
-                .placeholder(R.drawable.ic_baseline_add_a_photo_24)
-                .into(photo);
         photo.setOnClickListener(v -> selectImage(this));
+        applyMode(false);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_edit_building, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem edit = menu.findItem(R.id.menu_edit_building_editSave);
+        edit.setIcon(editMode ? R.drawable.ic_baseline_save_24 : R.drawable.ic_baseline_edit_24);
+        edit.setTitle(editMode ? R.string.action_save : R.string.action_edit);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (editMode && item.getItemId() == android.R.id.home) {
+            applyMode(false);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -111,7 +122,12 @@ public class EditBuildingActivity extends MyActivity {
         }
     }
 
-    public void saveBuilding(MenuItem item) {
+    public void editSaveBuilding(MenuItem item) {
+        if (!editMode) {
+            applyMode(true);
+            return;
+        }
+
         // set name
         TextInputEditText name = findViewById(R.id.building_field_name);
         building.setName(name.getText() != null ? name.getText().toString().trim() : "");
@@ -127,20 +143,50 @@ public class EditBuildingActivity extends MyActivity {
                 initPhoto.delete();
             }
             // rename the photo to make it unique and avoid conflicts during the selection
-            File newFileName = new File(building.getDirectory(this), building.getId() + '_' + photoFile.getName());
+            int i = photoFile.getPath().lastIndexOf('.');
+            String extension = i > 0 ? photoFile.getPath().substring(i) : "";
+            String timestamp = String.valueOf(System.currentTimeMillis()); // to invalidate cache
+            File newFileName = new File(building.getDirectory(this), building.getId() + "_" + timestamp + extension);
             photoFile.renameTo(newFileName);
             building.setPhoto(newFileName.getName());
             // reset the temporary photo file to avoid deletion
             lastPhotoSelected = null;
+            initPhoto = newFileName;
         }
 
 
         building.save(this);
-        finish();
+        applyMode(false);
+    }
+
+    private void applyMode(boolean editMode) {
+        this.editMode = editMode;
+
+        // fields
+        TextInputEditText name = findViewById(R.id.building_field_name);
+        name.setEnabled(editMode);
+        name.setText(building.getName());
+        TextInputEditText description = findViewById(R.id.building_field_description);
+        description.setEnabled(editMode);
+        description.setText(building.getDescription());
+        photo.setEnabled(editMode);
+        Glide.with(this)
+                .load(initPhoto)
+                .placeholder(editMode ? R.drawable.ic_baseline_add_a_photo_24 : R.drawable.ic_baseline_image_24)
+                .into(photo);
+
+        // appbar
+        invalidateOptionsMenu();
+        toolbar.setSubtitle(getString(editMode ? R.string.building_editing : R.string.building_info));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(editMode
+                    ? R.drawable.ic_baseline_close_24
+                    : R.drawable.ic_baseline_arrow_back_24);
+        }
     }
 
     private void selectImage(Context context) {
-        final CharSequence[] options = { getString(R.string.takePhoto), getString(R.string.fromGallery) };
+        final CharSequence[] options = {getString(R.string.takePhoto), getString(R.string.fromGallery)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(R.string.addPhoto));
@@ -207,7 +253,8 @@ public class EditBuildingActivity extends MyActivity {
         File image = null;
         try {
             image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return image;
     }
 }
