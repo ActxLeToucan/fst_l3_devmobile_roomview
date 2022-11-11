@@ -24,7 +24,6 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
     private final List<Building> buildings = new ArrayList<>();
     private BuildingRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
-    private TextInputEditText search;
     private String searchContent = "";
 
     @Override
@@ -42,7 +41,7 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
 
         updateData();
 
-        search = findViewById(R.id.mainActivity_searchBar);
+        TextInputEditText search = findViewById(R.id.mainActivity_searchBar);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}

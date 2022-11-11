@@ -10,7 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.File;
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import fr.antoinectx.roomview.models.Building;
@@ -41,12 +42,10 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
         holder.nomBatiment.setText(building.getName());
         holder.descriptionBatiment.setText(building.getDescription());
         Context context = holder.photoBatiment.getContext();
-        File photo = building.getPhotoFile(context);
-        if (photo != null && photo.exists()) {
-            holder.photoBatiment.setImageBitmap(building.getPhotoBitmap(context));
-        } else {
-            holder.photoBatiment.setImageResource(R.drawable.ic_baseline_image_24);
-        }
+        Glide.with(context)
+                .load(building.getPhotoFile(context))
+                .placeholder(R.drawable.ic_baseline_image_24)
+                .into(holder.photoBatiment);
     }
 
     // total number of rows

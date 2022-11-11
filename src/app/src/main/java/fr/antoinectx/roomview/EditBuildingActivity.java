@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
@@ -89,14 +90,11 @@ public class EditBuildingActivity extends MyActivity {
         TextInputEditText description = findViewById(R.id.building_field_description);
         description.setText(building.getDescription());
         photo = findViewById(R.id.editBuildingActivity_photo);
-        if (building.getPhotoPath() != null && !building.getPhotoPath().isEmpty()) {
-            photo.setImageBitmap(building.getPhotoBitmap(this));
-        } else {
-            photo.setImageResource(R.drawable.ic_baseline_add_a_photo_24);
-        }
-        photo.setOnClickListener(v -> {
-            selectImage(this);
-        });
+        Glide.with(this)
+                .load(building.getPhotoFile(this))
+                .placeholder(R.drawable.ic_baseline_add_a_photo_24)
+                .into(photo);
+        photo.setOnClickListener(v -> selectImage(this));
     }
 
     @Override
@@ -197,7 +195,10 @@ public class EditBuildingActivity extends MyActivity {
         // update building's photo
         building.setPhoto(newFile.getName());
         lastPhotoSelected = newFile;
-        photo.setImageBitmap(building.getPhotoBitmap(this));
+        Glide.with(this)
+                .load(building.getPhotoFile(this))
+                .placeholder(R.drawable.ic_baseline_add_a_photo_24)
+                .into(photo);
     }
 
     private File createImageFile() {

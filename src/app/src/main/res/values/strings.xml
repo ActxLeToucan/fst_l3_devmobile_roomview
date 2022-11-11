@@ -10,7 +10,7 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="pagename_editbuilding">Building modification</string>
-    <string name="buidingName">Building name</string>
+    <string name="buildingName">Building name</string>
     <string name="searchMatch">item found</string>
     <string name="searchMatches">items found</string>
     <string name="buildingDescription">Building description</string>

@@ -1,9 +1,6 @@
 package fr.antoinectx.roomview.models;
 
-import static fr.antoinectx.roomview.Tools.getBitmapFromPath;
-
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -78,21 +75,6 @@ public class Building {
             return null;
         }
         return new File(getDirectory(context), photo);
-    }
-
-    /**
-     * Get the photo bitmap
-     * @param context The context of the application
-     *                (used to get the directory of the application)
-     * @return The photo bitmap
-     */
-    public Bitmap getPhotoBitmap(Context context) {
-        if (photo == null || photo.trim().isEmpty()) {
-            return null;
-        }
-
-        String path = getPhotoFile(context).getAbsolutePath();
-        return getBitmapFromPath(path);
     }
 
 
