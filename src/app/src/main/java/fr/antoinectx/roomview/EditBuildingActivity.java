@@ -12,7 +12,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -32,6 +34,7 @@ public class EditBuildingActivity extends MyActivity {
     private Building building;
     private boolean editMode = false;
     private ImageButton photo;
+    private boolean photoChanged = false;
     private File initPhoto;
     private File lastPhotoSelected;
     private String pathPhotoFromCamera;
@@ -137,21 +140,24 @@ public class EditBuildingActivity extends MyActivity {
         building.setDescription(description.getText() != null ? description.getText().toString() : "");
 
         // photo
-        File photoFile = building.getPhotoFile(this);
-        if (photoFile != null) {
-            if (initPhoto != null && !initPhoto.getPath().equals(photoFile.getPath())) {
-                initPhoto.delete();
+        if (photoChanged) {
+            photoChanged = false;
+            File photoFile = building.getPhotoFile(this);
+            if (photoFile != null) {
+                if (initPhoto != null && !initPhoto.getPath().equals(photoFile.getPath())) {
+                    initPhoto.delete();
+                }
+                // rename the photo to make it unique and avoid conflicts during the selection
+                int i = photoFile.getPath().lastIndexOf('.');
+                String extension = i > 0 ? photoFile.getPath().substring(i) : "";
+                String timestamp = String.valueOf(System.currentTimeMillis()); // to invalidate cache
+                File newFileName = new File(building.getDirectory(this), building.getId() + "_" + timestamp + extension);
+                photoFile.renameTo(newFileName);
+                building.setPhotoPath(newFileName.getName());
+                // reset the temporary photo file to avoid deletion
+                lastPhotoSelected = null;
+                initPhoto = newFileName;
             }
-            // rename the photo to make it unique and avoid conflicts during the selection
-            int i = photoFile.getPath().lastIndexOf('.');
-            String extension = i > 0 ? photoFile.getPath().substring(i) : "";
-            String timestamp = String.valueOf(System.currentTimeMillis()); // to invalidate cache
-            File newFileName = new File(building.getDirectory(this), building.getId() + "_" + timestamp + extension);
-            photoFile.renameTo(newFileName);
-            building.setPhotoPath(newFileName.getName());
-            // reset the temporary photo file to avoid deletion
-            lastPhotoSelected = null;
-            initPhoto = newFileName;
         }
 
 
@@ -163,12 +169,24 @@ public class EditBuildingActivity extends MyActivity {
         this.editMode = editMode;
 
         // fields
+        View fields = findViewById(R.id.building_fields);
+        fields.setVisibility(editMode ? View.VISIBLE : View.GONE);
         TextInputEditText name = findViewById(R.id.building_field_name);
         name.setEnabled(editMode);
         name.setText(building.getName());
         TextInputEditText description = findViewById(R.id.building_field_description);
         description.setEnabled(editMode);
         description.setText(building.getDescription());
+
+        // text
+        View text = findViewById(R.id.building_text);
+        text.setVisibility(editMode ? View.GONE : View.VISIBLE);
+        TextView nameText = findViewById(R.id.textView_building_name_content);
+        nameText.setText(building.getName());
+        TextView descriptionText = findViewById(R.id.textView_building_description_content);
+        descriptionText.setText(building.getDescription());
+
+        // photo
         photo.setEnabled(editMode);
         Glide.with(this)
                 .load(initPhoto)
@@ -177,6 +195,7 @@ public class EditBuildingActivity extends MyActivity {
 
         // appbar
         invalidateOptionsMenu();
+        toolbar.setTitle(building.getName());
         toolbar.setSubtitle(getString(editMode ? R.string.building_editing : R.string.building_info));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(editMode
@@ -241,6 +260,7 @@ public class EditBuildingActivity extends MyActivity {
         // update building's photo
         building.setPhotoPath(newFile.getName());
         lastPhotoSelected = newFile;
+        photoChanged = true;
         Glide.with(this)
                 .load(building.getPhotoFile(this))
                 .placeholder(R.drawable.ic_baseline_add_a_photo_24)
