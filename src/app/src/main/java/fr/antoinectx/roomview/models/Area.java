@@ -120,6 +120,21 @@ public class Area {
     }
 
     /**
+     * Convert a JSON string to an area
+     *
+     * @param json The JSON string
+     * @return The area
+     */
+    public static Area fromJSONString(String json) {
+        try {
+            return fromJSON(new JSONObject(json));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Create an area from a JSON object
      *
      * @param json The JSON object

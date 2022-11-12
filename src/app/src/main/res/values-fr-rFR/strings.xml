@@ -23,4 +23,6 @@
     <string name="area_new">Nouvelle zone</string>
     <string name="building_info">Informations du bâtiment</string>
     <string name="details">Détails</string>
+    <string name="pagename_editArea">Modification de la zone</string>
+    <string name="area_name">Nom de la zone</string>
 </resources>
