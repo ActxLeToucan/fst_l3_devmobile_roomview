@@ -102,8 +102,7 @@
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/building_info"
-                app:srcCompat="@drawable/ic_baseline_add_a_photo_24" />
+                app:layout_constraintTop_toBottomOf="@+id/building_info" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

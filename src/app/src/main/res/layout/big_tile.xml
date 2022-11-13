@@ -20,6 +20,7 @@
             android:layout_height="match_parent"
             android:layout_alignTop="@id/bigTile_textPart"
             android:layout_alignBottom="@id/bigTile_textPart"
+            android:contentDescription="@string/building_photo"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_baseline_image_24"
             cardView:layout_constraintStart_toStartOf="parent"

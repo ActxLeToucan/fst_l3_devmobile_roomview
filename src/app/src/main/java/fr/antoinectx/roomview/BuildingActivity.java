@@ -13,10 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.Date;
 import java.util.stream.Collectors;
 
-import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
 
 public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdapter.ItemClickListener {
@@ -120,7 +118,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
 
     public void createArea(MenuItem item) {
         Intent intent = new Intent(this, EditAreaActivity.class);
-        intent.putExtra("area", new Area(getString(R.string.area_new), new Date()).toJSON().toString());
+        intent.putExtra("building", building.toJSON().toString());
         startActivity(intent);
     }
 

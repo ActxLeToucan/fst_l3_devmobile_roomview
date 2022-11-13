@@ -8,33 +8,59 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
 public abstract class MyActivity extends AppCompatActivity {
-    private int downX;
-    private boolean showBackButton = false;
     protected MaterialToolbar toolbar;
+    private int downX;
+    private boolean showNavigationIcon = false;
 
     /**
      * Initialize the app bar
      *
-     * @param title          The title of the app bar
-     * @param subtitle       The subtitle of the app bar
-     * @param showBackButton Whether to show the back button
+     * @param title              The title of the app bar
+     * @param subtitle           The subtitle of the app bar
+     * @param showNavigationIcon Whether to show the navigation icon (the default icon is the back arrow)
      */
-    protected void initAppBar(String title, @Nullable String subtitle, boolean showBackButton) {
-        this.showBackButton = showBackButton;
+    protected void initAppBar(String title, @Nullable String subtitle, boolean showNavigationIcon) {
+        initAppBar(title, subtitle, showNavigationIcon, R.drawable.ic_baseline_arrow_back_24, R.string.action_back);
+    }
+
+    /**
+     * Initialize the app bar
+     *
+     * @param title                 The title of the app bar
+     * @param subtitle              The subtitle of the app bar
+     * @param showNavigationIcon    Whether to show the navigation icon
+     * @param navigationIcon        The navigation icon to show
+     * @param navigationDescription The content description of the navigation icon
+     */
+    protected void initAppBar(String title, @Nullable String subtitle, boolean showNavigationIcon, @DrawableRes int navigationIcon, @StringRes int navigationDescription) {
+        this.showNavigationIcon = showNavigationIcon;
+
         toolbar = findViewById(R.id.materialToolbar);
         toolbar.setTitle(title);
+        toolbar.setNavigationContentDescription(navigationDescription);
         if (subtitle != null) toolbar.setSubtitle(subtitle);
+        if (showNavigationIcon) toolbar.setNavigationIcon(navigationIcon);
+
         setSupportActionBar(toolbar);
-        if (showBackButton && getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
+    }
+
+    /**
+     * Set the navigation icon and its description in the app bar
+     *
+     * @param navigationIcon        The navigation icon to show
+     * @param navigationDescription The content description of the navigation icon
+     */
+    protected void setAppBarNavigation(@DrawableRes int navigationIcon, @StringRes int navigationDescription) {
+        toolbar.setNavigationIcon(navigationIcon);
+        toolbar.setNavigationContentDescription(navigationDescription);
     }
 
     /**
@@ -45,7 +71,7 @@ public abstract class MyActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (this.showBackButton && item.getItemId() == android.R.id.home) finish();
+        if (this.showNavigationIcon && item.getItemId() == android.R.id.home) finish();
         return super.onOptionsItemSelected(item);
     }
 

@@ -197,11 +197,8 @@ public class EditBuildingActivity extends MyActivity {
         invalidateOptionsMenu();
         toolbar.setTitle(building.getName());
         toolbar.setSubtitle(getString(editMode ? R.string.building_editing : R.string.building_info));
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(editMode
-                    ? R.drawable.ic_baseline_close_24
-                    : R.drawable.ic_baseline_arrow_back_24);
-        }
+        setAppBarNavigation(editMode ? R.drawable.ic_baseline_close_24 : R.drawable.ic_baseline_arrow_back_24,
+                editMode ? R.string.action_cancel : R.string.action_back);
     }
 
     private void selectImage(Context context) {

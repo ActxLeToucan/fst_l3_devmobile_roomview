@@ -11,20 +11,26 @@ import java.util.List;
 
 public class OrientationPhoto {
     private final List<Passage> passages;
-    private final String filename;
+    @Nullable
+    private String filename;
 
-    private OrientationPhoto(List<Passage> passages, String filename) {
+    private OrientationPhoto(List<Passage> passages, @Nullable String filename) {
         this.passages = passages;
         this.filename = filename;
     }
 
-    public OrientationPhoto(String filename) {
+    public OrientationPhoto(@Nullable String filename) {
         this.passages = new ArrayList<>();
         this.filename = filename;
     }
 
     public List<Passage> getPassages() {
         return passages;
+    }
+
+    @Nullable
+    public String getFilename() {
+        return filename;
     }
 
     /**
@@ -40,7 +46,7 @@ public class OrientationPhoto {
                 passages.put(passage.toJSON());
             }
             json.put("passages", passages);
-            json.put("filename", filename);
+            if (filename != null) json.put("filename", filename);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -65,7 +71,7 @@ public class OrientationPhoto {
 
             return new OrientationPhoto(
                     passages,
-                    json.getString("filename")
+                    json.optString("filename")
             );
         } catch (JSONException e) {
             e.printStackTrace();

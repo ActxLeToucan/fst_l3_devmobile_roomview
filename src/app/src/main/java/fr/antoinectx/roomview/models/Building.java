@@ -3,6 +3,7 @@ package fr.antoinectx.roomview.models;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Building {
+public class Building extends ManipulateFiles {
     /**
      * Unique ID of the building
      */
@@ -153,7 +154,7 @@ public class Building {
             json.put("id", id);
             json.put("name", name);
             json.put("description", description);
-            json.put("photo", photoPath);
+            if (photoPath != null) json.put("photo", photoPath);
             JSONArray areasJSON = new JSONArray();
             for (Area area : areas) {
                 areasJSON.put(area.toJSON());
@@ -254,7 +255,7 @@ public class Building {
 
             // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
             for (Area area : areas) {
-                for (OrientationPhoto orientationPhoto : area.getPhotos()) {
+                for (OrientationPhoto orientationPhoto : area.getOrientationPhotos()) {
                     if (orientationPhoto != null)
                         for (Passage passage : orientationPhoto.getPassages()) {
                             passage.setAutreCote(areas.stream()
@@ -295,22 +296,6 @@ public class Building {
     }
 
     /**
-     * Delete a file or a directory recursively
-     *
-     * @param fileOrDirectory The file or directory to delete
-     */
-    private void deleteRecursive(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory()) {
-            for (File child : Objects.requireNonNull(fileOrDirectory.listFiles())) {
-                deleteRecursive(child);
-            }
-        }
-        if (!fileOrDirectory.delete()) {
-            Log.e("Building", "deleteRecursive: Can not delete " + fileOrDirectory.getAbsolutePath());
-        }
-    }
-
-    /**
      * Get the directory of the building
      *
      * @param context The context of the application
@@ -318,6 +303,18 @@ public class Building {
      * @return The directory
      */
     public File getDirectory(Context context) {
-        return new File(context.getFilesDir() + "/" + id);
+        return getDirectory(context, id);
+    }
+
+    /**
+     * Get the directory of a building
+     *
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @param id      The unique ID of the building
+     * @return The directory
+     */
+    public static File getDirectory(@NonNull Context context, String id) {
+        return new File(context.getFilesDir(), id);
     }
 }

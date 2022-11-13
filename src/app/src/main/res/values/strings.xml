@@ -25,4 +25,9 @@
     <string name="details">Details</string>
     <string name="pagename_editArea">Area modification</string>
     <string name="area_name">Area name</string>
+    <string name="orientation_n_photo">North photo of the area</string>
+    <string name="orientation_w_photo">West photo of the area</string>
+    <string name="orientation_e_photo">East photo of the area</string>
+    <string name="orientation_s_photo">South photo of the area</string>
+    <string name="action_back">Back</string>
 </resources>

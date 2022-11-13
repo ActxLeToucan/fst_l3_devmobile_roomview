@@ -25,4 +25,9 @@
     <string name="details">Détails</string>
     <string name="pagename_editArea">Modification de la zone</string>
     <string name="area_name">Nom de la zone</string>
+    <string name="orientation_n_photo">Photo Nord de la zone</string>
+    <string name="orientation_w_photo">Photo Ouest de la zone</string>
+    <string name="orientation_e_photo">Photo Est de la zone</string>
+    <string name="orientation_s_photo">Photo Sud de la zone</string>
+    <string name="action_back">Retour</string>
 </resources>
