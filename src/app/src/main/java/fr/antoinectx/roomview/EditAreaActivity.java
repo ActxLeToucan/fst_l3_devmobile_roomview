@@ -1,5 +1,6 @@
 package fr.antoinectx.roomview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +44,11 @@ public class EditAreaActivity extends MyActivity {
                 .load(area.getNorthFile(this))
                 .placeholder(R.drawable.ic_baseline_add_a_photo_24).fitCenter()
                 .into(north);
+        north.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CameraActivity.class);
+            startActivity(intent);
+                }
+        );
         ImageButton east = findViewById(R.id.imageButton_east);
         Glide.with(this)
                 .load(area.getEastFile(this))
