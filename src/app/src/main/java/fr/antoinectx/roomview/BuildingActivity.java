@@ -64,7 +64,10 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
     // TODO
     @Override
     public void onItemClick(View view, int position) {
-
+        Intent intent = new Intent(this, EditAreaActivity.class);
+        intent.putExtra("building", building.toJSON().toString());
+        intent.putExtra("area", adapter.getItem(position).toJSON().toString());
+        startActivity(intent);
     }
 
     @Override

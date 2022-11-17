@@ -30,4 +30,12 @@
     <string name="orientation_e_photo">East photo of the area</string>
     <string name="orientation_s_photo">South photo of the area</string>
     <string name="action_back">Back</string>
+    <string name="north">North</string>
+    <string name="east">East</string>
+    <string name="south">South</string>
+    <string name="west">West</string>
+    <string name="error_takePhoto">Impossible to take the photo.</string>
+    <string name="error">Error</string>
+    <string name="warning">Warning</string>
+    <string name="warning_deleteArea">You are about to delete this area. This action is irreversible. Do you wish to continue?</string>
 </resources>

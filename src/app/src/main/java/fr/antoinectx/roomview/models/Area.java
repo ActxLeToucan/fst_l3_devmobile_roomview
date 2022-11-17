@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Date;
 import java.util.UUID;
 
 public class Area extends ManipulateFiles {
@@ -229,5 +228,6 @@ public class Area extends ManipulateFiles {
         }
 
         deleteRecursive(directory);
+        directory.delete();
     }
 }

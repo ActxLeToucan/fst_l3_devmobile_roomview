@@ -1,5 +1,6 @@
 package fr.antoinectx.roomview;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,18 +23,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 public class CameraActivity extends MyActivity {
+    private String orientation;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
     private ImageCapture imageCapture;
     private Executor executor;
+    private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        orientation = getIntent().getStringExtra("orientation");
+        if (orientation == null) {
+            finish();
+            return;
+        }
+        file = new File(getFilesDir(), "photo.jpg");
+
         setContentView(R.layout.activity_camera);
 
-        initAppBar("", "", true, R.drawable.ic_baseline_close_24, R.string.action_cancel);
+        initAppBar(orientation, getString(R.string.takePhoto), true, R.drawable.ic_baseline_close_24, R.string.action_cancel);
         previewView = findViewById(R.id.previewView);
 
         startCamera();
@@ -86,19 +96,27 @@ public class CameraActivity extends MyActivity {
 
         findViewById(R.id.captureButton).setOnClickListener(v -> {
                     ImageCapture.OutputFileOptions outputFileOptions =
-                            new ImageCapture.OutputFileOptions.Builder(new File(getFilesDir(), "photo.jpg")).build();
+                            new ImageCapture.OutputFileOptions.Builder(file).build();
                     imageCapture.takePicture(outputFileOptions, executor,
                             new ImageCapture.OnImageSavedCallback() {
                                 @Override
                                 public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
-                                    // insert your code here.
                                     Log.d("CameraActivity", "Image saved");
+                                    Intent intent = new Intent();
+                                    intent.putExtra("orientation", orientation);
+                                    intent.putExtra("path", file.getAbsolutePath());
+                                    setResult(RESULT_OK, intent);
+                                    finish();
                                 }
 
                                 @Override
                                 public void onError(ImageCaptureException error) {
-                                    // insert your code here.
                                     Log.d("CameraActivity", "Image not saved");
+                                    Intent intent = new Intent();
+                                    intent.putExtra("orientation", orientation);
+                                    intent.putExtra("path", "");
+                                    setResult(RESULT_OK, intent);
+                                    finish();
                                 }
                             }
                     );

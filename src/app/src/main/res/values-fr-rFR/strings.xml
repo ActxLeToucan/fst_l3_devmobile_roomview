@@ -30,4 +30,12 @@
     <string name="orientation_e_photo">Photo Est de la zone</string>
     <string name="orientation_s_photo">Photo Sud de la zone</string>
     <string name="action_back">Retour</string>
+    <string name="north">Nord</string>
+    <string name="east">Est</string>
+    <string name="south">Sud</string>
+    <string name="west">Ouest</string>
+    <string name="error_takePhoto">Impossible de prendre la photo.</string>
+    <string name="error">Erreur</string>
+    <string name="warning">Attention</string>
+    <string name="warning_deleteArea">Vous êtes sur le point de supprimer cette zone. Cette action est irréversible. Souhaitez-vous continuer ?</string>
 </resources>
