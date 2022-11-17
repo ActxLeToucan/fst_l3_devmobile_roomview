@@ -14,8 +14,8 @@ import java.util.List;
 import fr.antoinectx.roomview.models.Area;
 
 public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerViewAdapter.ViewHolder> {
-    private List<Area> mData;
     private final LayoutInflater mInflater;
+    private List<Area> mData;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
@@ -45,6 +45,25 @@ public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerVi
         return mData.size();
     }
 
+    // convenience method for getting data at click position
+    Area getItem(int id) {
+        return mData.get(id);
+    }
+
+    // allows clicks events to be caught
+    void setClickListener(ItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    public void setAreas(List<Area> areas) {
+        mData = areas;
+        notifyDataSetChanged();
+    }
+
+    // parent activity will implement this method to respond to click events
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -60,25 +79,5 @@ public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerVi
         public void onClick(View view) {
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
         }
-    }
-
-    // convenience method for getting data at click position
-    Area getItem(int id) {
-        return mData.get(id);
-    }
-
-    // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
-    public void setAreas(List<Area> areas) {
-        mData = areas;
-        notifyDataSetChanged();
     }
 }

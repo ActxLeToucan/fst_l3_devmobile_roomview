@@ -37,18 +37,6 @@ public class EditBuildingActivity extends MyActivity {
     private boolean photoChanged = false;
     private File initPhoto;
     private File lastPhotoSelected;
-    private String pathPhotoFromCamera;
-
-    final private ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            (result) -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        applyPhoto(pathPhotoFromCamera);
-                    }
-                }
-            });
     final private ActivityResultLauncher<Intent> chooseFromGalleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (result) -> {
@@ -73,7 +61,17 @@ public class EditBuildingActivity extends MyActivity {
                     }
                 }
             });
-
+    private String pathPhotoFromCamera;
+    final private ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            (result) -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        applyPhoto(pathPhotoFromCamera);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

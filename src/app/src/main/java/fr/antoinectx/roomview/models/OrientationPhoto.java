@@ -24,6 +24,32 @@ public class OrientationPhoto {
         this.filename = filename;
     }
 
+    /**
+     * Convert a JSON object to an OrientationPhoto object
+     *
+     * @param json The JSON object
+     * @return The OrientationPhoto object
+     */
+    @Nullable
+    public static OrientationPhoto fromJSON(@Nullable JSONObject json) {
+        if (json == null) return null;
+
+        try {
+            List<Passage> passages = new ArrayList<>();
+            for (int i = 0; i < json.getJSONArray("passages").length(); i++) {
+                passages.add(Passage.fromJSON(json.getJSONArray("passages").getJSONObject(i)));
+            }
+
+            return new OrientationPhoto(
+                    passages,
+                    json.optString("filename")
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<Passage> getPassages() {
         return passages;
     }
@@ -51,32 +77,6 @@ public class OrientationPhoto {
             e.printStackTrace();
         }
         return json;
-    }
-
-    /**
-     * Convert a JSON object to an OrientationPhoto object
-     *
-     * @param json The JSON object
-     * @return The OrientationPhoto object
-     */
-    @Nullable
-    public static OrientationPhoto fromJSON(@Nullable JSONObject json) {
-        if (json == null) return null;
-
-        try {
-            List<Passage> passages = new ArrayList<>();
-            for (int i = 0; i < json.getJSONArray("passages").length(); i++) {
-                passages.add(Passage.fromJSON(json.getJSONArray("passages").getJSONObject(i)));
-            }
-
-            return new OrientationPhoto(
-                    passages,
-                    json.optString("filename")
-            );
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
 

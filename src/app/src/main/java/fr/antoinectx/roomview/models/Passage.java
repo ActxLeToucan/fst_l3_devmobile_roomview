@@ -33,6 +33,27 @@ public class Passage {
         this.autreCote = autreCote;
     }
 
+    /**
+     * Convert a JSON object to a Passage object
+     *
+     * @param json The JSON object
+     * @return The Passage object
+     */
+    public static Passage fromJSON(JSONObject json) {
+        try {
+            return new Passage(
+                    json.getInt("x1"),
+                    json.getInt("y1"),
+                    json.getInt("x2"),
+                    json.getInt("y2"),
+                    json.optString("autreCote")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public String getAutreCoteId() {
         return autreCote == null ? autreCoteId : autreCote.getId();
     }
@@ -73,26 +94,5 @@ public class Passage {
             e.printStackTrace();
         }
         return json;
-    }
-
-    /**
-     * Convert a JSON object to a Passage object
-     *
-     * @param json The JSON object
-     * @return The Passage object
-     */
-    public static Passage fromJSON(JSONObject json) {
-        try {
-            return new Passage(
-                    json.getInt("x1"),
-                    json.getInt("y1"),
-                    json.getInt("x2"),
-                    json.getInt("y2"),
-                    json.optString("autreCote")
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

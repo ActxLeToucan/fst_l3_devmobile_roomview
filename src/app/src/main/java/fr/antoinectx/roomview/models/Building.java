@@ -25,6 +25,10 @@ public class Building extends ManipulateFiles {
      */
     private final String id;
     /**
+     * Areas of the building (rooms, hallways, etc.)
+     */
+    private final List<Area> areas;
+    /**
      * Name of the building
      */
     private String name;
@@ -32,10 +36,6 @@ public class Building extends ManipulateFiles {
      * Description of the building
      */
     private String description;
-    /**
-     * Areas of the building (rooms, hallways, etc.)
-     */
-    private final List<Area> areas;
     /**
      * Photo filename of the building
      */
@@ -64,106 +64,6 @@ public class Building extends ManipulateFiles {
         this.name = name;
         this.description = description;
         this.areas = new ArrayList<>();
-    }
-
-    /**
-     * Get the photo file
-     *
-     * @param context The context of the application
-     *                (used to get the directory of the application)
-     * @return The photo file
-     */
-    public File getPhotoFile(Context context) {
-        if (photoPath == null || photoPath.trim().isEmpty()) {
-            return null;
-        }
-        return new File(getDirectory(context), photoPath);
-    }
-
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<Area> getAreas() {
-        return areas;
-    }
-
-    @Nullable
-    public String getPhotoPath() {
-        return photoPath;
-    }
-
-    public void setPhotoPath(@Nullable String photoPath) {
-        this.photoPath = photoPath;
-    }
-
-    // --- Save & Load ---
-
-    /**
-     * Save the building to a JSON file
-     *
-     * @param context The context of the application
-     *                (use getApplicationContext() or getBaseContext() or this in an activity),
-     *                used to get the files directory.
-     *                The file will be saved in {@literal /data/data/<package_name>/files/<id>/data.json}
-     *                where {@literal <id>} is the unique ID of the building
-     */
-    public void save(Context context) {
-        File dir = new File(context.getFilesDir() + "/" + id);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                Log.e("Building", "Failed to create directory " + dir.getAbsolutePath());
-                return;
-            }
-        }
-
-        File file = new File(dir.getAbsolutePath(), "data.json");
-
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(toJSON().toString().getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("Building", "Saved " + name + " to " + file.getAbsolutePath());
-    }
-
-    /**
-     * Convert the building to a JSON object
-     */
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("id", id);
-            json.put("name", name);
-            json.put("description", description);
-            if (photoPath != null) json.put("photo", photoPath);
-            JSONArray areasJSON = new JSONArray();
-            for (Area area : areas) {
-                areasJSON.put(area.toJSON());
-            }
-            json.put("areas", areasJSON);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return json;
     }
 
     /**
@@ -280,6 +180,117 @@ public class Building extends ManipulateFiles {
     }
 
     /**
+     * Get the directory of a building
+     *
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @param id      The unique ID of the building
+     * @return The directory
+     */
+    public static File getDirectory(@NonNull Context context, String id) {
+        return new File(context.getFilesDir(), id);
+    }
+
+    /**
+     * Get the photo file
+     *
+     * @param context The context of the application
+     *                (used to get the directory of the application)
+     * @return The photo file
+     */
+    public File getPhotoFile(Context context) {
+        if (photoPath == null || photoPath.trim().isEmpty()) {
+            return null;
+        }
+        return new File(getDirectory(context), photoPath);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // --- Save & Load ---
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Area> getAreas() {
+        return areas;
+    }
+
+    @Nullable
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(@Nullable String photoPath) {
+        this.photoPath = photoPath;
+    }
+
+    /**
+     * Save the building to a JSON file
+     *
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity),
+     *                used to get the files directory.
+     *                The file will be saved in {@literal /data/data/<package_name>/files/<id>/data.json}
+     *                where {@literal <id>} is the unique ID of the building
+     */
+    public void save(Context context) {
+        File dir = new File(context.getFilesDir() + "/" + id);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                Log.e("Building", "Failed to create directory " + dir.getAbsolutePath());
+                return;
+            }
+        }
+
+        File file = new File(dir.getAbsolutePath(), "data.json");
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(toJSON().toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("Building", "Saved " + name + " to " + file.getAbsolutePath());
+    }
+
+    /**
+     * Convert the building to a JSON object
+     */
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("id", id);
+            json.put("name", name);
+            json.put("description", description);
+            if (photoPath != null) json.put("photo", photoPath);
+            JSONArray areasJSON = new JSONArray();
+            for (Area area : areas) {
+                areasJSON.put(area.toJSON());
+            }
+            json.put("areas", areasJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    /**
      * Delete a building from the files directory
      *
      * @param context The context of the application
@@ -304,17 +315,5 @@ public class Building extends ManipulateFiles {
      */
     public File getDirectory(Context context) {
         return getDirectory(context, id);
-    }
-
-    /**
-     * Get the directory of a building
-     *
-     * @param context The context of the application
-     *                (use getApplicationContext() or getBaseContext() or this in an activity)
-     * @param id      The unique ID of the building
-     * @return The directory
-     */
-    public static File getDirectory(@NonNull Context context, String id) {
-        return new File(context.getFilesDir(), id);
     }
 }
