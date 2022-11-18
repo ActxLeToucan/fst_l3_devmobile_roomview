@@ -14,9 +14,10 @@ public class Passage {
     /**
      * Used when loading a passage from a file
      */
+    @Nullable
     private String autreCoteId;
 
-    private Passage(int x1, int y1, int x2, int y2, String autreCoteId) {
+    private Passage(int x1, int y1, int x2, int y2, @Nullable String autreCoteId) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -46,7 +47,7 @@ public class Passage {
                     json.getInt("y1"),
                     json.getInt("x2"),
                     json.getInt("y2"),
-                    json.optString("autreCote")
+                    !json.isNull("autreCote") ? json.getString("autreCote") : null
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +56,7 @@ public class Passage {
     }
 
     public String getAutreCoteId() {
-        return autreCote == null ? autreCoteId : autreCote.getId();
+        return autreCote != null ? autreCote.getId() : autreCoteId;
     }
 
     public int[] getCoordonnees() {
@@ -69,6 +70,7 @@ public class Passage {
 
     public void setAutreCote(@Nullable Area autreCote) {
         this.autreCote = autreCote;
+        this.autreCoteId = null;
     }
 
     public boolean estValide() {
@@ -87,9 +89,7 @@ public class Passage {
             json.put("y1", y1);
             json.put("x2", x2);
             json.put("y2", y2);
-            if (autreCote != null) {
-                json.put("autreCote", autreCote.getId());
-            }
+            json.put("autreCote", autreCote == null ? JSONObject.NULL : autreCote.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

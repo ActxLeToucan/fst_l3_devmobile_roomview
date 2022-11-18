@@ -1,5 +1,6 @@
 package fr.antoinectx.roomview.models;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -11,15 +12,15 @@ import java.util.List;
 
 public class OrientationPhoto {
     private final List<Passage> passages;
-    @Nullable
-    private String filename;
+    @NonNull
+    private final String filename;
 
-    private OrientationPhoto(List<Passage> passages, @Nullable String filename) {
+    private OrientationPhoto(List<Passage> passages, @NonNull String filename) {
         this.passages = passages;
         this.filename = filename;
     }
 
-    public OrientationPhoto(@Nullable String filename) {
+    public OrientationPhoto(@NonNull String filename) {
         this.passages = new ArrayList<>();
         this.filename = filename;
     }
@@ -31,9 +32,7 @@ public class OrientationPhoto {
      * @return The OrientationPhoto object
      */
     @Nullable
-    public static OrientationPhoto fromJSON(@Nullable JSONObject json) {
-        if (json == null) return null;
-
+    public static OrientationPhoto fromJSON(@NonNull JSONObject json) {
         try {
             List<Passage> passages = new ArrayList<>();
             for (int i = 0; i < json.getJSONArray("passages").length(); i++) {
@@ -42,7 +41,7 @@ public class OrientationPhoto {
 
             return new OrientationPhoto(
                     passages,
-                    json.optString("filename")
+                    json.getString("filename")
             );
         } catch (JSONException e) {
             e.printStackTrace();
@@ -54,7 +53,7 @@ public class OrientationPhoto {
         return passages;
     }
 
-    @Nullable
+    @NonNull
     public String getFilename() {
         return filename;
     }
@@ -72,7 +71,7 @@ public class OrientationPhoto {
                 passages.put(passage.toJSON());
             }
             json.put("passages", passages);
-            if (filename != null) json.put("filename", filename);
+            json.put("filename", filename);
         } catch (JSONException e) {
             e.printStackTrace();
         }

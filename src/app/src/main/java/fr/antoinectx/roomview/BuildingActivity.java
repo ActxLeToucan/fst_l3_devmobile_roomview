@@ -21,8 +21,6 @@ import fr.antoinectx.roomview.models.Building;
 public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdapter.ItemClickListener {
     private Building building;
     private AreaRecyclerViewAdapter adapter;
-    private RecyclerView recyclerView;
-    private TextInputEditText search;
     private String searchContent = "";
 
     @Override
@@ -40,11 +38,11 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
 
         adapter = new AreaRecyclerViewAdapter(this, building.getAreas());
         adapter.setClickListener(this);
-        recyclerView = findViewById(R.id.buildingActivity_recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.buildingActivity_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        search = findViewById(R.id.buildingActivity_searchBar);
+        TextInputEditText search = findViewById(R.id.buildingActivity_searchBar);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -62,7 +60,6 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         });
     }
 
-    // TODO
     @Override
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(this, AreaActivity.class);

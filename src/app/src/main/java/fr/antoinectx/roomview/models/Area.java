@@ -3,6 +3,7 @@ package fr.antoinectx.roomview.models;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
@@ -79,10 +80,10 @@ public class Area extends ManipulateFiles {
                     json.getString("buildingId"),
                     json.getString("name"),
                     new OrientationPhoto[]{
-                            OrientationPhoto.fromJSON(json.optJSONObject("north")),
-                            OrientationPhoto.fromJSON(json.optJSONObject("east")),
-                            OrientationPhoto.fromJSON(json.optJSONObject("south")),
-                            OrientationPhoto.fromJSON(json.optJSONObject("west"))
+                            !json.isNull("north") ? OrientationPhoto.fromJSON(json.getJSONObject("north")) : null,
+                            !json.isNull("east") ? OrientationPhoto.fromJSON(json.getJSONObject("east")) : null,
+                            !json.isNull("south") ? OrientationPhoto.fromJSON(json.getJSONObject("south")) : null,
+                            !json.isNull("west") ? OrientationPhoto.fromJSON(json.getJSONObject("west")) : null
                     }
             );
         } catch (JSONException e) {
@@ -127,72 +128,20 @@ public class Area extends ManipulateFiles {
         return orientationPhotos;
     }
 
-    @Nullable
-    public OrientationPhoto getNorth() {
-        return orientationPhotos[0];
+    public OrientationPhoto getOrientationPhoto(@NonNull Orientation orientation) {
+        return orientationPhotos[orientation.ordinal()];
     }
 
-    public void setNorth(OrientationPhoto orientationPhoto) {
-        orientationPhotos[0] = orientationPhoto;
+    public void setOrientationPhoto(@NonNull Orientation orientation, OrientationPhoto orientationPhoto) {
+        orientationPhotos[orientation.ordinal()] = orientationPhoto;
     }
 
     @Nullable
-    public File getNorthFile(Context context) {
+    public File getFile(Context context, @NonNull Orientation orientation) {
         File directory = getDirectory(context);
-        if (getNorth() == null) return null;
-        if (getNorth().getFilename() == null) return null;
-        return new File(directory, getNorth().getFilename());
-    }
-
-    @Nullable
-    public OrientationPhoto getEast() {
-        return orientationPhotos[1];
-    }
-
-    public void setEast(OrientationPhoto orientationPhoto) {
-        orientationPhotos[1] = orientationPhoto;
-    }
-
-    @Nullable
-    public File getEastFile(Context context) {
-        File directory = getDirectory(context);
-        if (getEast() == null) return null;
-        if (getEast().getFilename() == null) return null;
-        return new File(directory, getEast().getFilename());
-    }
-
-    @Nullable
-    public OrientationPhoto getSouth() {
-        return orientationPhotos[2];
-    }
-
-    public void setSouth(OrientationPhoto orientationPhoto) {
-        orientationPhotos[2] = orientationPhoto;
-    }
-
-    @Nullable
-    public File getSouthFile(Context context) {
-        File directory = getDirectory(context);
-        if (getSouth() == null) return null;
-        if (getSouth().getFilename() == null) return null;
-        return new File(directory, getSouth().getFilename());
-    }
-
-    @Nullable
-    public OrientationPhoto getWest() {
-        return orientationPhotos[3];
-    }
-
-    public void setWest(OrientationPhoto orientationPhoto) {
-        orientationPhotos[3] = orientationPhoto;
-    }
-
-    @Nullable
-    public File getWestFile(Context context) {
-        File directory = getDirectory(context);
-        if (getWest() == null) return null;
-        if (getWest().getFilename() == null) return null;
-        return new File(directory, getWest().getFilename());
+        OrientationPhoto orientationPhoto = getOrientationPhoto(orientation);
+        if (orientationPhoto == null) return null;
+        return new File(directory, orientationPhoto.getFilename());
     }
 
     /**
@@ -206,10 +155,10 @@ public class Area extends ManipulateFiles {
             json.put("id", id);
             json.put("buildingId", buildingId);
             json.put("name", name);
-            if (getNorth() != null) json.put("north", getNorth().toJSON());
-            if (getEast() != null) json.put("east", getEast().toJSON());
-            if (getSouth() != null) json.put("south", getSouth().toJSON());
-            if (getWest() != null) json.put("west", getWest().toJSON());
+            json.put("north", getOrientationPhoto(Orientation.NORTH) == null ? JSONObject.NULL : getOrientationPhoto(Orientation.NORTH).toJSON());
+            json.put("east", getOrientationPhoto(Orientation.EAST) == null ? JSONObject.NULL : getOrientationPhoto(Orientation.EAST).toJSON());
+            json.put("south", getOrientationPhoto(Orientation.SOUTH) == null ? JSONObject.NULL : getOrientationPhoto(Orientation.SOUTH).toJSON());
+            json.put("west", getOrientationPhoto(Orientation.WEST) == null ? JSONObject.NULL : getOrientationPhoto(Orientation.WEST).toJSON());
         } catch (JSONException e) {
             e.printStackTrace();
         }
