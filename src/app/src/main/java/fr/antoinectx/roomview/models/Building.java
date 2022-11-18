@@ -27,7 +27,7 @@ public class Building extends ManipulateFiles {
     /**
      * Areas of the building (rooms, hallways, etc.)
      */
-    private final List<Area> areas;
+    private List<Area> areas;
     /**
      * Name of the building
      */
@@ -217,8 +217,6 @@ public class Building extends ManipulateFiles {
         this.name = name;
     }
 
-    // --- Save & Load ---
-
     public String getDescription() {
         return description;
     }
@@ -315,5 +313,24 @@ public class Building extends ManipulateFiles {
      */
     public File getDirectory(Context context) {
         return getDirectory(context, id);
+    }
+
+    /**
+     * Reload the building from the JSON file
+     *
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @return Whether the building was successfully reloaded.
+     * False indicates that the building does not exist anymore.
+     */
+    public boolean reload(Context context) {
+        Building building = load(context, id);
+        if (building != null) {
+            this.name = building.name;
+            this.description = building.description;
+            this.areas = building.areas;
+            this.photoPath = building.photoPath;
+        }
+        return building != null;
     }
 }

@@ -97,16 +97,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
     }
 
     public void updateData() {
-        boolean found = false;
-        for (Building building : Building.loadAll(this)) {
-            if (building.getId().compareTo(this.building.getId()) == 0) {
-                this.building = building;
-                found = true;
-                break;
-            }
-        }
-        // si l'objet n'existe plus, on ferme l'activité
-        if (!found) {
+        if (!building.reload(this)) {
             finish();
         }
     }

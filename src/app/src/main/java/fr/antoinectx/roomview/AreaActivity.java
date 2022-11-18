@@ -56,6 +56,18 @@ public class AreaActivity extends MyActivity {
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!building.reload(this)) {
+            finish();
+        }
+        if (!area.reloadFromBuilding(building)) {
+            finish();
+        }
+        update();
+    }
+
     public void editArea(MenuItem item) {
         Intent intent = new Intent(this, EditAreaActivity.class);
         intent.putExtra("building", building.toJSON().toString());
@@ -76,6 +88,11 @@ public class AreaActivity extends MyActivity {
                 })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    public void update() {
+        toolbar.setTitle(area.getName());
+        updateOrientation();
     }
 
     private void updateOrientation() {

@@ -180,4 +180,27 @@ public class Area extends ManipulateFiles {
         deleteRecursive(directory);
         directory.delete();
     }
+
+    /**
+     * Reload the area from the building
+     *
+     * @param building The building
+     * @return Whether the area was found in the building
+     */
+    public boolean reloadFromBuilding(Building building) {
+        if (!building.getId().equals(buildingId)) {
+            Log.e("Area", "reloadFromBuilding: The building ID does not match");
+            return false;
+        }
+
+        Area area = building.getAreas()
+                .stream()
+                .filter(a -> a.getId().equals(id))
+                .findFirst().orElse(null);
+        if (area == null) return false;
+
+        this.name = area.name;
+        System.arraycopy(area.orientationPhotos, 0, this.orientationPhotos, 0, this.orientationPhotos.length);
+        return true;
+    }
 }
