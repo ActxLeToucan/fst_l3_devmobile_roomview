@@ -72,10 +72,11 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
     }
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         TextView nomBatiment;
         TextView descriptionBatiment;
         ImageView photoBatiment;
@@ -86,11 +87,18 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
             descriptionBatiment = itemView.findViewById(R.id.bigTile_description);
             photoBatiment = itemView.findViewById(R.id.bigTile_image);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (mClickListener != null) mClickListener.onItemLongClick(view, getAdapterPosition());
+            return true;
         }
     }
 }

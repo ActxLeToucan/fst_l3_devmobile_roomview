@@ -38,4 +38,8 @@
     <string name="error">Erreur</string>
     <string name="warning">Attention</string>
     <string name="warning_deleteArea">Vous êtes sur le point de supprimer cette zone. Cette action est irréversible. Souhaitez-vous continuer ?</string>
+    <string name="warning_deleteBuilding">Vous êtes sur le point de supprimer ce bâtiment. Cette action est irréversible. Souhaitez-vous continuer ?</string>
+    <string name="turnLeft">Tourner à gauche</string>
+    <string name="turnRight">Tourner à droite</string>
+    <string name="area_photo">Photo de la zone</string>
 </resources>

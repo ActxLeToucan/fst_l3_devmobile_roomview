@@ -1,5 +1,6 @@
 package fr.antoinectx.roomview;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -64,6 +65,14 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
     // TODO
     @Override
     public void onItemClick(View view, int position) {
+        Intent intent = new Intent(this, AreaActivity.class);
+        intent.putExtra("building", building.toJSON().toString());
+        intent.putExtra("area", adapter.getItem(position).toJSON().toString());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
         Intent intent = new Intent(this, EditAreaActivity.class);
         intent.putExtra("building", building.toJSON().toString());
         intent.putExtra("area", adapter.getItem(position).toJSON().toString());
@@ -132,7 +141,15 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
     }
 
     public void deleteBuilding(MenuItem item) {
-        building.delete(this);
-        finish();
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.warning)
+                .setMessage(R.string.warning_deleteBuilding)
+                .setPositiveButton(R.string.action_delete, (dialog, which) -> {
+                    building.delete(this);
+                    finish();
+                })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 }

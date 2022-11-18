@@ -63,21 +63,29 @@ public class AreaRecyclerViewAdapter extends RecyclerView.Adapter<AreaRecyclerVi
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
     }
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         TextView areaName;
 
         ViewHolder(View itemView) {
             super(itemView);
             areaName = itemView.findViewById(R.id.smallTile_title);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (mClickListener != null) mClickListener.onItemLongClick(view, getAdapterPosition());
+            return true;
         }
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -123,25 +122,6 @@ public class EditAreaActivity extends MyActivity {
         );
 
         applyPhotos();
-
-        Button deleteButton = findViewById(R.id.editAreaActivity_delete);
-        deleteButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.warning)
-                    .setMessage(R.string.warning_deleteArea)
-                    .setPositiveButton(R.string.action_delete, (dialog, which) -> {
-                        area.delete(this);
-                        building.getAreas().removeIf(a -> a.getId().equals(area.getId()));
-                        building.save(this);
-                        finish();
-                    })
-                    .setNegativeButton(R.string.action_cancel, null)
-                    .show();
-        });
-        if (newArea) {
-            deleteButton.setVisibility(Button.GONE);
-        }
     }
 
     @Override

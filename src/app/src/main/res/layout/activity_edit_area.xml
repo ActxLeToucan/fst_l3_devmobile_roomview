@@ -36,9 +36,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
         android:orientation="vertical"
         android:weightSum="3"
-        app:layout_constraintBottom_toTopOf="@+id/editAreaActivity_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/area_layout_name">
@@ -101,18 +102,5 @@
         </TableRow>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/editAreaActivity_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="12dp"
-        android:backgroundTint="?attr/colorError"
-        android:text="@string/action_delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

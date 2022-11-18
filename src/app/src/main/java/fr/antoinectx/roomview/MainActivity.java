@@ -86,6 +86,13 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         startActivity(intent);
     }
 
+    @Override
+    public void onItemLongClick(View view, int position) {
+        Intent intent = new Intent(this, EditBuildingActivity.class);
+        intent.putExtra("building", buildings.get(position).toJSON().toString());
+        startActivity(intent);
+    }
+
     public void saveBuildings() {
         for (Building building : buildings) {
             building.save(this);

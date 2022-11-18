@@ -38,4 +38,8 @@
     <string name="error">Error</string>
     <string name="warning">Warning</string>
     <string name="warning_deleteArea">You are about to delete this area. This action is irreversible. Do you wish to continue?</string>
+    <string name="warning_deleteBuilding">You are about to delete this building. This action is irreversible. Do you wish to continue?</string>
+    <string name="turnLeft">Turn left</string>
+    <string name="turnRight">Turn right</string>
+    <string name="area_photo">Photo of the area</string>
 </resources>
