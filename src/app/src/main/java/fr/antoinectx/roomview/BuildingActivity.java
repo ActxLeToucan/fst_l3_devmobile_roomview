@@ -17,6 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.stream.Collectors;
 
 import fr.antoinectx.roomview.models.Building;
+import fr.antoinectx.roomview.models.Orientation;
 
 public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdapter.ItemClickListener {
     private Building building;
@@ -65,6 +66,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         Intent intent = new Intent(this, AreaActivity.class);
         intent.putExtra("building", building.toJSON().toString());
         intent.putExtra("area", adapter.getItem(position).toJSON().toString());
+        intent.putExtra("orientation", Orientation.NORTH.toString());
         startActivity(intent);
     }
 

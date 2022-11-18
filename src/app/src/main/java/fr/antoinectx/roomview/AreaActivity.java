@@ -8,12 +8,17 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
+import fr.antoinectx.roomview.models.Orientation;
 
 public class AreaActivity extends MyActivity {
     private Building building;
     private Area area;
+    private Orientation orientation;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,17 +27,27 @@ public class AreaActivity extends MyActivity {
 
         building = Building.fromJSONString(getIntent().getStringExtra("building"));
         area = Area.fromJSONString(getIntent().getStringExtra("area"));
+        orientation = Orientation.valueOf(getIntent().getStringExtra("orientation"));
         if (building == null || area == null) {
             finish();
             return;
         }
 
-        initAppBar(area.getName(), "TODO : orientation courante", true);
+        initAppBar(area.getName(), orientation.getName(this), true);
 
-        ImageView imageView = findViewById(R.id.areaActivity_imageView);
+        imageView = findViewById(R.id.areaActivity_imageView);
         ImageButton buttonLeft = findViewById(R.id.areaActivity_buttonLeft);
+        buttonLeft.setOnClickListener(v -> {
+            orientation = orientation.getLeft();
+            updateOrientation();
+        });
         ImageButton buttonRight = findViewById(R.id.areaActivity_buttonRight);
-        // todo enum orientation
+        buttonRight.setOnClickListener(v -> {
+            orientation = orientation.getRight();
+            updateOrientation();
+        });
+
+        updateOrientation();
     }
 
     @Override
@@ -61,5 +76,12 @@ public class AreaActivity extends MyActivity {
                 })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    private void updateOrientation() {
+        toolbar.setSubtitle(orientation.getName(this));
+        Glide.with(this)
+                .load(area.getFile(this, orientation))
+                .into(imageView);
     }
 }
