@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ScaleGestureDetector;
 
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
@@ -91,6 +92,24 @@ public class CameraActivity extends MyActivity {
         // Connect the preview use case to the previewView
         preview.setSurfaceProvider(
                 previewView.getSurfaceProvider());
+
+        // set zoom to min
+        camera.getCameraControl().setLinearZoom(0f);
+
+        // pinch to zoom
+        ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                float currentZoomRatio = camera.getCameraInfo().getZoomState().getValue().getZoomRatio();
+                float delta = detector.getScaleFactor();
+                camera.getCameraControl().setZoomRatio(currentZoomRatio * delta);
+                return true;
+            }
+        });
+        previewView.setOnTouchListener((v, event) -> {
+            scaleGestureDetector.onTouchEvent(event);
+            return true;
+        });
 
         findViewById(R.id.captureButton).setOnClickListener(v -> {
                     ImageCapture.OutputFileOptions outputFileOptions =
