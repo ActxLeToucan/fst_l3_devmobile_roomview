@@ -5,10 +5,10 @@ import androidx.annotation.Nullable;
 import org.json.JSONObject;
 
 public class Passage {
-    private int x1;
-    private int y1;
-    private int x2;
-    private int y2;
+    private final double x1;
+    private final double y1;
+    private final double x2;
+    private final double y2;
     @Nullable
     private Area autreCote;
     /**
@@ -17,7 +17,7 @@ public class Passage {
     @Nullable
     private String autreCoteId;
 
-    private Passage(int x1, int y1, int x2, int y2, @Nullable String autreCoteId) {
+    private Passage(double x1, double y1, double x2, double y2, @Nullable String autreCoteId) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -26,7 +26,7 @@ public class Passage {
         this.autreCoteId = autreCoteId;
     }
 
-    public Passage(int x1, int y1, int x2, int y2, @Nullable Area autreCote) {
+    public Passage(double x1, double y1, double x2, double y2, @Nullable Area autreCote) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -43,10 +43,10 @@ public class Passage {
     public static Passage fromJSON(JSONObject json) {
         try {
             return new Passage(
-                    json.getInt("x1"),
-                    json.getInt("y1"),
-                    json.getInt("x2"),
-                    json.getInt("y2"),
+                    json.getDouble("x1"),
+                    json.getDouble("y1"),
+                    json.getDouble("x2"),
+                    json.getDouble("y2"),
                     !json.isNull("autreCote") ? json.getString("autreCote") : null
             );
         } catch (Exception e) {
@@ -59,8 +59,8 @@ public class Passage {
         return autreCote != null ? autreCote.getId() : autreCoteId;
     }
 
-    public int[] getCoordonnees() {
-        return new int[]{x1, y1, x2, y2};
+    public double[] getCoordonnees() {
+        return new double[]{x1, y1, x2, y2};
     }
 
     @Nullable

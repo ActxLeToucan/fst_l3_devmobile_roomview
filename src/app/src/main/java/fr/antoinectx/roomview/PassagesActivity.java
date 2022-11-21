@@ -24,6 +24,8 @@ public class PassagesActivity extends MyActivity {
     private Building building;
     private Area area;
     private Direction direction;
+    private int previousNumberOfPointers = 0;
+    private double[] previousSelection = new double[4];
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -68,33 +70,63 @@ public class PassagesActivity extends MyActivity {
             int nbPointers = motionEvent.getPointerCount();
 
             if (nbPointers == 2) {
-                // position sur l'image
+                // selection sur la photo
+                double x1 = motionEvent.getX(0) + deltaWidth / 2.0;
+                double y1 = motionEvent.getY(0) + deltaHeight / 2.0;
+                double x2 = motionEvent.getX(1) + deltaWidth / 2.0;
+                double y2 = motionEvent.getY(1) + deltaHeight / 2.0;
+
+                // selection relative sur la photo
+                double x1Rel = x1 / imageWidth;
+                if (x1Rel < 0) x1Rel = 0;
+                else if (x1Rel > 1) x1Rel = 1;
+                double y1Rel = y1 / imageHeight;
+                if (y1Rel < 0) y1Rel = 0;
+                else if (y1Rel > 1) y1Rel = 1;
+                double x2Rel = x2 / imageWidth;
+                if (x2Rel < 0) x2Rel = 0;
+                else if (x2Rel > 1) x2Rel = 1;
+                double y2Rel = y2 / imageHeight;
+                if (y2Rel < 0) y2Rel = 0;
+                else if (y2Rel > 1) y2Rel = 1;
+
+                previousSelection[0] = x1Rel;
+                previousSelection[1] = y1Rel;
+                previousSelection[2] = x2Rel;
+                previousSelection[3] = y2Rel;
+
+                boolean isValidSelection = !(x1Rel == x2Rel || y1Rel == y2Rel);
+
+                // selection sur l'ecran
                 Rect rect = new Rect();
-                rect.left = (int) motionEvent.getX(0) + deltaWidth / 2;
-                rect.top = (int) motionEvent.getY(0) + deltaHeight / 2;
-                rect.right = (int) motionEvent.getX(1) + deltaWidth / 2;
-                rect.bottom = (int) motionEvent.getY(1) + deltaHeight / 2;
+                rect.left = (int) motionEvent.getX(0);
+                rect.top = (int) motionEvent.getY(0);
+                rect.right = (int) motionEvent.getX(1);
+                rect.bottom = (int) motionEvent.getY(1);
                 rect.sort();
 
-                // position sur l'imageView
-                Rect rect2 = new Rect();
-                rect2.left = (int) motionEvent.getX(0);
-                rect2.top = (int) motionEvent.getY(0);
-                rect2.right = (int) motionEvent.getX(1);
-                rect2.bottom = (int) motionEvent.getY(1);
-                rect2.sort();
-
                 Paint paint = new Paint();
-                paint.setColor(Color.RED);
+                paint.setColor(isValidSelection ? Color.GREEN : Color.RED);
                 paint.setAlpha(100);
                 Canvas canvas = surfaceHolder.lockCanvas();
                 canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR);
                 canvas.drawRect(rect, paint);
-                paint.setColor(Color.BLUE);
-                paint.setAlpha(100);
-                canvas.drawRect(rect2, paint);
                 surfaceHolder.unlockCanvasAndPost(canvas);
+            } else if (nbPointers < 2 && previousNumberOfPointers == 2) {
+                boolean isValidSelection = !(previousSelection[0] == previousSelection[2] || previousSelection[1] == previousSelection[3]);
+
+                if (isValidSelection) {
+                    // TODO
+                } else {
+                    // TODO
+                }
+
+                previousSelection = new double[4];
+            } else {
+                previousSelection = new double[4];
             }
+
+            previousNumberOfPointers = nbPointers;
 
             return true;
         });
