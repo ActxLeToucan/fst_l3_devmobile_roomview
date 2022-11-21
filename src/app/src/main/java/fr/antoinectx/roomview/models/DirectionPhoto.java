@@ -10,36 +10,36 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrientationPhoto {
+public class DirectionPhoto {
     private final List<Passage> passages;
     @NonNull
     private final String filename;
 
-    private OrientationPhoto(List<Passage> passages, @NonNull String filename) {
+    private DirectionPhoto(List<Passage> passages, @NonNull String filename) {
         this.passages = passages;
         this.filename = filename;
     }
 
-    public OrientationPhoto(@NonNull String filename) {
+    public DirectionPhoto(@NonNull String filename) {
         this.passages = new ArrayList<>();
         this.filename = filename;
     }
 
     /**
-     * Convert a JSON object to an OrientationPhoto object
+     * Convert a JSON object to an DirectionPhoto object
      *
      * @param json The JSON object
-     * @return The OrientationPhoto object
+     * @return The DirectionPhoto object
      */
     @Nullable
-    public static OrientationPhoto fromJSON(@NonNull JSONObject json) {
+    public static DirectionPhoto fromJSON(@NonNull JSONObject json) {
         try {
             List<Passage> passages = new ArrayList<>();
             for (int i = 0; i < json.getJSONArray("passages").length(); i++) {
                 passages.add(Passage.fromJSON(json.getJSONArray("passages").getJSONObject(i)));
             }
 
-            return new OrientationPhoto(
+            return new DirectionPhoto(
                     passages,
                     json.getString("filename")
             );

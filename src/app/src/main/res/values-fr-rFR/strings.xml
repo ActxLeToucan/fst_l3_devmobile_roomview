@@ -42,4 +42,5 @@
     <string name="turnLeft">Tourner à gauche</string>
     <string name="turnRight">Tourner à droite</string>
     <string name="area_photo">Photo de la zone</string>
+    <string name="no_photo">Pas de photo</string>
 </resources>

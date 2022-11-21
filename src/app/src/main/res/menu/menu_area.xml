@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/menu_area_passages"
+        android:onClick="passages"
+        android:title="Passages" />
+    <item
         android:id="@+id/menu_area_edit_area"
         android:onClick="editArea"
         android:title="@string/action_edit" />

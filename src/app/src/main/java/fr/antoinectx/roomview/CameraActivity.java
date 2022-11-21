@@ -23,10 +23,10 @@ import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-import fr.antoinectx.roomview.models.Orientation;
+import fr.antoinectx.roomview.models.Direction;
 
 public class CameraActivity extends MyActivity {
-    private Orientation orientation;
+    private Direction direction;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
     private ImageCapture imageCapture;
@@ -37,12 +37,12 @@ public class CameraActivity extends MyActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        orientation = Orientation.valueOf(getIntent().getStringExtra("orientation"));
+        direction = Direction.valueOf(getIntent().getStringExtra("direction"));
         file = new File(getFilesDir(), "photo.jpg");
 
         setContentView(R.layout.activity_camera);
 
-        initAppBar(orientation.getName(this), getString(R.string.takePhoto), true, R.drawable.ic_baseline_close_24, R.string.action_cancel);
+        initAppBar(direction.getName(this), getString(R.string.takePhoto), true, R.drawable.ic_baseline_close_24, R.string.action_cancel);
         previewView = findViewById(R.id.previewView);
 
         startCamera();
@@ -120,7 +120,7 @@ public class CameraActivity extends MyActivity {
                                 public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
                                     Log.d("CameraActivity", "Image saved");
                                     Intent intent = new Intent();
-                                    intent.putExtra("orientation", orientation.toString());
+                                    intent.putExtra("direction", direction.toString());
                                     intent.putExtra("path", file.getAbsolutePath());
                                     setResult(RESULT_OK, intent);
                                     finish();
@@ -130,7 +130,7 @@ public class CameraActivity extends MyActivity {
                                 public void onError(ImageCaptureException error) {
                                     Log.d("CameraActivity", "Image not saved");
                                     Intent intent = new Intent();
-                                    intent.putExtra("orientation", orientation.toString());
+                                    intent.putExtra("direction", direction.toString());
                                     intent.putExtra("path", "");
                                     setResult(RESULT_OK, intent);
                                     finish();

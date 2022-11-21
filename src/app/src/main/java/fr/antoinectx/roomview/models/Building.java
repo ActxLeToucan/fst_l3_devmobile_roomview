@@ -155,9 +155,9 @@ public class Building extends ManipulateFiles {
 
             // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
             for (Area area : areas) {
-                for (OrientationPhoto orientationPhoto : area.getOrientationPhotos()) {
-                    if (orientationPhoto != null)
-                        for (Passage passage : orientationPhoto.getPassages()) {
+                for (DirectionPhoto directionPhoto : area.getDirectionPhotos()) {
+                    if (directionPhoto != null)
+                        for (Passage passage : directionPhoto.getPassages()) {
                             passage.setAutreCote(areas.stream()
                                     .filter(z -> z.getId().equals(passage.getAutreCoteId()))
                                     .findFirst()

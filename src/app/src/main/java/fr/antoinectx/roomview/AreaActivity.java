@@ -10,14 +10,16 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+
 import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
-import fr.antoinectx.roomview.models.Orientation;
+import fr.antoinectx.roomview.models.Direction;
 
 public class AreaActivity extends MyActivity {
     private Building building;
     private Area area;
-    private Orientation orientation;
+    private Direction direction;
     private ImageView imageView;
 
     @Override
@@ -27,33 +29,41 @@ public class AreaActivity extends MyActivity {
 
         building = Building.fromJSONString(getIntent().getStringExtra("building"));
         area = Area.fromJSONString(getIntent().getStringExtra("area"));
-        orientation = Orientation.valueOf(getIntent().getStringExtra("orientation"));
+        direction = Direction.valueOf(getIntent().getStringExtra("direction"));
         if (building == null || area == null) {
             finish();
             return;
         }
 
-        initAppBar(area.getName(), orientation.getName(this), true);
+        initAppBar(area.getName(), direction.getName(this), true);
 
         imageView = findViewById(R.id.areaActivity_imageView);
         ImageButton buttonLeft = findViewById(R.id.areaActivity_buttonLeft);
         buttonLeft.setOnClickListener(v -> {
-            orientation = orientation.getLeft();
-            updateOrientation();
+            direction = direction.getLeft();
+            updateDirection();
         });
         ImageButton buttonRight = findViewById(R.id.areaActivity_buttonRight);
         buttonRight.setOnClickListener(v -> {
-            orientation = orientation.getRight();
-            updateOrientation();
+            direction = direction.getRight();
+            updateDirection();
         });
 
-        updateOrientation();
+        updateDirection();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_area, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem passagesItem = menu.findItem(R.id.menu_area_passages);
+        File photo = area.getFile(this, direction);
+        passagesItem.setVisible(photo != null && photo.exists());
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -90,15 +100,25 @@ public class AreaActivity extends MyActivity {
                 .show();
     }
 
-    public void update() {
-        toolbar.setTitle(area.getName());
-        updateOrientation();
+    public void passages(MenuItem item) {
+        Intent intent = new Intent(this, PassagesActivity.class);
+        intent.putExtra("building", building.toJSON().toString());
+        intent.putExtra("area", area.toJSON().toString());
+        intent.putExtra("direction", direction.name());
+        startActivity(intent);
     }
 
-    private void updateOrientation() {
-        toolbar.setSubtitle(orientation.getName(this));
+    public void update() {
+        toolbar.setTitle(area.getName());
+        updateDirection();
+    }
+
+    private void updateDirection() {
+        toolbar.setSubtitle(direction.getName(this));
         Glide.with(this)
-                .load(area.getFile(this, orientation))
+                .load(area.getFile(this, direction))
                 .into(imageView);
+
+        invalidateOptionsMenu();
     }
 }

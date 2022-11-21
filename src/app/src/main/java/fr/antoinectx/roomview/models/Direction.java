@@ -4,18 +4,18 @@ import android.content.Context;
 
 import fr.antoinectx.roomview.R;
 
-public enum Orientation {
+public enum Direction {
     NORTH,
     EAST,
     SOUTH,
     WEST;
 
     /**
-     * Get the name of the orientation in the current language
+     * Get the name of the direction in the current language
      *
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity),
-     * @return The name of the orientation
+     * @return The name of the direction
      */
     public String getName(Context context) {
         switch (this) {
@@ -33,12 +33,12 @@ public enum Orientation {
     }
 
     /**
-     * Get the next orientation in the trigonometric direction (turn left, counter-clockwise)
+     * Get the next direction in the trigonometric direction (turn left, counter-clockwise)
      * (NORTH -> WEST -> SOUTH -> EAST -> NORTH)
      *
-     * @return The next orientation
+     * @return The next direction
      */
-    public Orientation getLeft() {
+    public Direction getLeft() {
         switch (this) {
             case NORTH:
                 return WEST;
@@ -53,12 +53,12 @@ public enum Orientation {
     }
 
     /**
-     * Get the previous orientation in the trigonometric direction (turn right, clockwise)
+     * Get the previous direction in the trigonometric direction (turn right, clockwise)
      * (NORTH -> EAST -> SOUTH -> WEST -> NORTH)
      *
-     * @return The previous orientation
+     * @return The previous direction
      */
-    public Orientation getRight() {
+    public Direction getRight() {
         switch (this) {
             case NORTH:
                 return EAST;

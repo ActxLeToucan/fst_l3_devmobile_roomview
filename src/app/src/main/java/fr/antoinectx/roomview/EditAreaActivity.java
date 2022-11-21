@@ -17,8 +17,8 @@ import java.io.File;
 
 import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
-import fr.antoinectx.roomview.models.Orientation;
-import fr.antoinectx.roomview.models.OrientationPhoto;
+import fr.antoinectx.roomview.models.Direction;
+import fr.antoinectx.roomview.models.DirectionPhoto;
 
 public class EditAreaActivity extends MyActivity {
     private Building building;
@@ -35,16 +35,16 @@ public class EditAreaActivity extends MyActivity {
                 if (result.getResultCode() == RESULT_OK) {
                     Intent data = result.getData();
                     if (data != null) {
-                        Orientation orientation = Orientation.valueOf(data.getStringExtra("orientation"));
+                        Direction direction = Direction.valueOf(data.getStringExtra("direction"));
                         String path = data.getStringExtra("path");
                         if (path != null && !path.isEmpty()) {
                             File file = new File(path);
                             if (file.exists()) {
                                 String timestamp = String.valueOf(System.currentTimeMillis()); // to invalidate cache
-                                File newFile = new File(area.getDirectory(this), orientation.getName(this) + '_' + timestamp + ".jpg");
+                                File newFile = new File(area.getDirectory(this), direction.getName(this) + '_' + timestamp + ".jpg");
                                 file.renameTo(newFile);
 
-                                area.setOrientationPhoto(orientation, new OrientationPhoto(newFile.getName()));
+                                area.setDirectionPhoto(direction, new DirectionPhoto(newFile.getName()));
 
                                 applyPhotos();
                             }
@@ -89,28 +89,28 @@ public class EditAreaActivity extends MyActivity {
         north = findViewById(R.id.imageButton_north);
         north.setOnClickListener(v -> {
                     Intent intent = new Intent(this, CameraActivity.class);
-                    intent.putExtra("orientation", Orientation.NORTH.toString());
+                    intent.putExtra("direction", Direction.NORTH.toString());
                     takePhotoLauncher.launch(intent);
                 }
         );
         east = findViewById(R.id.imageButton_east);
         east.setOnClickListener(v -> {
                     Intent intent = new Intent(this, CameraActivity.class);
-                    intent.putExtra("orientation", Orientation.EAST.toString());
+                    intent.putExtra("direction", Direction.EAST.toString());
                     takePhotoLauncher.launch(intent);
                 }
         );
         south = findViewById(R.id.imageButton_south);
         south.setOnClickListener(v -> {
                     Intent intent = new Intent(this, CameraActivity.class);
-                    intent.putExtra("orientation", Orientation.SOUTH.toString());
+                    intent.putExtra("direction", Direction.SOUTH.toString());
                     takePhotoLauncher.launch(intent);
                 }
         );
         west = findViewById(R.id.imageButton_west);
         west.setOnClickListener(v -> {
                     Intent intent = new Intent(this, CameraActivity.class);
-                    intent.putExtra("orientation", Orientation.WEST.toString());
+                    intent.putExtra("direction", Direction.WEST.toString());
                     takePhotoLauncher.launch(intent);
                 }
         );
@@ -129,23 +129,23 @@ public class EditAreaActivity extends MyActivity {
         super.onDestroy();
         // photos
         if (!saved && oldArea != null) {
-            File oldNorth = oldArea.getFile(this, Orientation.NORTH);
-            File newNorth = area.getFile(this, Orientation.NORTH);
+            File oldNorth = oldArea.getFile(this, Direction.NORTH);
+            File newNorth = area.getFile(this, Direction.NORTH);
             if (oldNorth != null && newNorth != null && !oldNorth.getName().equals(newNorth.getName())) {
                 newNorth.delete();
             }
-            File oldEast = oldArea.getFile(this, Orientation.EAST);
-            File newEast = area.getFile(this, Orientation.EAST);
+            File oldEast = oldArea.getFile(this, Direction.EAST);
+            File newEast = area.getFile(this, Direction.EAST);
             if (oldEast != null && newEast != null && !oldEast.getName().equals(newEast.getName())) {
                 newEast.delete();
             }
-            File oldSouth = oldArea.getFile(this, Orientation.SOUTH);
-            File newSouth = area.getFile(this, Orientation.SOUTH);
+            File oldSouth = oldArea.getFile(this, Direction.SOUTH);
+            File newSouth = area.getFile(this, Direction.SOUTH);
             if (oldSouth != null && newSouth != null && !oldSouth.getName().equals(newSouth.getName())) {
                 newSouth.delete();
             }
-            File oldWest = oldArea.getFile(this, Orientation.WEST);
-            File newWest = area.getFile(this, Orientation.WEST);
+            File oldWest = oldArea.getFile(this, Direction.WEST);
+            File newWest = area.getFile(this, Direction.WEST);
             if (oldWest != null && newWest != null && !oldWest.getName().equals(newWest.getName())) {
                 newWest.delete();
             }
@@ -158,19 +158,19 @@ public class EditAreaActivity extends MyActivity {
 
     private void applyPhotos() {
         Glide.with(this)
-                .load(area.getFile(this, Orientation.NORTH))
+                .load(area.getFile(this, Direction.NORTH))
                 .placeholder(R.drawable.ic_baseline_add_a_photo_24).fitCenter()
                 .into(north);
         Glide.with(this)
-                .load(area.getFile(this, Orientation.EAST))
+                .load(area.getFile(this, Direction.EAST))
                 .placeholder(R.drawable.ic_baseline_add_a_photo_24).fitCenter()
                 .into(east);
         Glide.with(this)
-                .load(area.getFile(this, Orientation.SOUTH))
+                .load(area.getFile(this, Direction.SOUTH))
                 .placeholder(R.drawable.ic_baseline_add_a_photo_24).fitCenter()
                 .into(south);
         Glide.with(this)
-                .load(area.getFile(this, Orientation.WEST))
+                .load(area.getFile(this, Direction.WEST))
                 .placeholder(R.drawable.ic_baseline_add_a_photo_24).fitCenter()
                 .into(west);
     }
@@ -184,23 +184,23 @@ public class EditAreaActivity extends MyActivity {
 
         // photos
         if (oldArea != null) {
-            File oldNorth = oldArea.getFile(this, Orientation.NORTH);
-            File newNorth = area.getFile(this, Orientation.NORTH);
+            File oldNorth = oldArea.getFile(this, Direction.NORTH);
+            File newNorth = area.getFile(this, Direction.NORTH);
             if (oldNorth != null && newNorth != null && !oldNorth.getName().equals(newNorth.getName())) {
                 oldNorth.delete();
             }
-            File oldEast = oldArea.getFile(this, Orientation.EAST);
-            File newEast = area.getFile(this, Orientation.EAST);
+            File oldEast = oldArea.getFile(this, Direction.EAST);
+            File newEast = area.getFile(this, Direction.EAST);
             if (oldEast != null && newEast != null && !oldEast.getName().equals(newEast.getName())) {
                 oldEast.delete();
             }
-            File oldSouth = oldArea.getFile(this, Orientation.SOUTH);
-            File newSouth = area.getFile(this, Orientation.SOUTH);
+            File oldSouth = oldArea.getFile(this, Direction.SOUTH);
+            File newSouth = area.getFile(this, Direction.SOUTH);
             if (oldSouth != null && newSouth != null && !oldSouth.getName().equals(newSouth.getName())) {
                 oldSouth.delete();
             }
-            File oldWest = oldArea.getFile(this, Orientation.WEST);
-            File newWest = area.getFile(this, Orientation.WEST);
+            File oldWest = oldArea.getFile(this, Direction.WEST);
+            File newWest = area.getFile(this, Direction.WEST);
             if (oldWest != null && newWest != null && !oldWest.getName().equals(newWest.getName())) {
                 oldWest.delete();
             }

@@ -137,41 +137,11 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
             Building building = new Building(name, description);
             building.save(this);
             update();
-            recyclerView.scrollToPosition(buildings.size() - 1);
+            recyclerView.smoothScrollToPosition(buildings.size() - 1);
         });
 
         builder.setNegativeButton(getString(R.string.action_cancel), (dialogInterface, which) -> dialogInterface.cancel());
 
         builder.show();
-/*
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
-        LocalDateTime now = LocalDateTime.now();
-
-        Building bat = new Building(getString(R.string.new_building), dateFormatter.format(now));
-        Area area1 = new Area("Zone 1", new Date());
-        Area area2 = new Area("Zone 2", new Date());
-
-        OrientationPhoto orientationPhoto1Sud = new OrientationPhoto("");
-        OrientationPhoto orientationPhoto2Nord = new OrientationPhoto("");
-
-        orientationPhoto1Sud.getPassages().add(new Passage(0, 0, 0, 0, area2));
-        orientationPhoto2Nord.getPassages().add(new Passage(0, 0, 0, 0, area1));
-
-        area1.setNorth(new OrientationPhoto(""));
-        area1.setEast(new OrientationPhoto(""));
-        area1.setSouth(orientationPhoto1Sud);
-        area1.setWest(new OrientationPhoto(""));
-        area2.setNorth(orientationPhoto2Nord);
-        area2.setEast(new OrientationPhoto(""));
-        area2.setSouth(new OrientationPhoto(""));
-        area2.setWest(new OrientationPhoto(""));
-
-        bat.getAreas().add(area1);
-        bat.getAreas().add(area2);
-        bat.save(this);
-
-        search.setText("");
-        update();
-        recyclerView.smoothScrollToPosition(buildings.size() - 1);*/
     }
 }

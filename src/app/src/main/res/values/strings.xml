@@ -42,4 +42,5 @@
     <string name="turnLeft">Turn left</string>
     <string name="turnRight">Turn right</string>
     <string name="area_photo">Photo of the area</string>
+    <string name="no_photo">No photo</string>
 </resources>
