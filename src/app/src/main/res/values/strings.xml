@@ -43,4 +43,7 @@
     <string name="turnRight">Turn right</string>
     <string name="area_photo">Photo of the area</string>
     <string name="no_photo">No photo</string>
+    <string name="passagesActivity_invalidSelection_title">Invalid selection</string>
+    <string name="passagesActivity_invalidSelection_message">The passage must be on the image.</string>
+    <string name="other_side">Other side</string>
 </resources>

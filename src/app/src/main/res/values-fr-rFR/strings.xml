@@ -18,7 +18,7 @@
     <string name="building_photo">Photo du bâtiment</string>
     <string name="add_photo">Ajouter une photo</string>
     <string name="takePhoto">Prendre une photo</string>
-    <string name="fromGallery">Choisir depuis la gallerie</string>
+    <string name="fromGallery">Choisir depuis la galerie</string>
     <string name="action_cancel">Annuler</string>
     <string name="area_new">Nouvelle zone</string>
     <string name="building_info">Informations du bâtiment</string>
@@ -43,4 +43,7 @@
     <string name="turnRight">Tourner à droite</string>
     <string name="area_photo">Photo de la zone</string>
     <string name="no_photo">Pas de photo</string>
+    <string name="passagesActivity_invalidSelection_title">Sélection invalide</string>
+    <string name="passagesActivity_invalidSelection_message">Le passage doit se trouver sur l\'image.</string>
+    <string name="other_side">Autre côté</string>
 </resources>

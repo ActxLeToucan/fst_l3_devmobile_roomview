@@ -203,4 +203,10 @@ public class Area extends ManipulateFiles {
         System.arraycopy(area.directionPhotos, 0, this.directionPhotos, 0, this.directionPhotos.length);
         return true;
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

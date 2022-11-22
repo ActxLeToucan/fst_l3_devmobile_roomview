@@ -59,8 +59,20 @@ public class Passage {
         return autreCote != null ? autreCote.getId() : autreCoteId;
     }
 
-    public double[] getCoordonnees() {
-        return new double[]{x1, y1, x2, y2};
+    public double getX1() {
+        return x1;
+    }
+
+    public double getY1() {
+        return y1;
+    }
+
+    public double getX2() {
+        return x2;
+    }
+
+    public double getY2() {
+        return y2;
     }
 
     @Nullable
