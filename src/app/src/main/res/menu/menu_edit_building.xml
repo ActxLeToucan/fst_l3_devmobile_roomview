@@ -4,7 +4,7 @@
     <item
         android:id="@+id/menu_edit_building_editSave"
         android:icon="@drawable/ic_baseline_edit_24"
-        android:onClick="editSaveBuilding"
+        android:onClick="editOrSaveBuilding"
         android:title="@string/action_save"
         actionbarcompat_mse:showAsAction="always" />
 </menu>

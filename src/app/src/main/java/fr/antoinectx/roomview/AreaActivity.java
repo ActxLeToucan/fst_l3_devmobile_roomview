@@ -100,7 +100,7 @@ public class AreaActivity extends MyActivity {
                 .show();
     }
 
-    public void passages(MenuItem item) {
+    public void editPassages(MenuItem item) {
         Intent intent = new Intent(this, PassagesActivity.class);
         intent.putExtra("building", building.toJSON().toString());
         intent.putExtra("area", area.toJSON().toString());

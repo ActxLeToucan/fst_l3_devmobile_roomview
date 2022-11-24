@@ -123,7 +123,7 @@ public class EditBuildingActivity extends MyActivity {
         }
     }
 
-    public void editSaveBuilding(MenuItem item) {
+    public void editOrSaveBuilding(MenuItem item) {
         if (!editMode) {
             applyMode(true);
             return;
