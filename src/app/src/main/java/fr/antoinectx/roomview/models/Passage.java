@@ -4,7 +4,10 @@ import androidx.annotation.Nullable;
 
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 public class Passage {
+    private String id;
     private final double x1;
     private final double y1;
     private final double x2;
@@ -17,7 +20,8 @@ public class Passage {
     @Nullable
     private String autreCoteId;
 
-    private Passage(double x1, double y1, double x2, double y2, @Nullable String autreCoteId) {
+    private Passage(String id, double x1, double y1, double x2, double y2, @Nullable String autreCoteId) {
+        this.id = id;
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -27,6 +31,7 @@ public class Passage {
     }
 
     public Passage(double x1, double y1, double x2, double y2, @Nullable Area autreCote) {
+        this.id = UUID.randomUUID().toString();
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -43,6 +48,7 @@ public class Passage {
     public static Passage fromJSON(JSONObject json) {
         try {
             return new Passage(
+                    json.getString("id"),
                     json.getDouble("x1"),
                     json.getDouble("y1"),
                     json.getDouble("x2"),
@@ -53,6 +59,10 @@ public class Passage {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getAutreCoteId() {
@@ -73,6 +83,14 @@ public class Passage {
 
     public double getY2() {
         return y2;
+    }
+
+    public boolean contains(double x, double y) {
+        double minX = Math.min(x1, x2);
+        double maxX = Math.max(x1, x2);
+        double minY = Math.min(y1, y2);
+        double maxY = Math.max(y1, y2);
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
 
     @Nullable
@@ -97,6 +115,7 @@ public class Passage {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         try {
+            json.put("id", id);
             json.put("x1", x1);
             json.put("y1", y1);
             json.put("x2", x2);
