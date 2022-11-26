@@ -98,7 +98,7 @@ public class Passage {
         return autreCote;
     }
 
-    public void setAutreCote(@Nullable Area autreCote) {
+    public void setAutreCote(Area autreCote) {
         this.autreCote = autreCote;
         this.autreCoteId = null;
     }

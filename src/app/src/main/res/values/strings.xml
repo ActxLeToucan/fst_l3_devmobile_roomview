@@ -46,7 +46,7 @@
     <string name="passagesActivity_invalidSelection_title">Invalid selection</string>
     <string name="passagesActivity_invalidSelection_message">The passage must be on the image.</string>
     <string name="other_side">Other side</string>
-    <string name="passagesActivity_selectPassage_title">Modify the passage that goes to…</string>
+    <string name="passagesView_selectPassage_title">Select the passage that goes to…</string>
     <string name="passagesActivity_selectAction_title">What to do with this passage</string>
     <string name="passagesActivity_deletePassage_message">You are about to delete this passage. This action is irreversible. Do you wish to continue?</string>
 </resources>

@@ -12,22 +12,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
-    <ImageView
-        android:id="@+id/passagesActivity_imageView"
+    <include
+        android:id="@+id/passagesView"
+        layout="@layout/passages_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/area_photo"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/materialToolbar" />
-
-    <SurfaceView
-        android:id="@+id/passagesActivity_surfaceView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/passagesActivity_imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialToolbar" />
