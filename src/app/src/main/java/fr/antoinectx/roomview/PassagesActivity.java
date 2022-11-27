@@ -201,6 +201,9 @@ public class PassagesActivity extends PassageViewActivity {
         builder.setView(layout);
         builder.setOnCancelListener(dialogInterface -> {
             draw(surfaceHolder);
+            if (beforeDismissListener != null) {
+                beforeDismissListener.beforeDismiss();
+            }
         });
         AlertDialog dialog = builder.create();
 

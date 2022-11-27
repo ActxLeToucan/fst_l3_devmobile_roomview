@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -85,6 +86,7 @@ public abstract class PassageViewActivity extends MyActivity {
     private int previousNumberOfPointers = 0;
     private double[] previousSelection = new double[4];
     private boolean allowSimpleClick = true;
+    private Drawable resource;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,18 +142,12 @@ public abstract class PassageViewActivity extends MyActivity {
         }
     }
 
-    protected void drawWithResource(@NonNull SurfaceHolder surfaceHolder, Drawable resource, List<Passage> passages, int color) {
-        Canvas canvas = surfaceHolder.lockCanvas();
-        if (canvas != null) {
-            drawPassages(canvas, resource, passages, color);
-            surfaceHolder.unlockCanvasAndPost(canvas);
-        } else {
-            Log.e("PassagesActivity", "Cannot draw canvas");
-        }
-    }
-
-    private void drawPassages(Canvas canvas, Drawable resource, List<Passage> passages, int color) {
+    private void drawPassages(@NonNull Canvas canvas, List<Passage> passages, int color) {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        if (resource == null) {
+            return;
+        }
 
         int imageWidth = resource.getIntrinsicWidth();
         int imageHeight = resource.getIntrinsicHeight();
@@ -177,32 +173,14 @@ public abstract class PassageViewActivity extends MyActivity {
     }
 
     /**
-     * Draw the passages on the canvas
-     *
-     * @param canvas   the canvas to draw on
-     * @param passages the passages to draw
-     * @param color    the color to draw the passages
-     */
-    private void drawPassages(@NonNull Canvas canvas, @NonNull List<Passage> passages, int color) {
-        drawPassages(canvas, imageView.getDrawable(), passages, color);
-    }
-
-    /**
      * Set the image in the image view and let you define what to do on some events
      * @param file The file to display
      * @param onTouchListner The listener to call on the events
      */
     protected void applyImage(File file, OnTouchListner onTouchListner) {
-        imageView.setOnTouchListener((view, motionEvent) -> false);
-        SurfaceView surfaceView = findViewById(R.id.passagesView_surfaceView);
-        surfaceView.setZOrderOnTop(true);
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        Canvas canvas = surfaceHolder.lockCanvas();
-        if (canvas != null) {
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            surfaceHolder.unlockCanvasAndPost(canvas);
-        }
+        imageView.setOnTouchListener(null);
+        resource = null;
+
         Glide.with(this)
                 .load(file)
                 .listener(new RequestListener<Drawable>() {
@@ -218,22 +196,44 @@ public abstract class PassageViewActivity extends MyActivity {
                     }
                 })
                 .into(imageView);
-    }
+    };
+
+
 
     /**
      * Initialize the surface view to draw the passages
      */
     @SuppressLint("ClickableViewAccessibility")
     public void initSurface(OnTouchListner onTouchListner, Drawable resource) {
+        this.resource = resource;
+
         SurfaceView surfaceView = findViewById(R.id.passagesView_surfaceView);
+        surfaceView.setVisibility(View.GONE); // to force the surface view to be created
         surfaceView.setZOrderOnTop(true);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        drawWithResource(surfaceHolder, resource, area.getDirectionPhoto(direction).getPassages(), Color.BLUE);
 
-        imageView.setOnTouchListener((view, motionEvent) -> {
-            int imageWidth = resource.getIntrinsicWidth();
-            int imageHeight = resource.getIntrinsicHeight();
+        surfaceHolder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                draw(holder);
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                draw(holder);
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+            }
+        });
+        surfaceView.setVisibility(View.VISIBLE);
+
+
+        imageView.setOnTouchListener((v, motionEvent) -> {
+            int imageWidth = this.resource.getIntrinsicWidth();
+            int imageHeight = this.resource.getIntrinsicHeight();
             int viewWidth = imageView.getWidth();
             int viewHeight = imageView.getHeight();
 
@@ -306,7 +306,7 @@ public abstract class PassageViewActivity extends MyActivity {
 
                     Log.d("PassagesView", "Click on " + xRel + " " + yRel + " " + passages.size());
                     if (passages.size() > 1) {
-                        drawWithResource(surfaceHolder, resource, passages, Color.RED);
+                        draw(surfaceHolder, passages);
                         CharSequence[] items = passages.stream()
                                 .map(p -> p.getAutreCote().getName())
                                 .toArray(CharSequence[]::new);
@@ -320,7 +320,7 @@ public abstract class PassageViewActivity extends MyActivity {
                     } else if (passages.size() == 1) {
                         onTouchListner.onPassageClick(surfaceHolder, this, passages.get(0));
                     } else {
-                        drawWithResource(surfaceHolder, resource, area.getDirectionPhoto(direction).getPassages(), Color.RED);
+                        draw(surfaceHolder);
                     }
                 }
 
