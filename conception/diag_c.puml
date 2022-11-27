@@ -1,48 +1,86 @@
 @startuml diag_c
-title Diagramme de classe
+title Diagramme de classe : Modèles
 
-class Batiment {
-    - String nom
-    + creerZone(): Zone
-    + getWeather(): Meteo
+abstract class ManipulateFiles {
+    # deleteRecursive(File): void
 }
 
-class Zone {
-    - String nom
-    - Date dateCapture
-    + prendrePhotos()
+class Building {
+    - id: String
+    - name: String
+    - description: String
+    - photoPath: String
+    - Building(String, String, String, List<Area>, String)
+    + Building(String, String)
+    + static loadAll(Context): List<Building>
+    + static load(Context, String): Building
+    + static fromJSONString(String): Building
+    + static fromJSON(JSONObject): Building
+    + reload(Context): boolean
+    + toJSON(): JSONObject
+    + save(Context): void
+    + getPhotoFile(Context): File
+    + delete(Context): void
+    + getDirectory(Context): File
+}
+
+class Area {
+    - id: String
+    - buildingId: String
+    - name: String
+    - Area(String, String, String, DirectionPhoto[])
+    + Area(String, String)
+    + static fromJSONString(String): Area
+    + static fromJSON(JSONObject): Area
+    + reloadFromBuilding(Building): boolean
+    + toJSON(): JSONObject
+    + getDirectory(Context): File
+    + getDirectionPhoto(Direction): DirectionPhoto
+    + setDirectionPhoto(Direction, DirectionPhoto): void
+    + getFile(Context, Direction): File
+    + delete(Contedxt): void
 }
 note left: Une zone peut représenter\nune pièce ou un sous-espace\nd'une pièce (cas pour un couloir\nou une grande pièce).
 
-class Meteo {
-    - String description
-    - String iconUrl
-    - double temp
-    - double tempRessentie
-    - double pression
-    - double humidite
-    - double vVent
+enum Direction {
+    NORTH
+    EAST
+    SOUTH
+    WEST
+    + getName(Context): String
+    + getLeft(): Direction
+    + getRight(): Direction
 }
 
-class Photo {
-    + dessinerPassage()
-    + detruirePassage(Passage p)
+class DirectionPhoto {
+    - filename: String
+    - DirectionPhoto(List<Passage>, String)
+    + DirectionPhoto(String)
+    + static fromJSON(JSONObject): DirectionPhoto
+    + toJSON(): JSONObject
 }
 
 class Passage {
-    - int x1
-    - int y1
-    - int x2
-    - int y2
-    + relier(Zone autreCote)
+    - id: String
+    - x1: double
+    - y1: double
+    - x2: double
+    - y2: double
+    - autreCoteId: String
+    - Passage(String, double, double, double, double, String)
+    + Passage(String, double, double, double, double, Area)
+    + static fromJSON(JSONObject): Passage
+    + toJSON(): JSONObject
+    + getAutreCote(List<Area>): Area
+    + contains(double, double): boolean
 }
 note left: Un passage peut représenter\nn'importe quelle zone physique.\nUne porte, un escalier, ou encore\ndu vide pour avancer dans\nune même pièce.
 
+Building -left-|> ManipulateFiles
+Area --|> ManipulateFiles
 
-Batiment "1" --> "*" Zone
-Zone "1" --> "4" Photo
-Photo "1" --> "*" Passage
-Passage "*" --> "1" Zone : autreCote
-Zone "1" --> "1" Meteo
+Building "1" --> "*" Area : areas: List<Area>
+Area "1" --> "4" DirectionPhoto : directionPhotos: DirectionPhoto[4]
+DirectionPhoto "1" --> "*" Passage : passages: List<Passage>
 
 @enduml
