@@ -1,42 +1,38 @@
 package fr.antoinectx.roomview.models;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Passage {
-    private String id;
+    private final String id;
     private final double x1;
     private final double y1;
     private final double x2;
     private final double y2;
-    @Nullable
-    private Area autreCote;
-    /**
-     * Used when loading a passage from a file
-     */
-    @Nullable
+    @NonNull
     private String autreCoteId;
 
-    private Passage(String id, double x1, double y1, double x2, double y2, @Nullable String autreCoteId) {
+    private Passage(String id, double x1, double y1, double x2, double y2, @NonNull String autreCoteId) {
         this.id = id;
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.autreCote = null;
         this.autreCoteId = autreCoteId;
     }
 
-    public Passage(double x1, double y1, double x2, double y2, @Nullable Area autreCote) {
+    public Passage(double x1, double y1, double x2, double y2, @NonNull Area autreCote) {
         this.id = UUID.randomUUID().toString();
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.autreCote = autreCote;
+        this.autreCoteId = autreCote.getId();
     }
 
     /**
@@ -53,7 +49,7 @@ public class Passage {
                     json.getDouble("y1"),
                     json.getDouble("x2"),
                     json.getDouble("y2"),
-                    !json.isNull("autreCote") ? json.getString("autreCote") : null
+                    json.getString("autreCote")
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,8 +61,19 @@ public class Passage {
         return id;
     }
 
+    @NonNull
     public String getAutreCoteId() {
-        return autreCote != null ? autreCote.getId() : autreCoteId;
+        return autreCoteId;
+    }
+
+    @Nullable
+    public Area getAutreCote(@NonNull List<Area> areas) {
+        for (Area area : areas) {
+            if (area.getId().equals(autreCoteId)) {
+                return area;
+            }
+        }
+        return null;
     }
 
     public double getX1() {
@@ -93,18 +100,8 @@ public class Passage {
         return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
 
-    @Nullable
-    public Area getAutreCote() {
-        return autreCote;
-    }
-
-    public void setAutreCote(Area autreCote) {
-        this.autreCote = autreCote;
-        this.autreCoteId = null;
-    }
-
-    public boolean estValide() {
-        return autreCote != null;
+    public void setAutreCote(@NonNull Area autreCote) {
+        this.autreCoteId = autreCote.getId();
     }
 
     /**
@@ -120,7 +117,7 @@ public class Passage {
             json.put("y1", y1);
             json.put("x2", x2);
             json.put("y2", y2);
-            json.put("autreCote", autreCote == null ? JSONObject.NULL : autreCote.getId());
+            json.put("autreCote", autreCoteId);
         } catch (Exception e) {
             e.printStackTrace();
         }

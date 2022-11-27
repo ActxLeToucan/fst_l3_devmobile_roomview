@@ -81,7 +81,7 @@ public class AreaActivity extends PassageViewActivity {
                     building.getAreas().removeIf(a -> a.getId().equals(area.getId()));
                     building.getAreas().forEach(a -> Arrays.asList(a.getDirectionPhotos()).forEach(p -> {
                         if (p != null && p.getPassages() != null) {
-                            p.getPassages().removeIf(passage -> passage.getAutreCote() == null || passage.getAutreCote().getId().equals(area.getId()));
+                            p.getPassages().removeIf(passage -> passage.getAutreCoteId().equals(area.getId()));
                         }
                     }));
                     building.save(this);
@@ -118,7 +118,7 @@ public class AreaActivity extends PassageViewActivity {
 
             @Override
             public void onPassageClick(SurfaceHolder surfaceHolder, Context parent, Passage passage) {
-                area = passage.getAutreCote();
+                area = passage.getAutreCote(building.getAreas());
                 update();
             }
         });

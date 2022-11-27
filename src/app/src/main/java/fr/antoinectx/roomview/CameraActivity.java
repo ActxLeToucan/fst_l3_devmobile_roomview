@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ScaleGestureDetector;
+import android.view.Surface;
 
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
@@ -73,7 +74,8 @@ public class CameraActivity extends MyActivity {
 
         // Set up the capture use case to allow users to take photos
         imageCapture = new ImageCapture.Builder()
-                .setTargetRotation(previewView.getDisplay().getRotation())
+                .setTargetRotation(previewView.getDisplay() != null
+                        ? previewView.getDisplay().getRotation() : Surface.ROTATION_0)
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .build();
 

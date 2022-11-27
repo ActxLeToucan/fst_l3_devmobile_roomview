@@ -42,27 +42,30 @@ import fr.antoinectx.roomview.models.Passage;
 interface OnTouchListner {
     /**
      * Called when the user selects an area on the image
-     * @param surfaceHolder The surface holder to draw on
-     * @param parent Parent activity if you need the context
-     * @param imageSelection The selection on the image (relative position)
+     *
+     * @param surfaceHolder   The surface holder to draw on
+     * @param parent          Parent activity if you need the context
+     * @param imageSelection  The selection on the image (relative position)
      * @param screenSelection The selection on the screen (absolute position)
      */
     void onSelection(SurfaceHolder surfaceHolder, Context parent, double[] imageSelection, double[] screenSelection);
 
     /**
      * Called when the user cancels the selection
-     * @param surfaceHolder The surface holder to draw on
-     * @param parent Parent activity if you need the context
+     *
+     * @param surfaceHolder  The surface holder to draw on
+     * @param parent         Parent activity if you need the context
      * @param imageSelection The selection on the image (relative position)
-     * @param clickEnabler Must be called to re-enable the passage click listener
+     * @param clickEnabler   Must be called to re-enable the passage click listener
      */
     void afterSelection(SurfaceHolder surfaceHolder, Context parent, double[] imageSelection, SimpleClickEnabler clickEnabler);
 
     /**
      * Called when the user clicks on a passage
+     *
      * @param surfaceHolder The surface holder to draw on
-     * @param parent Parent activity if you need the context
-     * @param passage The passage that was clicked
+     * @param parent        Parent activity if you need the context
+     * @param passage       The passage that was clicked
      */
     void onPassageClick(SurfaceHolder surfaceHolder, Context parent, Passage passage);
 }
@@ -108,23 +111,26 @@ public abstract class PassageViewActivity extends MyActivity {
      * @see #draw(SurfaceHolder, List, int)
      */
     protected void draw(@NonNull SurfaceHolder surfaceHolder) {
-        draw(surfaceHolder, area.getDirectionPhoto(direction).getPassages());
+        List<Passage> passages = area.getDirectionPhoto(direction) == null
+                ? null
+                : area.getDirectionPhoto(direction).getPassages();
+        draw(surfaceHolder, passages);
     }
 
     /**
-     * Draw the passages on the surface
+     * Draw a list of passages on the surface with the default color
      *
      * @param surfaceHolder The surface holder to draw on
      * @param passages      The passages to draw
      * @see #draw(SurfaceHolder)
      * @see #draw(SurfaceHolder, List, int)
      */
-    protected void draw(@NonNull SurfaceHolder surfaceHolder, List<Passage> passages) {
+    protected void draw(@NonNull SurfaceHolder surfaceHolder, @Nullable List<Passage> passages) {
         draw(surfaceHolder, passages, Color.BLUE);
     }
 
     /**
-     * Draw the passages on the surface
+     * Draw a list of passages on the surface with a specific color
      *
      * @param surfaceHolder The surface holder to draw on
      * @param passages      The passages to draw
@@ -132,7 +138,7 @@ public abstract class PassageViewActivity extends MyActivity {
      * @see #draw(SurfaceHolder)
      * @see #draw(SurfaceHolder, List)
      */
-    protected void draw(@NonNull SurfaceHolder surfaceHolder, List<Passage> passages, int color) {
+    protected void draw(@NonNull SurfaceHolder surfaceHolder, @Nullable List<Passage> passages, int color) {
         Canvas canvas = surfaceHolder.lockCanvas();
         if (canvas != null) {
             drawPassages(canvas, passages, color);
@@ -142,10 +148,17 @@ public abstract class PassageViewActivity extends MyActivity {
         }
     }
 
-    private void drawPassages(@NonNull Canvas canvas, List<Passage> passages, int color) {
+    /**
+     * Draw a list of passages on the canvas with a specific color on a canvas
+     *
+     * @param canvas   The canvas to draw on
+     * @param passages The passages to draw
+     * @param color    The color to draw the passages
+     */
+    private void drawPassages(@NonNull Canvas canvas, @Nullable List<Passage> passages, int color) {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
-        if (resource == null) {
+        if (resource == null || passages == null) {
             return;
         }
 
@@ -174,7 +187,8 @@ public abstract class PassageViewActivity extends MyActivity {
 
     /**
      * Set the image in the image view and let you define what to do on some events
-     * @param file The file to display
+     *
+     * @param file           The file to display
      * @param onTouchListner The listener to call on the events
      */
     protected void applyImage(File file, OnTouchListner onTouchListner) {
@@ -186,6 +200,7 @@ public abstract class PassageViewActivity extends MyActivity {
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        initSurface(null, null);
                         return false;
                     }
 
@@ -196,15 +211,13 @@ public abstract class PassageViewActivity extends MyActivity {
                     }
                 })
                 .into(imageView);
-    };
-
-
+    }
 
     /**
      * Initialize the surface view to draw the passages
      */
     @SuppressLint("ClickableViewAccessibility")
-    public void initSurface(OnTouchListner onTouchListner, Drawable resource) {
+    public void initSurface(@Nullable OnTouchListner onTouchListner, @Nullable Drawable resource) {
         this.resource = resource;
 
         SurfaceView surfaceView = findViewById(R.id.passagesView_surfaceView);
@@ -229,6 +242,11 @@ public abstract class PassageViewActivity extends MyActivity {
             }
         });
         surfaceView.setVisibility(View.VISIBLE);
+
+
+        if (onTouchListner == null) {
+            return;
+        }
 
 
         imageView.setOnTouchListener((v, motionEvent) -> {
@@ -298,17 +316,14 @@ public abstract class PassageViewActivity extends MyActivity {
                     double finalXRel = xRel;
                     double finalYRel = yRel;
 
-                    Log.d("PassagesView", area.getDirectionPhoto(direction).getPassages().size() + " passages");
-                    Log.d("PassagesView", (int) area.getDirectionPhoto(direction).getPassages().stream().filter(p -> p.getAutreCote() != null).count() + " passages non null");
                     List<Passage> passages = area.getDirectionPhoto(direction).getPassages().stream()
-                            .filter(p -> p.contains(finalXRel, finalYRel) && p.getAutreCote() != null)
+                            .filter(p -> p.contains(finalXRel, finalYRel))
                             .collect(Collectors.toList());
 
-                    Log.d("PassagesView", "Click on " + xRel + " " + yRel + " " + passages.size());
                     if (passages.size() > 1) {
                         draw(surfaceHolder, passages);
                         CharSequence[] items = passages.stream()
-                                .map(p -> p.getAutreCote().getName())
+                                .map(p -> p.getAutreCote(building.getAreas()).getName())
                                 .toArray(CharSequence[]::new);
                         new AlertDialog.Builder(this)
                                 .setTitle(R.string.passagesView_selectPassage_title)

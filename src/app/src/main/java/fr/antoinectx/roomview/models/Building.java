@@ -153,19 +153,6 @@ public class Building extends ManipulateFiles {
                 areas.add(Area.fromJSON(json.getJSONArray("areas").getJSONObject(i)));
             }
 
-            // when all zones are loaded, we can set the autreCote of each passage in zone's photo from json
-            for (Area area : areas) {
-                for (DirectionPhoto directionPhoto : area.getDirectionPhotos()) {
-                    if (directionPhoto != null)
-                        for (Passage passage : directionPhoto.getPassages()) {
-                            passage.setAutreCote(areas.stream()
-                                    .filter(z -> z.getId().equals(passage.getAutreCoteId()))
-                                    .findFirst()
-                                    .orElse(null));
-                        }
-                }
-            }
-
             return new Building(
                     json.getString("id"),
                     json.getString("name"),
