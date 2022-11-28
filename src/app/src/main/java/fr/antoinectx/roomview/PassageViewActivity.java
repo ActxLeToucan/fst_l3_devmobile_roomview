@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -90,6 +89,7 @@ public abstract class PassageViewActivity extends MyActivity {
     private double[] previousSelection = new double[4];
     private boolean allowSimpleClick = true;
     private Drawable resource;
+    private SurfaceHolder sholder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -195,6 +195,14 @@ public abstract class PassageViewActivity extends MyActivity {
         imageView.setOnTouchListener(null);
         resource = null;
 
+        if (sholder.getSurface().isValid()) {
+            Canvas canvas = sholder.lockCanvas();
+            if (canvas != null) {
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                sholder.unlockCanvasAndPost(canvas);
+            }
+        }
+
         Glide.with(this)
                 .load(file)
                 .listener(new RequestListener<Drawable>() {
@@ -221,7 +229,6 @@ public abstract class PassageViewActivity extends MyActivity {
         this.resource = resource;
 
         SurfaceView surfaceView = findViewById(R.id.passagesView_surfaceView);
-        surfaceView.setVisibility(View.GONE); // to force the surface view to be created
         surfaceView.setZOrderOnTop(true);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
@@ -241,11 +248,17 @@ public abstract class PassageViewActivity extends MyActivity {
             public void surfaceDestroyed(SurfaceHolder holder) {
             }
         });
-        surfaceView.setVisibility(View.VISIBLE);
 
 
         if (onTouchListner == null) {
             return;
+        }
+
+        if (sholder == null) {
+            sholder = surfaceHolder;
+        }
+        if (!sholder.isCreating() && sholder.getSurface().isValid()) {
+            draw(sholder);
         }
 
 
@@ -289,7 +302,7 @@ public abstract class PassageViewActivity extends MyActivity {
                 previousSelection[3] = y2Rel;
 
                 onTouchListner.onSelection(
-                        surfaceHolder,
+                        sholder,
                         this,
                         new double[]{x1Rel, y1Rel, x2Rel, y2Rel},
                         new double[]{
@@ -300,7 +313,7 @@ public abstract class PassageViewActivity extends MyActivity {
                         });
             } else {
                 if (nbPointers < 2 && previousNumberOfPointers == 2) {
-                    onTouchListner.afterSelection(surfaceHolder, this, previousSelection, () -> allowSimpleClick = true);
+                    onTouchListner.afterSelection(sholder, this, previousSelection, () -> allowSimpleClick = true);
                 } else if (nbPointers == 1 && motionEvent.getAction() == MotionEvent.ACTION_UP && allowSimpleClick) {
                     // Click sur un passage
                     double x = motionEvent.getX() + deltaWidth / 2.0;
@@ -321,21 +334,21 @@ public abstract class PassageViewActivity extends MyActivity {
                             .collect(Collectors.toList());
 
                     if (passages.size() > 1) {
-                        draw(surfaceHolder, passages);
+                        draw(sholder, passages);
                         CharSequence[] items = passages.stream()
                                 .map(p -> p.getAutreCote(building.getAreas()).getName())
                                 .toArray(CharSequence[]::new);
                         new AlertDialog.Builder(this)
                                 .setTitle(R.string.passagesView_selectPassage_title)
                                 .setItems(items, (dialog, item) -> {
-                                    onTouchListner.onPassageClick(surfaceHolder, this, passages.get(item));
+                                    onTouchListner.onPassageClick(sholder, this, passages.get(item));
                                 })
-                                .setOnCancelListener(dialogInterface -> draw(surfaceHolder))
+                                .setOnCancelListener(dialogInterface -> draw(sholder))
                                 .show();
                     } else if (passages.size() == 1) {
-                        onTouchListner.onPassageClick(surfaceHolder, this, passages.get(0));
+                        onTouchListner.onPassageClick(sholder, this, passages.get(0));
                     } else {
-                        draw(surfaceHolder);
+                        draw(sholder);
                     }
                 }
 

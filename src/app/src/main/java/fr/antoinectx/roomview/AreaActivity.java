@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.widget.ImageButton;
 
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -124,5 +126,14 @@ public class AreaActivity extends PassageViewActivity {
         });
 
         invalidateOptionsMenu();
+
+        // preload next images
+        Glide.with(this)
+                .load(area.getFile(this, direction.getLeft()))
+                .preload();
+        Glide.with(this)
+                .load(area.getFile(this, direction.getRight()))
+                .preload();
+
     }
 }
