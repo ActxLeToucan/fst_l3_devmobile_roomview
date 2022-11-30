@@ -11,6 +11,9 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -171,6 +174,11 @@ public abstract class PassageViewActivity extends MyActivity {
         int deltaHeight = imageHeight - viewHeight;
 
         for (Passage passage : passages) {
+            Area otherSide = passage.getAutreCote(building.getAreas());
+            if (otherSide == null) {
+                continue;
+            }
+
             Rect rect = new Rect();
             rect.left = (int) (passage.getX1() * imageWidth - deltaWidth / 2.0);
             rect.top = (int) (passage.getY1() * imageHeight - deltaHeight / 2.0);
@@ -182,7 +190,31 @@ public abstract class PassageViewActivity extends MyActivity {
             paint.setColor(color);
             paint.setAlpha(100);
             canvas.drawRect(rect, paint);
+
+            canvas.save();
+
+            TextPaint textPaint = new TextPaint();
+            textPaint.setTextSize(50);
+            // calculate luminance to determine text color (https://fr.wikipedia.org/wiki/Luminance#Matri%C3%A7age)
+            double luminance = 0.2126 * Color.red(color) + 0.7152 * Color.green(color) + 0.0722 * Color.blue(color);
+            textPaint.setColor(luminance > 128 ? Color.BLACK : Color.WHITE);
+            String str = otherSide.getName();
+            StaticLayout layout = new StaticLayout(str, textPaint, rect.width(), Layout.Alignment.ALIGN_CENTER, 1, 1, true);
+
+            int textHeight = getTextHeight(str, textPaint);
+            int nbLines = layout.getLineCount();
+            int textY = rect.centerY() - (nbLines * textHeight) / 2;
+            int textX = rect.centerX() - layout.getWidth() / 2;
+            canvas.translate(textX, textY);
+            layout.draw(canvas);
+            canvas.restore();
         }
+    }
+
+    private int getTextHeight(String text, @NonNull Paint paint) {
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        return bounds.height();
     }
 
     /**
@@ -195,7 +227,7 @@ public abstract class PassageViewActivity extends MyActivity {
         imageView.setOnTouchListener(null);
         resource = null;
 
-        if (sholder.getSurface().isValid()) {
+        if (sholder != null && sholder.getSurface().isValid()) {
             Canvas canvas = sholder.lockCanvas();
             if (canvas != null) {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
