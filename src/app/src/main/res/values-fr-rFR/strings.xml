@@ -49,4 +49,8 @@
     <string name="passagesView_selectPassage_title">Sélectionner le passage qui va vers…</string>
     <string name="passagesActivity_selectAction_title">Que faire avec ce passage ?</string>
     <string name="passagesActivity_deletePassage_message">Vous êtes sur le point de supprimer ce passage. Cette action est irréversible. Souhaitez-vous continuer ?</string>
+    <string name="action_export">Exporter</string>
+    <string name="export_success_title">Exporté</string>
+    <string name="export_success_message">Le bâtiment a été exporté avec succès !</string>
+    <string name="error_export">L\'exportation du bâtiment a échoué.</string>
 </resources>

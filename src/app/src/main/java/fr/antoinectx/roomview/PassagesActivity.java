@@ -237,7 +237,7 @@ public class PassagesActivity extends PassageViewActivity {
      */
     private void deletePassage(SurfaceHolder surfaceHolder, Passage passage) {
         new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.warning)
                 .setMessage(R.string.passagesActivity_deletePassage_message)
                 .setPositiveButton(R.string.action_delete, (dialogInterface, i) -> {

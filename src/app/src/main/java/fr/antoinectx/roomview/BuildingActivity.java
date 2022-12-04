@@ -2,6 +2,7 @@ package fr.antoinectx.roomview;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +24,38 @@ import fr.antoinectx.roomview.models.Direction;
 
 public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdapter.ItemClickListener {
     private Building building;
+    final private ActivityResultLauncher<Intent> selectFileToExportTo = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            (result) -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        Uri uri = data.getData();
+
+                        new Thread(() -> {
+                            AlertDialog.Builder dialogError = new AlertDialog.Builder(this)
+                                    .setTitle(R.string.error)
+                                    .setMessage(R.string.error_export)
+                                    .setIcon(R.drawable.ic_baseline_error_24)
+                                    .setPositiveButton("OK", null);
+                            try {
+                                if (building.export(this, uri)) {
+                                    runOnUiThread(new AlertDialog.Builder(this)
+                                            .setTitle(R.string.export_success_title)
+                                            .setMessage(R.string.export_success_message)
+                                            .setIcon(R.drawable.ic_baseline_check_circle_24)
+                                            .setPositiveButton("OK", null)::show);
+                                } else {
+                                    runOnUiThread(dialogError::show);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                runOnUiThread(dialogError::show);
+                            }
+                        }).start();
+                    }
+                }
+            });
     private AreaRecyclerViewAdapter adapter;
     private String searchContent = "";
 
@@ -128,6 +163,14 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         Intent intent = new Intent(this, EditBuildingActivity.class);
         intent.putExtra("building", building.toJSON().toString());
         startActivity(intent);
+    }
+
+    public void exportBuilding(MenuItem item) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/zip");
+        intent.putExtra(Intent.EXTRA_TITLE, building.getName() + ".building");
+        selectFileToExportTo.launch(intent);
     }
 
     public void deleteBuilding(MenuItem item) {

@@ -9,6 +9,10 @@
         android:onClick="showBuildingDetails"
         android:title="@string/details" />
     <item
+        android:id="@+id/menu_building_export"
+        android:onClick="exportBuilding"
+        android:title="@string/action_export" />
+    <item
         android:id="@+id/menu_building_delete"
         android:onClick="deleteBuilding"
         android:title="@string/action_delete" />

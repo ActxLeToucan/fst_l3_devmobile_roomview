@@ -1,6 +1,8 @@
 package fr.antoinectx.roomview.models;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -319,5 +321,25 @@ public class Building extends ManipulateFiles {
             this.photoPath = building.photoPath;
         }
         return building != null;
+    }
+
+    /**
+     * Export the building folder to a zip file
+     *
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @param uri     The URI of the zip file to export to
+     * @return Whether the export was successful
+     */
+    public boolean export(Context context, Uri uri) {
+        try (ParcelFileDescriptor pfd = context.getContentResolver().
+                openFileDescriptor(uri, "w")) {
+            if (pfd == null) return false;
+
+            return (zip(getDirectory(context), pfd));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
