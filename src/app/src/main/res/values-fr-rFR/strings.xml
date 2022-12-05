@@ -53,4 +53,8 @@
     <string name="export_success_title">Exporté</string>
     <string name="export_success_message">Le bâtiment a été exporté avec succès !</string>
     <string name="error_export">L\'exportation du bâtiment a échoué.</string>
+    <string name="action_import">Importer</string>
+    <string name="error_import">L\'importation du bâtiment a échoué.</string>
+    <string name="import_success_title">Importé</string>
+    <string name="import_success_message">Le bâtiment a été importé avec succès !</string>
 </resources>

@@ -81,7 +81,7 @@ public class Building extends ManipulateFiles {
         List<Building> buildings = new ArrayList<>();
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             if (file.isDirectory()) {
-                Building building = load(context, file.getName());
+                Building building = load(context, file.getName(), false);
                 if (building != null) {
                     buildings.add(building);
                 }
@@ -97,9 +97,10 @@ public class Building extends ManipulateFiles {
      * @param context The context of the application
      *                (use getApplicationContext() or getBaseContext() or this in an activity)
      * @param id      The unique ID of the building to load
+     * @param forceId If true, the id parameter will be used as the building ID
      * @return The building
      */
-    public static Building load(Context context, String id) {
+    public static Building load(Context context, String id, boolean forceId) {
         File dir = new File(context.getFilesDir() + "/" + id);
         if (!dir.exists()) {
             Log.e("Building", "load: Can not find directory " + dir.getAbsolutePath());
@@ -117,7 +118,7 @@ public class Building extends ManipulateFiles {
             return null;
         }
 
-        Building building = fromJSONString(new String(bytes));
+        Building building = forceId ? fromJSONString(new String(bytes), id) : fromJSONString(new String(bytes));
         if (building == null) {
             Log.e("Building", "load: Can not parse JSON file " + file.getAbsolutePath());
             return null;
@@ -132,6 +133,9 @@ public class Building extends ManipulateFiles {
      *
      * @param json The JSON string
      * @return The building
+     * @see #fromJSONString(String, String)
+     * @see #fromJSON(JSONObject)
+     * @see #fromJSON(JSONObject, String)
      */
     public static Building fromJSONString(String json) {
         try {
@@ -143,20 +147,61 @@ public class Building extends ManipulateFiles {
     }
 
     /**
+     * Convert a JSON string to a building with a specific ID
+     *
+     * @param json The JSON string
+     * @param id   The ID of the building
+     * @return The building
+     * @see #fromJSONString(String)
+     * @see #fromJSON(JSONObject)
+     * @see #fromJSON(JSONObject, String)
+     */
+    public static Building fromJSONString(String json, String id) {
+        try {
+            return fromJSON(new JSONObject(json), id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Create a building from a JSON object
      *
      * @param json The JSON object
      * @return The building
+     * @see Building#fromJSON(JSONObject, String)
+     * @see Building#fromJSONString(String)
+     * @see Building#fromJSONString(String, String)
      */
     public static Building fromJSON(JSONObject json) {
         try {
+            return fromJSON(json, json.getString("id"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Create a building from a JSON object with a specific ID
+     *
+     * @param json The JSON object
+     * @param id   The ID of the building
+     * @return The building
+     * @see Building#fromJSON(JSONObject)
+     * @see Building#fromJSONString(String)
+     * @see Building#fromJSONString(String, String)
+     */
+    public static Building fromJSON(JSONObject json, String id) {
+        try {
             List<Area> areas = new ArrayList<>();
             for (int i = 0; i < json.getJSONArray("areas").length(); i++) {
-                areas.add(Area.fromJSON(json.getJSONArray("areas").getJSONObject(i)));
+                areas.add(Area.fromJSON(json.getJSONArray("areas").getJSONObject(i), id));
             }
 
             return new Building(
-                    json.getString("id"),
+                    id,
                     json.getString("name"),
                     json.getString("description"),
                     areas,
@@ -178,6 +223,42 @@ public class Building extends ManipulateFiles {
      */
     public static File getDirectory(@NonNull Context context, String id) {
         return new File(context.getFilesDir(), id);
+    }
+
+    /**
+     * Import a building from a zip file
+     *
+     * @param context The context of the application
+     *                (use getApplicationContext() or getBaseContext() or this in an activity)
+     * @param uri     The URI of the zip file to import from
+     * @return Whether the import was successful
+     */
+    public static boolean importFrom(Context context, Uri uri) {
+        try (ParcelFileDescriptor pfd = context.getContentResolver().
+                openFileDescriptor(uri, "r")) {
+            if (pfd == null) return false;
+
+            File dir = new File(context.getFilesDir(), UUID.randomUUID().toString());
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    Log.e("Building", "Failed to create directory " + dir.getAbsolutePath());
+                    return false;
+                }
+            }
+
+            unzip(pfd, dir);
+
+            Building building = load(context, dir.getName(), true);
+            if (building == null) {
+                deleteRecursive(dir, "Building.importFrom");
+                return false;
+            }
+            building.save(context);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -290,7 +371,7 @@ public class Building extends ManipulateFiles {
             return;
         }
 
-        deleteRecursive(dir);
+        deleteRecursive(dir, "Building.delete");
     }
 
     /**
@@ -313,7 +394,7 @@ public class Building extends ManipulateFiles {
      * False indicates that the building does not exist anymore.
      */
     public boolean reload(Context context) {
-        Building building = load(context, id);
+        Building building = load(context, id, false);
         if (building != null) {
             this.name = building.name;
             this.description = building.description;
@@ -336,7 +417,7 @@ public class Building extends ManipulateFiles {
                 openFileDescriptor(uri, "w")) {
             if (pfd == null) return false;
 
-            return (zip(getDirectory(context), pfd));
+            return zip(getDirectory(context), pfd, false);
         } catch (IOException e) {
             e.printStackTrace();
             return false;

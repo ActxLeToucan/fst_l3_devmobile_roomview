@@ -2,6 +2,7 @@ package fr.antoinectx.roomview;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +28,41 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
     private BuildingRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
     private String searchContent = "";
+    final private ActivityResultLauncher<Intent> selectFileToImport = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            (result) -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        Uri uri = data.getData();
+
+                        new Thread(() -> {
+                            AlertDialog.Builder dialogError = new AlertDialog.Builder(this)
+                                    .setTitle(R.string.error)
+                                    .setMessage(R.string.error_import)
+                                    .setIcon(R.drawable.ic_baseline_error_24)
+                                    .setPositiveButton("OK", null);
+                            try {
+                                if (!Building.importFrom(this, uri))
+                                    runOnUiThread(dialogError::show);
+
+                                runOnUiThread(() -> {
+                                    update();
+                                    new AlertDialog.Builder(this)
+                                            .setTitle(R.string.import_success_title)
+                                            .setMessage(R.string.import_success_message)
+                                            .setIcon(R.drawable.ic_baseline_check_circle_24)
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                runOnUiThread(dialogError::show);
+                            }
+                        }).start();
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +179,13 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         });
 
         builder.setNegativeButton(getString(R.string.action_cancel), (dialogInterface, which) -> dialogInterface.cancel());
+
+        builder.setNeutralButton(R.string.action_import, (dialogInterface, which) -> {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/zip");
+            selectFileToImport.launch(intent);
+        });
 
         builder.show();
     }

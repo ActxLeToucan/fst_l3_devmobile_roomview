@@ -57,6 +57,8 @@ public class Area extends ManipulateFiles {
      *
      * @param json The JSON string
      * @return The area
+     * @see Area#fromJSON(JSONObject)
+     * @see Area#fromJSON(JSONObject, String)
      */
     public static Area fromJSONString(String json) {
         try {
@@ -68,16 +70,20 @@ public class Area extends ManipulateFiles {
     }
 
     /**
-     * Create an area from a JSON object
+     * Create an area from a JSON object and force the parent building ID
      *
-     * @param json The JSON object
+     * @param json       The JSON object
+     * @param buildingId The parent building ID
      * @return The area
+     * @see Area#fromJSON(JSONObject)
+     * @see Area#fromJSONString(String)
      */
-    public static Area fromJSON(JSONObject json) {
+    @Nullable
+    public static Area fromJSON(@NonNull JSONObject json, String buildingId) {
         try {
             return new Area(
                     json.getString("id"),
-                    json.getString("buildingId"),
+                    buildingId,
                     json.getString("name"),
                     new DirectionPhoto[]{
                             !json.isNull("north") ? DirectionPhoto.fromJSON(json.getJSONObject("north")) : null,
@@ -86,6 +92,25 @@ public class Area extends ManipulateFiles {
                             !json.isNull("west") ? DirectionPhoto.fromJSON(json.getJSONObject("west")) : null
                     }
             );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Create an area from a JSON object
+     *
+     * @param json The JSON object
+     * @return The area
+     * @see Area#fromJSON(JSONObject, String)
+     * @see Area#fromJSONString(String)
+     */
+    @Nullable
+    public static Area fromJSON(@NonNull JSONObject json) {
+        try {
+            String buildingId = json.getString("buildingId");
+            return fromJSON(json, buildingId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -177,7 +202,7 @@ public class Area extends ManipulateFiles {
             return;
         }
 
-        deleteRecursive(directory);
+        deleteRecursive(directory, "Area.delete");
         directory.delete();
     }
 

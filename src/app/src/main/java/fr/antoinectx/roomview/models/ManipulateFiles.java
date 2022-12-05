@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public abstract class ManipulateFiles {
@@ -18,15 +19,16 @@ public abstract class ManipulateFiles {
      * Delete a file or a directory recursively
      *
      * @param fileOrDirectory The file or directory to delete
+     * @param logTag          The log tag
      */
-    protected void deleteRecursive(@NonNull File fileOrDirectory) {
+    protected static void deleteRecursive(@NonNull File fileOrDirectory, String logTag) {
         if (fileOrDirectory.isDirectory()) {
             for (File child : Objects.requireNonNull(fileOrDirectory.listFiles())) {
-                deleteRecursive(child);
+                deleteRecursive(child, logTag);
             }
         }
         if (!fileOrDirectory.delete()) {
-            Log.e(getClass().getSimpleName(), "deleteRecursive: Can not delete " + fileOrDirectory.getAbsolutePath());
+            Log.e(logTag, "deleteRecursive: Can not delete " + fileOrDirectory.getAbsolutePath());
         }
     }
 
@@ -38,7 +40,7 @@ public abstract class ManipulateFiles {
      * @param zipOut          The zip file
      * @throws IOException If an error occurs while manipulating the files
      */
-    private void zipElement(@NonNull File fileOrDirectory, String fileName, @NonNull ZipOutputStream zipOut) throws IOException {
+    private static void zipElement(@NonNull File fileOrDirectory, String fileName, @NonNull ZipOutputStream zipOut) throws IOException {
         if (fileOrDirectory.isHidden()) {
             return;
         }
@@ -72,21 +74,28 @@ public abstract class ManipulateFiles {
     /**
      * Zip a file or a directory
      *
-     * @param fileOrDirectory The file or directory to zip
-     * @param fos             The file output stream of the zip file
+     * @param fileOrDirectory      The file or directory to zip
+     * @param fos                  The file output stream of the zip file
+     * @param includeRootDirectory If the root directory should be included in the zip file
      * @return True if the zip is successful, false otherwise
      * @throws IOException If an error occurs while manipulating the files
      * @see #zipElement(File, String, ZipOutputStream)
-     * @see #zip(File, ParcelFileDescriptor)
-     * @see #zip(File, File)
+     * @see #zip(File, ParcelFileDescriptor, boolean)
+     * @see #zip(File, File, boolean)
      */
-    private boolean zip(@NonNull File fileOrDirectory, @NonNull FileOutputStream fos) throws IOException {
+    private static boolean zip(@NonNull File fileOrDirectory, @NonNull FileOutputStream fos, boolean includeRootDirectory) throws IOException {
         if (!fileOrDirectory.exists()) {
-            Log.e(getClass().getSimpleName(), "zip: " + fileOrDirectory.getAbsolutePath() + " does not exist");
-            return false;
+            throw new IOException(fileOrDirectory.getAbsolutePath() + " does not exist");
         }
         ZipOutputStream zipOut = new ZipOutputStream(fos);
-        zipElement(fileOrDirectory, fileOrDirectory.getName(), zipOut);
+
+        if (fileOrDirectory.isDirectory() && !includeRootDirectory) {
+            for (File child : Objects.requireNonNull(fileOrDirectory.listFiles())) {
+                zipElement(child, child.getName(), zipOut);
+            }
+        } else {
+            zipElement(fileOrDirectory, fileOrDirectory.getName(), zipOut);
+        }
         zipOut.close();
         fos.close();
         return true;
@@ -95,19 +104,19 @@ public abstract class ManipulateFiles {
     /**
      * Zip a file or a directory to a new file
      *
-     * @param fileOrDirectory The file or directory to zip
-     * @param zipFile         The zip file to create
+     * @param fileOrDirectory      The file or directory to zip
+     * @param zipFile              The zip file to create
+     * @param includeRootDirectory If the root directory should be included in the zip file
      * @return True if the zip is successful, false otherwise
      * @throws IOException If an error occurs while manipulating the files
-     * @see #zip(File, FileOutputStream)
-     * @see #zip(File, ParcelFileDescriptor)
+     * @see #zip(File, FileOutputStream, boolean)
+     * @see #zip(File, ParcelFileDescriptor, boolean)
      */
-    protected boolean zip(@NonNull File fileOrDirectory, @NonNull File zipFile) throws IOException {
+    protected static boolean zip(@NonNull File fileOrDirectory, @NonNull File zipFile, boolean includeRootDirectory) throws IOException {
         if (zipFile.exists()) {
-            Log.e(getClass().getSimpleName(), "zip: " + zipFile.getAbsolutePath() + " already exists");
-            return false;
+            throw new IOException(zipFile.getAbsolutePath() + " already exists");
         }
-        return zip(fileOrDirectory, new FileOutputStream(zipFile));
+        return zip(fileOrDirectory, new FileOutputStream(zipFile), includeRootDirectory);
     }
 
     /**
@@ -115,12 +124,62 @@ public abstract class ManipulateFiles {
      *
      * @param fileOrDirectory      The file or directory to zip
      * @param parcelFileDescriptor The parcel file descriptor of the zip file to create
+     * @param includeRootDirectory If the root directory should be included in the zip file
      * @return True if the zip is successful, false otherwise
      * @throws IOException If an error occurs while manipulating the files
-     * @see #zip(File, FileOutputStream)
-     * @see #zip(File, File)
+     * @see #zip(File, FileOutputStream, boolean)
+     * @see #zip(File, File, boolean)
      */
-    protected boolean zip(@NonNull File fileOrDirectory, @NonNull ParcelFileDescriptor parcelFileDescriptor) throws IOException {
-        return zip(fileOrDirectory, new FileOutputStream(parcelFileDescriptor.getFileDescriptor()));
+    protected static boolean zip(@NonNull File fileOrDirectory, @NonNull ParcelFileDescriptor parcelFileDescriptor, boolean includeRootDirectory) throws IOException {
+        return zip(fileOrDirectory, new FileOutputStream(parcelFileDescriptor.getFileDescriptor()), includeRootDirectory);
+    }
+
+    private static void unzip(@NonNull FileInputStream fis, @NonNull File destination) throws IOException {
+        byte[] buffer = new byte[1024];
+        ZipInputStream zis = new ZipInputStream(fis);
+        ZipEntry zipEntry = zis.getNextEntry();
+        while (zipEntry != null) {
+            File newFile = newFile(destination, zipEntry);
+            if (zipEntry.isDirectory()) {
+                if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                    throw new IOException("Failed to create directory " + newFile);
+                }
+            } else {
+                // fix for Windows-created archives
+                File parent = newFile.getParentFile();
+                if (parent != null && !parent.isDirectory() && !parent.mkdirs()) {
+                    throw new IOException("Failed to create directory " + parent);
+                }
+
+                // write file content
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+            }
+            zipEntry = zis.getNextEntry();
+        }
+        zis.closeEntry();
+        zis.close();
+    }
+
+    protected static void unzip(@NonNull ParcelFileDescriptor parcelFileDescriptor, @NonNull File destination) throws IOException {
+        unzip(new FileInputStream(parcelFileDescriptor.getFileDescriptor()), destination);
+    }
+
+    @NonNull
+    private static File newFile(File destinationDir, @NonNull ZipEntry zipEntry) throws IOException {
+        File destFile = new File(destinationDir, zipEntry.getName());
+
+        String destDirPath = destinationDir.getCanonicalPath();
+        String destFilePath = destFile.getCanonicalPath();
+
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+        }
+
+        return destFile;
     }
 }
