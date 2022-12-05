@@ -11,15 +11,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DirectionPhoto {
+    /**
+     * Passages to other areas
+     */
     private final List<Passage> passages;
+    /**
+     * The photo file name
+     */
     @NonNull
     private final String filename;
 
+    /**
+     * Complete constructor, only used when loading a direction photo from JSON
+     *
+     * @param passages Passages to other areas
+     * @param filename The photo file name
+     */
     private DirectionPhoto(List<Passage> passages, @NonNull String filename) {
         this.passages = passages;
         this.filename = filename;
     }
 
+    /**
+     * Default constructor
+     *
+     * @param filename The photo file name
+     */
     public DirectionPhoto(@NonNull String filename) {
         this.passages = new ArrayList<>();
         this.filename = filename;

@@ -18,13 +18,13 @@ public class Area extends ManipulateFiles {
      */
     private final String id;
     /**
-     * The parent building unique ID
-     */
-    private final String buildingId;
-    /**
      * The direction photos (one for each direction) [N, E, S, W]
      */
     private final DirectionPhoto[] directionPhotos;
+    /**
+     * The parent building unique ID
+     */
+    private String buildingId;
     /**
      * The area name
      */
@@ -33,9 +33,9 @@ public class Area extends ManipulateFiles {
     /**
      * Complete constructor, only used when loading an area from JSON
      *
-     * @param id                The area unique ID
-     * @param buildingId        The parent building unique ID
-     * @param name              The area name
+     * @param id              The area unique ID
+     * @param buildingId      The parent building unique ID
+     * @param name            The area name
      * @param directionPhotos The direction photos [N, E, S, W]
      */
     private Area(String id, String buildingId, String name, DirectionPhoto[] directionPhotos) {
@@ -45,6 +45,12 @@ public class Area extends ManipulateFiles {
         this.directionPhotos = directionPhotos;
     }
 
+    /**
+     * Default constructor
+     *
+     * @param buildingId The parent building unique ID
+     * @param name       The area name
+     */
     public Area(String buildingId, String name) {
         this.id = UUID.randomUUID().toString();
         this.buildingId = buildingId;
@@ -60,6 +66,7 @@ public class Area extends ManipulateFiles {
      * @see Area#fromJSON(JSONObject)
      * @see Area#fromJSON(JSONObject, String)
      */
+    @Nullable
     public static Area fromJSONString(String json) {
         try {
             return fromJSON(new JSONObject(json));
@@ -161,6 +168,13 @@ public class Area extends ManipulateFiles {
         directionPhotos[direction.ordinal()] = directionPhoto;
     }
 
+    /**
+     * Get the file of the direction photo
+     *
+     * @param context   The context of the application
+     * @param direction The direction of the photo
+     * @return The file of the direction photo
+     */
     @Nullable
     public File getFile(Context context, @NonNull Direction direction) {
         File directory = getDirectory(context);
@@ -212,7 +226,7 @@ public class Area extends ManipulateFiles {
      * @param building The building
      * @return Whether the area was found in the building
      */
-    public boolean reloadFromBuilding(Building building) {
+    public boolean reloadFromBuilding(@NonNull Building building) {
         if (!building.getId().equals(buildingId)) {
             Log.e("Area", "reloadFromBuilding: The building ID does not match");
             return false;

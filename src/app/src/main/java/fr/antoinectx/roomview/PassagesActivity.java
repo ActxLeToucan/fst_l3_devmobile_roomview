@@ -161,7 +161,7 @@ public class PassagesActivity extends PassageViewActivity {
                     if (item == 0) {
                         selectOtherSide(surfaceHolder,
                                 (otherSide) -> {
-                                    passage.setAutreCote(otherSide);
+                                    passage.setOtherSide(otherSide);
                                     DirectionPhoto directionPhoto = area.getDirectionPhoto(direction);
                                     directionPhoto.getPassages().removeIf(p -> p.getId().equals(passage.getId()));
                                     directionPhoto.getPassages().add(new Passage(passage.getX1(), passage.getY1(), passage.getX2(), passage.getY2(), otherSide));

@@ -72,6 +72,7 @@ public class BuildingRecyclerViewAdapter extends RecyclerView.Adapter<BuildingRe
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+
         void onItemLongClick(View view, int position);
     }
 

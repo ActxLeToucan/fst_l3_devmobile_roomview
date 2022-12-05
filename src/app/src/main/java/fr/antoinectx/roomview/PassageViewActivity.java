@@ -174,7 +174,7 @@ public abstract class PassageViewActivity extends MyActivity {
         int deltaHeight = imageHeight - viewHeight;
 
         for (Passage passage : passages) {
-            Area otherSide = passage.getAutreCote(building.getAreas());
+            Area otherSide = passage.getOtherSide(building.getAreas());
             if (otherSide == null) {
                 continue;
             }
@@ -368,7 +368,7 @@ public abstract class PassageViewActivity extends MyActivity {
                     if (passages.size() > 1) {
                         draw(sholder, passages);
                         CharSequence[] items = passages.stream()
-                                .map(p -> p.getAutreCote(building.getAreas()).getName())
+                                .map(p -> p.getOtherSide(building.getAreas()).getName())
                                 .toArray(CharSequence[]::new);
                         new AlertDialog.Builder(this)
                                 .setTitle(R.string.passagesView_selectPassage_title)

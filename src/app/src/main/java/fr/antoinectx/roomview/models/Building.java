@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.Contract;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,6 +62,12 @@ public class Building extends ManipulateFiles {
         this.photoPath = photoPath;
     }
 
+    /**
+     * Default constructor
+     *
+     * @param name        The name of the building
+     * @param description The description of the building
+     */
     public Building(String name, String description) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
@@ -75,7 +82,8 @@ public class Building extends ManipulateFiles {
      *                (use getApplicationContext() or getBaseContext() or this in an activity),
      * @return A list of all the buildings
      */
-    public static List<Building> loadAll(Context context) {
+    @NonNull
+    public static List<Building> loadAll(@NonNull Context context) {
         File dir = new File(context.getFilesDir().toString());
 
         List<Building> buildings = new ArrayList<>();
@@ -100,7 +108,8 @@ public class Building extends ManipulateFiles {
      * @param forceId If true, the id parameter will be used as the building ID
      * @return The building
      */
-    public static Building load(Context context, String id, boolean forceId) {
+    @Nullable
+    public static Building load(@NonNull Context context, String id, boolean forceId) {
         File dir = new File(context.getFilesDir() + "/" + id);
         if (!dir.exists()) {
             Log.e("Building", "load: Can not find directory " + dir.getAbsolutePath());
@@ -137,6 +146,7 @@ public class Building extends ManipulateFiles {
      * @see #fromJSON(JSONObject)
      * @see #fromJSON(JSONObject, String)
      */
+    @Nullable
     public static Building fromJSONString(String json) {
         try {
             return fromJSON(new JSONObject(json));
@@ -156,6 +166,7 @@ public class Building extends ManipulateFiles {
      * @see #fromJSON(JSONObject)
      * @see #fromJSON(JSONObject, String)
      */
+    @Nullable
     public static Building fromJSONString(String json, String id) {
         try {
             return fromJSON(new JSONObject(json), id);
@@ -174,6 +185,7 @@ public class Building extends ManipulateFiles {
      * @see Building#fromJSONString(String)
      * @see Building#fromJSONString(String, String)
      */
+    @Nullable
     public static Building fromJSON(JSONObject json) {
         try {
             return fromJSON(json, json.getString("id"));
@@ -193,6 +205,7 @@ public class Building extends ManipulateFiles {
      * @see Building#fromJSONString(String)
      * @see Building#fromJSONString(String, String)
      */
+    @Nullable
     public static Building fromJSON(JSONObject json, String id) {
         try {
             List<Area> areas = new ArrayList<>();
@@ -221,7 +234,9 @@ public class Building extends ManipulateFiles {
      * @param id      The unique ID of the building
      * @return The directory
      */
-    public static File getDirectory(@NonNull Context context, String id) {
+    @NonNull
+    @Contract("_, _ -> new")
+    public static File getDirectory(@NonNull Context context, @NonNull String id) {
         return new File(context.getFilesDir(), id);
     }
 
@@ -317,7 +332,7 @@ public class Building extends ManipulateFiles {
      *                The file will be saved in {@literal /data/data/<package_name>/files/<id>/data.json}
      *                where {@literal <id>} is the unique ID of the building
      */
-    public void save(Context context) {
+    public void save(@NonNull Context context) {
         File dir = new File(context.getFilesDir() + "/" + id);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {

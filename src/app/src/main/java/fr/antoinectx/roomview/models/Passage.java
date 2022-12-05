@@ -9,30 +9,67 @@ import java.util.List;
 import java.util.UUID;
 
 public class Passage {
+    /**
+     * The passage unique ID
+     */
     private final String id;
+    /**
+     * X coordinate of the passage's first point
+     */
     private final double x1;
+    /**
+     * Y coordinate of the passage's first point
+     */
     private final double y1;
+    /**
+     * X coordinate of the passage's second point
+     */
     private final double x2;
+    /**
+     * Y coordinate of the passage's second point
+     */
     private final double y2;
+    /**
+     * Area unique ID of the passage's destination
+     */
     @NonNull
-    private String autreCoteId;
+    private String otherSideId;
 
-    private Passage(String id, double x1, double y1, double x2, double y2, @NonNull String autreCoteId) {
+    /**
+     * Complete constructor, only used when loading a passage from JSON
+     *
+     * @param id          The passage unique ID
+     * @param x1          X coordinate of the passage's first point
+     * @param y1          Y coordinate of the passage's first point
+     * @param x2          X coordinate of the passage's second point
+     * @param y2          Y coordinate of the passage's second point
+     * @param otherSideId Area unique ID of the passage's destination
+     */
+    private Passage(String id, double x1, double y1, double x2, double y2, @NonNull String otherSideId) {
         this.id = id;
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.autreCoteId = autreCoteId;
+        this.otherSideId = otherSideId;
     }
 
-    public Passage(double x1, double y1, double x2, double y2, @NonNull Area autreCote) {
+    /**
+     * Default constructor
+     *
+     * @param x1        X coordinate of the passage's first point
+     * @param y1        Y coordinate of the passage's first point
+     * @param x2        X coordinate of the passage's second point
+     * @param y2        Y coordinate of the passage's second point
+     * @param otherSide Passage's destination
+     */
+    public Passage(double x1, double y1, double x2, double y2, @NonNull Area otherSide) {
         this.id = UUID.randomUUID().toString();
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.autreCoteId = autreCote.getId();
+        this.otherSideId = otherSide.getId();
     }
 
     /**
@@ -41,6 +78,7 @@ public class Passage {
      * @param json The JSON object
      * @return The Passage object
      */
+    @Nullable
     public static Passage fromJSON(JSONObject json) {
         try {
             return new Passage(
@@ -49,7 +87,7 @@ public class Passage {
                     json.getDouble("y1"),
                     json.getDouble("x2"),
                     json.getDouble("y2"),
-                    json.getString("autreCote")
+                    json.getString("otherSide")
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,14 +100,14 @@ public class Passage {
     }
 
     @NonNull
-    public String getAutreCoteId() {
-        return autreCoteId;
+    public String getOtherSideId() {
+        return otherSideId;
     }
 
     @Nullable
-    public Area getAutreCote(@NonNull List<Area> areas) {
+    public Area getOtherSide(@NonNull List<Area> areas) {
         for (Area area : areas) {
-            if (area.getId().equals(autreCoteId)) {
+            if (area.getId().equals(otherSideId)) {
                 return area;
             }
         }
@@ -92,6 +130,13 @@ public class Passage {
         return y2;
     }
 
+    /**
+     * Whether the passage contains the given point
+     *
+     * @param x X coordinate of the point
+     * @param y Y coordinate of the point
+     * @return True if the passage contains the point, false otherwise
+     */
     public boolean contains(double x, double y) {
         double minX = Math.min(x1, x2);
         double maxX = Math.max(x1, x2);
@@ -100,8 +145,8 @@ public class Passage {
         return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
 
-    public void setAutreCote(@NonNull Area autreCote) {
-        this.autreCoteId = autreCote.getId();
+    public void setOtherSide(@NonNull Area otherSide) {
+        this.otherSideId = otherSide.getId();
     }
 
     /**
@@ -117,7 +162,7 @@ public class Passage {
             json.put("y1", y1);
             json.put("x2", x2);
             json.put("y2", y2);
-            json.put("autreCote", autreCoteId);
+            json.put("otherSide", otherSideId);
         } catch (Exception e) {
             e.printStackTrace();
         }
