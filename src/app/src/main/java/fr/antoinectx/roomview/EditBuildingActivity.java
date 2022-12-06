@@ -61,6 +61,12 @@ public class EditBuildingActivity extends MyActivity {
                     }
                 }
             });
+    private final ActivityResultLauncher<String> requestPermissionGalleryLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    startIntentSelectPhoto();
+                }
+            });
     private String pathPhotoFromCamera;
     final private ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -70,6 +76,12 @@ public class EditBuildingActivity extends MyActivity {
                     if (data != null) {
                         applyPhoto(pathPhotoFromCamera);
                     }
+                }
+            });
+    private final ActivityResultLauncher<String> requestPermissionCameraLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    startIntentTakePhoto(this);
                 }
             });
 
@@ -208,28 +220,36 @@ public class EditBuildingActivity extends MyActivity {
         builder.setItems(options, (dialog, item) -> {
             if (options[item].equals(getString(R.string.takePhoto))) {
                 if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{android.Manifest.permission.CAMERA}, 50);
+                    requestPermissionCameraLauncher.launch(android.Manifest.permission.CAMERA);
                 } else {
-                    File f = createImageFile();
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri photoUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", f);
-                    takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    takePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                    pathPhotoFromCamera = f.getAbsolutePath();
-
-                    takePhotoLauncher.launch(takePicture);
+                    startIntentTakePhoto(this);
                 }
             } else if (options[item].equals(getString(R.string.fromGallery))) {
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    requestPermissionGalleryLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE);
                 } else {
-                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    chooseFromGalleryLauncher.launch(intent);
+                    startIntentSelectPhoto();
                 }
             }
         });
         builder.show();
+    }
+
+    private void startIntentTakePhoto(Context context) {
+        File f = createImageFile();
+        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri photoUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", f);
+        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        takePicture.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        pathPhotoFromCamera = f.getAbsolutePath();
+
+        takePhotoLauncher.launch(takePicture);
+    }
+
+    private void startIntentSelectPhoto() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        chooseFromGalleryLauncher.launch(intent);
     }
 
     private void applyPhoto(String picturePath) {

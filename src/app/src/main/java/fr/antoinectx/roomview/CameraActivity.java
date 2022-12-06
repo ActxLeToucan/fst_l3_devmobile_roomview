@@ -1,12 +1,20 @@
 package fr.antoinectx.roomview;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ScaleGestureDetector;
+import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.view.Surface;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -27,12 +35,23 @@ import java.util.concurrent.Executor;
 import fr.antoinectx.roomview.models.Direction;
 
 public class CameraActivity extends MyActivity {
+    private float[] accelerometerValues = new float[3];
+    private float[] magnetometerValues = new float[3];
+    private SensorEventListener accelerometerListener, magnetometerListener;
     private Direction direction;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
     private ImageCapture imageCapture;
     private Executor executor;
     private File file;
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    startCamera();
+                } else {
+                    finish();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +65,83 @@ public class CameraActivity extends MyActivity {
         initAppBar(direction.getName(this), getString(R.string.takePhoto), true, R.drawable.ic_baseline_close_24, R.string.action_cancel);
         previewView = findViewById(R.id.previewView);
 
+        startSensors();
         startCamera();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorManager.unregisterListener(accelerometerListener);
+        sensorManager.unregisterListener(magnetometerListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorManager.registerListener(accelerometerListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(magnetometerListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void startSensors() {
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        accelerometerListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                accelerometerValues = sensorEvent.values;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
+
+        magnetometerListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                magnetometerValues = sensorEvent.values;
+
+                float[] result = new float[9];
+                float[] orientation = new float[3];
+
+                SensorManager.getRotationMatrix(result, null, accelerometerValues, magnetometerValues);
+                SensorManager.getOrientation(result, orientation);
+
+                float rad = orientation[0];
+
+                // correction for other directions (not North)
+                rad -= direction.ordinal() * (float) Math.PI / 2;
+
+                // correction for landscape
+                int rotation = getWindowManager().getDefaultDisplay().getRotation();
+                rad += rotation * (float) Math.PI / 2;
+
+                CompassView compassView = findViewById(R.id.compass);
+
+                // normalize rad to -PI to PI
+                rad = rad - 2 * (float) Math.PI * (float) Math.floor((rad + Math.PI) / (2 * Math.PI));
+                compassView.setRadians(rad);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
+
+        sensorManager.registerListener(accelerometerListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(magnetometerListener, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void startCamera() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{android.Manifest.permission.CAMERA}, 50);
+            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA);
         } else {
             executor = ContextCompat.getMainExecutor(this);
             cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -99,7 +189,7 @@ public class CameraActivity extends MyActivity {
         camera.getCameraControl().setLinearZoom(0f);
 
         // pinch to zoom
-        ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
                 float currentZoomRatio = camera.getCameraInfo().getZoomState().getValue().getZoomRatio();
@@ -119,7 +209,7 @@ public class CameraActivity extends MyActivity {
                     imageCapture.takePicture(outputFileOptions, executor,
                             new ImageCapture.OnImageSavedCallback() {
                                 @Override
-                                public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
+                                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                                     Log.d("CameraActivity", "Image saved");
                                     Intent intent = new Intent();
                                     intent.putExtra("direction", direction.toString());
@@ -129,7 +219,7 @@ public class CameraActivity extends MyActivity {
                                 }
 
                                 @Override
-                                public void onError(ImageCaptureException error) {
+                                public void onError(@NonNull ImageCaptureException error) {
                                     Log.d("CameraActivity", "Image not saved");
                                     Intent intent = new Intent();
                                     intent.putExtra("direction", direction.toString());
@@ -143,4 +233,6 @@ public class CameraActivity extends MyActivity {
                 }
         );
     }
+
+
 }
