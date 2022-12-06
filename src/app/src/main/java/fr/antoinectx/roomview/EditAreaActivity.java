@@ -66,6 +66,8 @@ public class EditAreaActivity extends MyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_area);
 
+        blockOrientation(); // Block orientation to prevent data loss
+
         building = Building.fromJSONString(getIntent().getStringExtra("building"));
         if (building == null) {
             finish();

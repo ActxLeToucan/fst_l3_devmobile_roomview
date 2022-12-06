@@ -178,6 +178,10 @@ public class EditBuildingActivity extends MyActivity {
     private void applyMode(boolean editMode) {
         this.editMode = editMode;
 
+        if (editMode) {
+            blockOrientation(); // Block orientation to prevent data loss
+        }
+
         // fields
         View fields = findViewById(R.id.building_fields);
         fields.setVisibility(editMode ? View.VISIBLE : View.GONE);

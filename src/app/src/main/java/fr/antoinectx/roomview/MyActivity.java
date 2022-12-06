@@ -1,6 +1,8 @@
 package fr.antoinectx.roomview;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -123,5 +125,21 @@ public abstract class MyActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(event);
+    }
+
+    /**
+     * Block the screen orientation in the current one
+     * and prevent (indirectly) that the activity is destroyed when the screen is rotated.
+     * It is still possible to rotate the screen 180° when it is blocked.
+     * <br /><b>Warning:</b> Please do not abuse this method.
+     * I wrote this but I'm pretty sure this is not a good practice.
+     */
+    protected void blockOrientation() {
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        }
     }
 }
