@@ -57,4 +57,10 @@
     <string name="error_import">L\'importation du bâtiment a échoué.</string>
     <string name="import_success_title">Importé</string>
     <string name="import_success_message">Le bâtiment a été importé avec succès !</string>
+    <string name="passages_edit">Modifier les passages</string>
+    <string name="destination_choose">Choisir une destination</string>
+    <string name="warning_areaNotReachable">La zone sélectionnée ne peut pas être atteinte.</string>
+    <string name="steps">Étapes</string>
+    <string name="action_goThere">Y aller</string>
+    <string name="destination">Destination</string>
 </resources>

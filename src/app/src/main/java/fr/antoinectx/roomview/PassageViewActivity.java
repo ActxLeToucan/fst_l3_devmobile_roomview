@@ -3,6 +3,7 @@ package fr.antoinectx.roomview;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,7 +19,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +32,8 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.util.List;
@@ -80,6 +86,30 @@ interface SimpleClickEnabler {
      * Re-enables the passage click listener
      */
     void enable();
+}
+
+/**
+ * Listener used when the user selects an area
+ */
+interface OnSelectedAreaListener {
+    /**
+     * Called when the user cancels the dialog without selecting an area
+     *
+     * @param dialog The dialog that was cancelled
+     */
+    void onCancel(DialogInterface dialog);
+
+    /**
+     * Called when the user selects an area
+     *
+     * @param area The area that was selected
+     */
+    void onSelect(Area area);
+
+    /**
+     * Called just before the dialog is dismissed, after the user selects an area
+     */
+    void beforeDismiss();
 }
 
 
@@ -255,6 +285,9 @@ public abstract class PassageViewActivity extends MyActivity {
 
     /**
      * Initialize the surface view to draw the passages
+     *
+     * @param onTouchListner The listener to call on the events
+     * @param resource       The image
      */
     @SuppressLint("ClickableViewAccessibility")
     public void initSurface(@Nullable OnTouchListner onTouchListner, @Nullable Drawable resource) {
@@ -391,5 +424,45 @@ public abstract class PassageViewActivity extends MyActivity {
 
             return true;
         });
+    }
+
+    /**
+     * Let the user select an area in the building (but not the current area)
+     *
+     * @param hint The hint to display in the dialog
+     * @param listener The listener to call on the events
+     */
+    protected void selectArea(String hint, @NonNull OnSelectedAreaListener listener) {
+        List<Area> areas = building.getAreas().stream()
+                .filter(a -> !a.getId().equals(area.getId()))
+                .collect(Collectors.toList());
+        ArrayAdapter<Area> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, areas);
+
+        View layout = getLayoutInflater().inflate(R.layout.dialog_select_area, null);
+        TextInputLayout textInputLayout = layout.findViewById(R.id.passage_layout_area);
+        textInputLayout.setHint(hint);
+        MaterialAutoCompleteTextView autoCompleteTextView = layout.findViewById(R.id.passage_field_area);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(layout);
+        builder.setOnCancelListener(listener::onCancel);
+        AlertDialog dialog = builder.create();
+
+
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setOnItemClickListener((parent, view1, position, id) -> {
+            Area selectedArea = (Area) parent.getItemAtPosition(position);
+            if (selectedArea != null) {
+                listener.onSelect(selectedArea);
+            } else {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+            }
+
+            listener.beforeDismiss();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 }

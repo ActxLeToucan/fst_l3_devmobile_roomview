@@ -3,7 +3,11 @@
     <item
         android:id="@+id/menu_area_passages"
         android:onClick="editPassages"
-        android:title="Passages" />
+        android:title="@string/passages_edit" />
+    <item
+        android:id="@+id/menu_area_choose_destination"
+        android:onClick="chooseDestination"
+        android:title="@string/destination_choose" />
     <item
         android:id="@+id/menu_area_edit_area"
         android:onClick="editArea"

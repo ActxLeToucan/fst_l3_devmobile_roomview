@@ -2,6 +2,7 @@ package fr.antoinectx.roomview;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,44 +11,15 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
-
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.DirectionPhoto;
 import fr.antoinectx.roomview.models.Passage;
-
-/**
- * Listens to user selection of the other side of a passage.
- */
-interface SelectOtherSide_OnSelectListener {
-    /**
-     * Called when the user selects the other side of a passage
-     *
-     * @param otherSide The other side of the passage
-     */
-    void onSelect(Area otherSide);
-}
-
-/**
- * Action performed just before dismissing the dialog to select the other side of a passage
- */
-interface SelectOtherSide_BeforeDismissListener {
-    /**
-     * Called just before dismissing the dialog to select the other side of a passage
-     */
-    void beforeDismiss();
-}
 
 public class PassagesActivity extends PassageViewActivity {
 
@@ -101,14 +73,27 @@ public class PassagesActivity extends PassageViewActivity {
                 boolean isValidSelection = !(x1 == x2 || y1 == y2);
 
                 if (isValidSelection) {
-                    selectOtherSide(surfaceHolder,
-                            (otherSide) -> {
-                                Passage passage = new Passage(x1, y1, x2, y2, otherSide);
-                                DirectionPhoto directionPhoto = area.getDirectionPhoto(direction);
-                                directionPhoto.getPassages().add(passage);
-                            },
-                            clickEnabler::enable
-                    );
+                    selectArea(getString(R.string.other_side), new OnSelectedAreaListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            draw(surfaceHolder);
+                            clickEnabler.enable();
+                        }
+
+                        @Override
+                        public void onSelect(Area otherSide) {
+                            Passage passage = new Passage(x1, y1, x2, y2, otherSide);
+                            DirectionPhoto directionPhoto = area.getDirectionPhoto(direction);
+                            directionPhoto.getPassages().add(passage);
+                        }
+
+                        @Override
+                        public void beforeDismiss() {
+                            savePassages();
+                            draw(surfaceHolder);
+                            clickEnabler.enable();
+                        }
+                    });
                 } else {
                     new AlertDialog.Builder(parent)
                             .setTitle(R.string.passagesActivity_invalidSelection_title)
@@ -159,15 +144,26 @@ public class PassagesActivity extends PassageViewActivity {
                 .setTitle(R.string.passagesActivity_selectAction_title)
                 .setItems(items, (dialog, item) -> {
                     if (item == 0) {
-                        selectOtherSide(surfaceHolder,
-                                (otherSide) -> {
-                                    passage.setOtherSide(otherSide);
-                                    DirectionPhoto directionPhoto = area.getDirectionPhoto(direction);
-                                    directionPhoto.getPassages().removeIf(p -> p.getId().equals(passage.getId()));
-                                    directionPhoto.getPassages().add(new Passage(passage.getX1(), passage.getY1(), passage.getX2(), passage.getY2(), otherSide));
-                                },
-                                null
-                        );
+                        selectArea(getString(R.string.other_side), new OnSelectedAreaListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                draw(surfaceHolder);
+                            }
+
+                            @Override
+                            public void onSelect(Area otherSide) {
+                                passage.setOtherSide(otherSide);
+                                DirectionPhoto directionPhoto = area.getDirectionPhoto(direction);
+                                directionPhoto.getPassages().removeIf(p -> p.getId().equals(passage.getId()));
+                                directionPhoto.getPassages().add(new Passage(passage.getX1(), passage.getY1(), passage.getX2(), passage.getY2(), otherSide));
+                            }
+
+                            @Override
+                            public void beforeDismiss() {
+                                savePassages();
+                                draw(surfaceHolder);
+                            }
+                        });
                         dialog.dismiss();
                     } else if (item == 1) {
                         deletePassage(surfaceHolder, passage);
@@ -178,55 +174,6 @@ public class PassagesActivity extends PassageViewActivity {
                 })
                 .setOnCancelListener(dialogInterface -> draw(surfaceHolder))
                 .show();
-    }
-
-    /**
-     * Show a dialog to select the other side of the passage
-     *
-     * @param surfaceHolder         The surface holder to draw on
-     * @param onSelectListener      The listener to call when the other side is selected
-     * @param beforeDismissListener The listener to call before dismissing the dialog
-     */
-    private void selectOtherSide(SurfaceHolder surfaceHolder, SelectOtherSide_OnSelectListener onSelectListener, @Nullable SelectOtherSide_BeforeDismissListener beforeDismissListener) {
-        List<Area> areas = building.getAreas().stream()
-                .filter(a -> !a.getId().equals(area.getId()))
-                .collect(Collectors.toList());
-        ArrayAdapter<Area> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, areas);
-
-        View layout = getLayoutInflater().inflate(R.layout.dialog_create_passage, null);
-        MaterialAutoCompleteTextView autoCompleteTextView = layout.findViewById(R.id.passage_field_area);
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(layout);
-        builder.setOnCancelListener(dialogInterface -> {
-            draw(surfaceHolder);
-            if (beforeDismissListener != null) {
-                beforeDismissListener.beforeDismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-
-
-        autoCompleteTextView.setAdapter(adapter);
-        autoCompleteTextView.setOnItemClickListener((parent, view1, position, id) -> {
-            Area selectedArea = (Area) parent.getItemAtPosition(position);
-            if (selectedArea != null) {
-                onSelectListener.onSelect(selectedArea);
-            } else {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-            }
-
-            savePassages();
-            draw(surfaceHolder);
-
-            if (beforeDismissListener != null) {
-                beforeDismissListener.beforeDismiss();
-            }
-            dialog.dismiss();
-        });
-
-        dialog.show();
     }
 
     /**

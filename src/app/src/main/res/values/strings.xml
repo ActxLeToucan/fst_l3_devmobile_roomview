@@ -57,4 +57,10 @@
     <string name="error_import">The building import failed.</string>
     <string name="import_success_title">Imported</string>
     <string name="import_success_message">The building was successfully imported!</string>
+    <string name="passages_edit">Edit passages</string>
+    <string name="destination_choose">Choose a destination</string>
+    <string name="warning_areaNotReachable">The selected area cannot be reached.</string>
+    <string name="steps">Steps</string>
+    <string name="action_goThere">Go there</string>
+    <string name="destination">Destination</string>
 </resources>

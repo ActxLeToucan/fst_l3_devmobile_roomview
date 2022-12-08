@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.Contract;
+import org.jgrapht.graph.DirectedMultigraph;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -437,5 +438,24 @@ public class Building extends ManipulateFiles {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Get the graph corresponding to the building
+     * @return The graph
+     */
+    public DirectedMultigraph<Area, Passage> getGraph() {
+        DirectedMultigraph<Area, Passage> graph = new DirectedMultigraph<>(Passage.class);
+        for (Area area : areas) {
+            graph.addVertex(area);
+        }
+        for (Area area : areas) {
+            for (DirectionPhoto directionPhoto : area.getDirectionPhotos()) {
+                for (Passage passage : directionPhoto.getPassages()) {
+                    graph.addEdge(area, passage.getOtherSide(areas), passage);
+                }
+            }
+        }
+        return graph;
     }
 }

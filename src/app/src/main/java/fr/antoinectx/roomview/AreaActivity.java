@@ -2,6 +2,7 @@ package fr.antoinectx.roomview;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,9 +12,15 @@ import android.widget.ImageButton;
 
 import com.bumptech.glide.Glide;
 
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DirectedMultigraph;
+
 import java.io.File;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
+import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Passage;
 
 public class AreaActivity extends PassageViewActivity {
@@ -135,5 +142,50 @@ public class AreaActivity extends PassageViewActivity {
                 .load(area.getFile(this, direction.getRight()))
                 .preload();
 
+    }
+
+    public void chooseDestination(MenuItem item) {
+        selectArea(getString(R.string.destination), new OnSelectedAreaListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+
+            }
+
+            @Override
+            public void onSelect(Area area) {
+                AlertDialog.Builder notReachableDialog = new AlertDialog.Builder(AreaActivity.this)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.warning)
+                        .setMessage(R.string.warning_areaNotReachable)
+                        .setPositiveButton("OK", null);
+
+                Area current = building.getAreas().stream().filter(a -> a.getId().equals(AreaActivity.this.area.getId())).findFirst().orElse(null);
+                Area destination = building.getAreas().stream().filter(a -> a.getId().equals(area.getId())).findFirst().orElse(null);
+                if (current == null || destination == null) {
+                    notReachableDialog.show();
+                    return;
+                }
+
+                DirectedMultigraph<Area, Passage> graph = building.getGraph();
+                DijkstraShortestPath<Area, Passage> dijkstraAlg = new DijkstraShortestPath<>(graph);
+                GraphPath<Area, Passage> path = dijkstraAlg.getPath(current, destination);
+
+                if (path == null) {
+                    notReachableDialog.show();
+                    return;
+                }
+
+                new AlertDialog.Builder(AreaActivity.this)
+                        .setIcon(R.drawable.ic_baseline_map_24)
+                        .setTitle(R.string.steps)
+                        .setMessage(path.getEdgeList().stream().map(passage -> " • " + passage.getOtherSide(building.getAreas()).getName()).collect(Collectors.joining("\n")))
+                        .show();
+            }
+
+            @Override
+            public void beforeDismiss() {
+
+            }
+        });
     }
 }
