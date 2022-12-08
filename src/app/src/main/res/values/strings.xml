@@ -63,4 +63,8 @@
     <string name="steps">Steps</string>
     <string name="action_goThere">Go there</string>
     <string name="destination">Destination</string>
+    <string name="guidedTour">Guided tour</string>
+    <string name="tour_start_message">The guided tour begins. The other passages and the editing are now disabled. You can leave this mode at any time from the menu in the upper right corner.</string>
+    <string name="tour_end_message">You have reached your destination. The guided tour ends here. The other passages and the modification are available again.</string>
+    <string name="guided_tour_end">Stop the guided tour</string>
 </resources>

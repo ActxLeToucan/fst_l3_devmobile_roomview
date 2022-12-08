@@ -55,9 +55,19 @@ public class AreaActivity extends PassageViewActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        // hide "passages" if there is no image
         MenuItem passagesItem = menu.findItem(R.id.menu_area_passages);
         File photo = area.getFile(this, direction);
         passagesItem.setVisible(photo != null && photo.exists());
+
+        // hide all options except "stop guided tour" if the guided tour is active
+        if (pathPassages != null) {
+            for (int i = 0; i < menu.size(); i++) {
+                menu.getItem(i).setVisible(false);
+            }
+        }
+        menu.findItem(R.id.menu_area_stop_guided_tour).setVisible(pathPassages != null);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -114,7 +124,24 @@ public class AreaActivity extends PassageViewActivity {
     }
 
     private void updateDirection() {
-        toolbar.setSubtitle(direction.getName(this));
+        // update guided tour
+        if (pathPassages != null && pathPassages.get(pathPassages.size() -1).getOtherSideId().equals(area.getId())) {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.ic_baseline_map_24)
+                    .setTitle(R.string.guidedTour)
+                    .setMessage(R.string.tour_end_message)
+                    .setPositiveButton("OK", null)
+                    .show();
+            pathPassages = null;
+        }
+
+        // update menu
+        invalidateOptionsMenu();
+
+        // update toolbar
+        toolbar.setSubtitle(pathPassages == null ? direction.getName(this) : direction.getName(this) + " - " + getString(R.string.guidedTour));
+
+        // update image
         applyImage(area.getFile(this, direction), new OnTouchListner() {
             @Override
             public void onSelection(SurfaceHolder surfaceHolder, Context parent, double[] imageSelection, double[] screenSelection) {
@@ -131,8 +158,6 @@ public class AreaActivity extends PassageViewActivity {
                 update();
             }
         });
-
-        invalidateOptionsMenu();
 
         // preload next images
         Glide.with(this)
@@ -179,6 +204,17 @@ public class AreaActivity extends PassageViewActivity {
                         .setIcon(R.drawable.ic_baseline_map_24)
                         .setTitle(R.string.steps)
                         .setMessage(path.getEdgeList().stream().map(passage -> " • " + passage.getOtherSide(building.getAreas()).getName()).collect(Collectors.joining("\n")))
+                        .setPositiveButton(R.string.action_goThere, (dialog, which) -> {
+                            AreaActivity.this.pathPassages = path.getEdgeList();
+                            update();
+                            new AlertDialog.Builder(AreaActivity.this)
+                                    .setIcon(R.drawable.ic_baseline_map_24)
+                                    .setTitle(R.string.guidedTour)
+                                    .setMessage(R.string.tour_start_message)
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        })
+                        .setNegativeButton(R.string.action_cancel, null)
                         .show();
             }
 
@@ -187,5 +223,10 @@ public class AreaActivity extends PassageViewActivity {
 
             }
         });
+    }
+
+    public void endGuidedTour(MenuItem item) {
+        pathPassages = null;
+        update();
     }
 }

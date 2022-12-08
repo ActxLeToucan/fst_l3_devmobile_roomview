@@ -9,6 +9,10 @@
         android:onClick="chooseDestination"
         android:title="@string/destination_choose" />
     <item
+        android:id="@+id/menu_area_stop_guided_tour"
+        android:onClick="endGuidedTour"
+        android:title="@string/guided_tour_end" />
+    <item
         android:id="@+id/menu_area_edit_area"
         android:onClick="editArea"
         android:title="@string/action_edit" />

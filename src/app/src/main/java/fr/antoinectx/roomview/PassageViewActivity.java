@@ -118,6 +118,7 @@ public abstract class PassageViewActivity extends MyActivity {
     protected Area area;
     protected Direction direction;
     protected ImageView imageView;
+    protected List<Passage> pathPassages;
     private int previousNumberOfPointers = 0;
     private double[] previousSelection = new double[4];
     private boolean allowSimpleClick = true;
@@ -136,6 +137,17 @@ public abstract class PassageViewActivity extends MyActivity {
         }
     }
 
+    protected List<Passage> getPassages() {
+        List<Passage> passages = area.getDirectionPhoto(direction) == null
+                ? null
+                : area.getDirectionPhoto(direction).getPassages();
+        if (passages == null) return null;
+        if (pathPassages == null) return passages;
+
+        List<String> pathPassagesIds = pathPassages.stream().map(Passage::getId).collect(Collectors.toList());
+        return passages.stream().filter(passage -> pathPassagesIds.contains(passage.getId())).collect(Collectors.toList());
+    }
+
     /**
      * Draw the passages on the surface
      *
@@ -144,10 +156,7 @@ public abstract class PassageViewActivity extends MyActivity {
      * @see #draw(SurfaceHolder, List, int)
      */
     protected void draw(@NonNull SurfaceHolder surfaceHolder) {
-        List<Passage> passages = area.getDirectionPhoto(direction) == null
-                ? null
-                : area.getDirectionPhoto(direction).getPassages();
-        draw(surfaceHolder, passages);
+        draw(surfaceHolder, getPassages());
     }
 
     /**
@@ -394,7 +403,7 @@ public abstract class PassageViewActivity extends MyActivity {
                     double finalXRel = xRel;
                     double finalYRel = yRel;
 
-                    List<Passage> passages = area.getDirectionPhoto(direction).getPassages().stream()
+                    List<Passage> passages = getPassages().stream()
                             .filter(p -> p.contains(finalXRel, finalYRel))
                             .collect(Collectors.toList());
 

@@ -63,4 +63,8 @@
     <string name="steps">Étapes</string>
     <string name="action_goThere">Y aller</string>
     <string name="destination">Destination</string>
+    <string name="guidedTour">Visite guidée</string>
+    <string name="tour_start_message">La visite guidée commence. Les autres passages ainsi que la modification sont désormais désactivés. Vous pouvez quitter ce mode à tout moment depuis le menu dans le coin supérieur droit.</string>
+    <string name="tour_end_message">Vous êtes arrivés à destination. La visite guidée s\'achève donc ici. Les autres passages ainsi que la modification sont à nouveau disponibles.</string>
+    <string name="guided_tour_end">Arrêter la visite guidée</string>
 </resources>
