@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -17,7 +18,9 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import fr.antoinectx.roomview.models.Area;
@@ -167,6 +170,11 @@ public class AreaActivity extends PassageViewActivity {
                 .load(area.getFile(this, direction.getRight()))
                 .preload();
 
+        // update date
+        TextView dateTextView = findViewById(R.id.dateCapture);
+        Date date = area.getDirectionPhoto(direction).getDate();
+        String dateText = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(date);
+        dateTextView.setText(dateText);
     }
 
     public void chooseDestination(MenuItem item) {
