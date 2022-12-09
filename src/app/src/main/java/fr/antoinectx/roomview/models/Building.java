@@ -451,6 +451,7 @@ public class Building extends ManipulateFiles {
         }
         for (Area area : areas) {
             for (DirectionPhoto directionPhoto : area.getDirectionPhotos()) {
+                if (directionPhoto == null) continue;
                 for (Passage passage : directionPhoto.getPassages()) {
                     graph.addEdge(area, passage.getOtherSide(areas), passage);
                 }

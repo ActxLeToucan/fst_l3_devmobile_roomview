@@ -160,6 +160,7 @@ public class Area extends ManipulateFiles {
         return directionPhotos;
     }
 
+    @Nullable
     public DirectionPhoto getDirectionPhoto(@NonNull Direction direction) {
         return directionPhotos[direction.ordinal()];
     }

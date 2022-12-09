@@ -1,19 +1,37 @@
 package fr.antoinectx.roomview;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import fr.antoinectx.roomview.models.Area;
 import fr.antoinectx.roomview.models.Building;
@@ -25,10 +43,14 @@ public class EditAreaActivity extends MyActivity {
     private Area oldArea;
     private Area area;
     private boolean saved = false;
+    private boolean newArea;
     private ImageButton north;
     private ImageButton east;
     private ImageButton south;
     private ImageButton west;
+    private Boolean addWeather = null;
+    private String[] weather = {null, null, null};
+    private Date lastWeatherUpdate = null;
     final private ActivityResultLauncher<Intent> takePhotoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (result) -> {
@@ -47,6 +69,21 @@ public class EditAreaActivity extends MyActivity {
                                 area.setDirectionPhoto(direction, new DirectionPhoto(newFile.getName()));
 
                                 applyPhotos();
+
+                                if (addWeather == null) {
+                                    new AlertDialog.Builder(this)
+                                            .setTitle(R.string.weather)
+                                            .setMessage(R.string.weather_add_message)
+                                            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                                                addWeather = true;
+                                                getWeather();
+                                            })
+                                            .setNegativeButton(R.string.no, (dialog, which) -> addWeather = false)
+                                            .setOnCancelListener(null)
+                                            .show();
+                                } else if (addWeather) {
+                                    getWeather();
+                                }
                             }
                         } else {
                             new AlertDialog.Builder(this)
@@ -59,7 +96,12 @@ public class EditAreaActivity extends MyActivity {
                     }
                 }
             });
-    private boolean newArea;
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    getWeather();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,5 +263,98 @@ public class EditAreaActivity extends MyActivity {
         building.save(this);
         newArea = false;
         finish();
+    }
+
+    private void beforeWeatherLoad() {
+        runOnUiThread(() -> {
+            FrameLayout loading = findViewById(R.id.layout_loading_edit_area);
+            if (loading.getVisibility() == View.GONE) {
+                AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+                inAnimation.setDuration(200);
+                loading.setAnimation(inAnimation);
+                loading.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void afterWeatherLoad() {
+        runOnUiThread(() -> {
+            FrameLayout loading = findViewById(R.id.layout_loading_edit_area);
+            if (loading.getVisibility() == View.VISIBLE) {
+                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+                outAnimation.setDuration(200);
+                loading.setAnimation(outAnimation);
+                loading.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /**
+     * Get the weather from the API.
+     * If the weather was loaded in the last 5 minutes, it will be loaded from {@link #weather}.
+     */
+    public void getWeather() {
+        Date fiveMinutesAgo = new Date(System.currentTimeMillis() - 5 * 60 * 1000);
+        if (lastWeatherUpdate != null && lastWeatherUpdate.after(fiveMinutesAgo)) {
+            setWeather();
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            return;
+        }
+
+        beforeWeatherLoad();
+        com.google.android.gms.location.FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, location -> {
+                    if (location == null) {
+                        afterWeatherLoad();
+                        return;
+                    }
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(() -> {
+                        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + BuildConfig.WEATHER_API_KEY + "&units=metric&lang=fr";
+                        try (InputStream is = new URL(url).openStream()) {
+                            JSONObject json = new JSONObject(new Scanner(is).useDelimiter("\\A").next());
+                            String weather = json.getJSONArray("weather").getJSONObject(0).getString("description");
+                            String temperature = json.getJSONObject("main").getString("temp") + "°C";
+                            String icon = json.getJSONArray("weather").getJSONObject(0).getString("icon");
+                            runOnUiThread(() -> {
+                                this.weather[0] = weather;
+                                this.weather[1] = temperature;
+                                this.weather[2] = icon;
+                                lastWeatherUpdate = new Date();
+                                setWeather();
+                            });
+                            afterWeatherLoad();
+                        } catch (JSONException | IOException e) {
+                            afterWeatherLoad();
+                            e.printStackTrace();
+                        }
+                    });
+                })
+                .addOnFailureListener(this, e -> {
+                    afterWeatherLoad();
+                    e.printStackTrace();
+                });
+    }
+
+    /**
+     * Set the weather in each direction photo recently created (in the last 5 minutes).
+     */
+    public void setWeather() {
+        Date fiveMinutesAgo = new Date(System.currentTimeMillis() - 5 * 60 * 1000);
+        Arrays.stream(area.getDirectionPhotos()).forEach(directionPhoto -> {
+            if (directionPhoto != null) {
+                if (directionPhoto.getDate() != null && directionPhoto.getDate().after(fiveMinutesAgo)) {
+                    directionPhoto.setWeather(weather[0]);
+                    directionPhoto.setTemperature(weather[1]);
+                    directionPhoto.setIcon(weather[2]);
+                }
+            }
+        });
     }
 }

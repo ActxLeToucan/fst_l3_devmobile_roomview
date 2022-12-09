@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +26,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import fr.antoinectx.roomview.models.Area;
+import fr.antoinectx.roomview.models.DirectionPhoto;
 import fr.antoinectx.roomview.models.Passage;
 
 public class AreaActivity extends PassageViewActivity {
@@ -128,7 +131,7 @@ public class AreaActivity extends PassageViewActivity {
 
     private void updateDirection() {
         // update guided tour
-        if (pathPassages != null && pathPassages.get(pathPassages.size() -1).getOtherSideId().equals(area.getId())) {
+        if (pathPassages != null && pathPassages.get(pathPassages.size() - 1).getOtherSideId().equals(area.getId())) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_baseline_map_24)
                     .setTitle(R.string.guidedTour)
@@ -170,11 +173,44 @@ public class AreaActivity extends PassageViewActivity {
                 .load(area.getFile(this, direction.getRight()))
                 .preload();
 
+        DirectionPhoto directionPhoto = area.getDirectionPhoto(direction);
+
         // update date
         TextView dateTextView = findViewById(R.id.dateCapture);
-        Date date = area.getDirectionPhoto(direction).getDate();
-        String dateText = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(date);
-        dateTextView.setText(dateText);
+        if (directionPhoto != null) {
+            Date date = directionPhoto.getDate();
+            String dateText = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(date);
+            dateTextView.setText(dateText);
+        } else {
+            dateTextView.setText("");
+        }
+
+        // update weather
+        TextView weatherTextView = findViewById(R.id.weatherText);
+        ImageView weatherIconView = findViewById(R.id.weatherIcon);
+        if (directionPhoto != null) {
+            String weather = directionPhoto.getWeather();
+            String temperature = directionPhoto.getTemperature();
+            String weatherIcon = directionPhoto.getIcon();
+            if (weather != null && temperature != null && weatherIcon != null) {
+                String weatherText = weather + ", " + temperature;
+                weatherTextView.setText(weatherText);
+                String iconUrl = "https://openweathermap.org/img/wn/" + weatherIcon + "@2x.png";
+                weatherIconView.setVisibility(View.VISIBLE);
+                Glide.with(this)
+                        .load(iconUrl)
+                        .into(weatherIconView);
+            } else {
+                weatherTextView.setText("");
+                weatherIconView.setImageDrawable(null);
+                weatherIconView.setVisibility(View.GONE);
+            }
+        } else {
+            weatherTextView.setText("");
+            weatherIconView.setImageDrawable(null);
+            weatherIconView.setVisibility(View.GONE);
+        }
+
     }
 
     public void chooseDestination(MenuItem item) {
@@ -187,8 +223,6 @@ public class AreaActivity extends PassageViewActivity {
             @Override
             public void onSelect(Area area) {
                 AlertDialog.Builder notReachableDialog = new AlertDialog.Builder(AreaActivity.this)
-                        .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(R.string.warning)
                         .setMessage(R.string.warning_areaNotReachable)
                         .setPositiveButton("OK", null);
 

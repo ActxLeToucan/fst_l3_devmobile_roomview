@@ -67,4 +67,8 @@
     <string name="tour_start_message">The guided tour begins. The other passages and the editing are now disabled. You can leave this mode at any time from the menu in the upper right corner.</string>
     <string name="tour_end_message">You have reached your destination. The guided tour ends here. The other passages and the modification are available again.</string>
     <string name="guided_tour_end">Stop the guided tour</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="weather">Weather</string>
+    <string name="weather_add_message">Do you want to store the current weather?</string>
 </resources>
