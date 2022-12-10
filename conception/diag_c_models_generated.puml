@@ -1,0 +1,136 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Area {
+  - Area(String, String, String, DirectionPhoto[]): 
+  + Area(String, String): 
+  - id: String
+  - name: String
+  - buildingId: String
+  - directionPhotos: DirectionPhoto[]
+  + fromJSONString(String): Area?
+  + getDirectionPhoto(Direction): DirectionPhoto
+  + setDirectionPhoto(Direction, DirectionPhoto): void
+  + getDirectionPhotos(): DirectionPhoto[]
+  + getId(): String
+  + getName(): String
+  + delete(Context): void
+  + reloadFromBuilding(Building): boolean
+  + toString(): String
+  + fromJSON(JSONObject): Area?
+  + setName(String): void
+  + fromJSON(JSONObject, String): Area?
+  + getBuildingId(): String
+  + getFile(Context, Direction): File
+  + toJSON(): JSONObject
+  + getDirectory(Context): File
+}
+class Building {
+  - Building(String, String, String, List<Area>, String): 
+  + Building(String, String): 
+  - id: String
+  - areas: List<Area>
+  - description: String
+  - name: String
+  - photoPath: String
+  + fromJSON(JSONObject, String): Building?
+  + getGraph(): DirectedMultigraph<Area, Passage>
+  + setDescription(String): void
+  + getPhotoFile(Context): File
+  + getId(): String
+  + fromJSONString(String, String): Building?
+  + getDirectory(Context): File
+  + export(Context, Uri): boolean
+  + setName(String): void
+  + fromJSONString(String): Building?
+  + importFrom(Context, Uri): boolean
+  + reload(Context): boolean
+  + getAreas(): List<Area>
+  + getDirectory(Context, String): File
+  + getDescription(): String
+  + getPhotoPath(): String
+  + getName(): String
+  + save(Context): void
+  + load(Context, String, boolean): Building?
+  + toJSON(): JSONObject
+  + delete(Context): void
+  + loadAll(Context): List<Building>
+  + fromJSON(JSONObject): Building?
+  + setPhotoPath(String): void
+}
+enum Direction << enumeration >> {
+  + Direction(): 
+  + EAST: 
+  + NORTH: 
+  + SOUTH: 
+  + WEST: 
+  + values(): Direction[]
+  + valueOf(String): Direction
+  + getName(Context): String
+  + getRight(): Direction
+  + getLeft(): Direction
+}
+class DirectionPhoto {
+  - DirectionPhoto(List<Passage>, String, Date, String, String, String): 
+  + DirectionPhoto(String): 
+  - date: Date
+  - weather: String
+  - filename: String
+  - temperature: String
+  - passages: List<Passage>
+  - icon: String
+  + getPassages(): List<Passage>
+  + getTemperature(): String
+  + getDate(): Date
+  + toJSON(): JSONObject
+  + setWeather(String): void
+  + fromJSON(JSONObject): DirectionPhoto?
+  + getFilename(): String
+  + setIcon(String): void
+  + getIcon(): String
+  + setTemperature(String): void
+  + getWeather(): String
+}
+class ManipulateFiles {
+  + ManipulateFiles(): 
+  # zip(File, ParcelFileDescriptor, boolean): boolean
+  - zip(File, FileOutputStream, boolean): boolean
+  - unzip(FileInputStream, File): void
+  # unzip(ParcelFileDescriptor, File): void
+  # zip(File, File, boolean): boolean
+  - zipElement(File, String, ZipOutputStream): void
+  - newFile(File, ZipEntry): File
+  # deleteRecursive(File, String): void
+}
+class Passage {
+  - Passage(String, double, double, double, double, String): 
+  + Passage(double, double, double, double, Area): 
+  - y1: double
+  - x1: double
+  - otherSideId: String
+  - y2: double
+  - id: String
+  - x2: double
+  + contains(double, double): boolean
+  + fromJSON(JSONObject): Passage?
+  + getY2(): double
+  + setOtherSide(Area): void
+  + getX2(): double
+  + getOtherSide(List<Area>): Area
+  + toJSON(): JSONObject
+  + getY1(): double
+  + getId(): String
+  + getX1(): double
+  + getOtherSideId(): String
+}
+
+Area             -[#595959,dashed]->  DirectionPhoto  : "«create»"
+Area            "1" *-[#595959,plain]-> "directionPhotos\n*" DirectionPhoto  
+Area             -[#000082,plain]-^  ManipulateFiles 
+Building        "1" *-[#595959,plain]-> "areas\n*" Area            
+Building         -[#000082,plain]-^  ManipulateFiles 
+DirectionPhoto  "1" *-[#595959,plain]-> "passages\n*" Passage         
+@enduml
