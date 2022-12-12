@@ -181,6 +181,8 @@ La caméra s'ouvre.
 
 Tournez l'appareil pour que l'indicateur en haut de l'écran soit vert, et prenez la photo.
 
+Par défaut, le zoom est réglé au minimum. Vous pouvez zoomer avec le geste d'agrandissement.
+
 Après avoir pris la première photo, l'application vous propose d'enregistrer la météo. Votre choix est enregistré et vous n'aurez plus à le faire pour les autres photos de la zone.
 
 Une fois les quatre photos prises, cliquez sur le bouton en haut à droite (en forme de disquette) pour enregistrer la zone.
