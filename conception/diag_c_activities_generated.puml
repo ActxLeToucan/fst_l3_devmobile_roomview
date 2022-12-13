@@ -5,235 +5,247 @@ top to bottom direction
 skinparam linetype ortho
 
 class AreaActivity {
-  + onCreateOptionsMenu(Menu): boolean
-  + editPassages(MenuItem): void
   - updateDirection(): void
   + chooseDestination(MenuItem): void
-  + endGuidedTour(MenuItem): void
-  # onCreate(Bundle): void
-  + editArea(MenuItem): void
-  + update(): void
   + onPrepareOptionsMenu(Menu): boolean
   + deleteArea(MenuItem): void
+  + update(): void
+  + endGuidedTour(MenuItem): void
+  + onCreateOptionsMenu(Menu): boolean
   # onResume(): void
+  + editArea(MenuItem): void
+  # onCreate(Bundle): void
+  + editPassages(MenuItem): void
 }
 class AreaRecyclerViewAdapter {
-  - mClickListener: ItemClickListener
   - mInflater: LayoutInflater
   - mData: List<Area>
-  + setAreas(List<Area>): void
+  - mClickListener: ItemClickListener
+  ~ getItem(int): Area
   + onBindViewHolder(ViewHolder, int): void
   + getItemCount(): int
-  + onCreateViewHolder(ViewGroup, int): ViewHolder
+  + setAreas(List<Area>): void
   ~ setClickListener(ItemClickListener): void
-  ~ getItem(int): Area
+  + onCreateViewHolder(ViewGroup, int): ViewHolder
 }
 class BuildingActivity {
-  - searchContent: String
   - adapter: AreaRecyclerViewAdapter
-  - selectFileToExportTo: ActivityResultLauncher<Intent>
+  - searchContent: String
   - building: Building
-  + showBuildingDetails(MenuItem): void
-  # onResume(): void
-  + onCreateOptionsMenu(Menu): boolean
-  # onCreate(Bundle): void
-  + updateSearchResults(): void
-  + deleteBuilding(MenuItem): void
-  + updateData(): void
-  + update(): void
-  + updateInterface(): void
+  - selectFileToExportTo: ActivityResultLauncher<Intent>
   + onItemClick(View, int): void
   + onItemLongClick(View, int): void
+  + deleteBuilding(MenuItem): void
+  # onResume(): void
+  + showBuildingDetails(MenuItem): void
   + createArea(MenuItem): void
+  - beforeExport(): void
+  + updateData(): void
+  + onCreateOptionsMenu(Menu): boolean
+  + updateSearchResults(): void
+  + update(): void
+  + updateInterface(): void
+  # onCreate(Bundle): void
   + exportBuilding(MenuItem): void
+  - afterExport(): void
 }
 class BuildingRecyclerViewAdapter {
-  - mInflater: LayoutInflater
   - mData: List<Building>
   - mClickListener: ItemClickListener
-  + setBuildings(List<Building>): void
-  ~ getItem(int): Building
+  - mInflater: LayoutInflater
   + onBindViewHolder(ViewHolder, int): void
+  + getItemCount(): int
+  + setBuildings(List<Building>): void
   + onCreateViewHolder(ViewGroup, int): ViewHolder
   ~ setClickListener(ItemClickListener): void
-  + getItemCount(): int
+  ~ getItem(int): Building
 }
 class CameraActivity {
-  - previewView: PreviewView
   - accelerometerListener: SensorEventListener
-  - file: File
-  - magnetometerListener: SensorEventListener
   - imageCapture: ImageCapture
-  - executor: Executor
   - accelerometerValues: float[]
+  - requestPermissionLauncher: ActivityResultLauncher<String>
   - magnetometerValues: float[]
+  - file: File
+  - executor: Executor
   - direction: Direction
   - cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
-  - requestPermissionLauncher: ActivityResultLauncher<String>
-  + startSensors(): void
+  - magnetometerListener: SensorEventListener
+  - previewView: PreviewView
   # onPause(): void
-  - bindPreview(ProcessCameraProvider): void
+  + startSensors(): void
   - startCamera(): void
+  - bindPreview(ProcessCameraProvider): void
   # onCreate(Bundle): void
   # onResume(): void
 }
 class CompassView {
-  - paint: Paint
   - dimensions: Rect
+  - paint: Paint
   - radians: float
+  # onDraw(Canvas): void
   + setRadians(float): void
   # onSizeChanged(int, int, int, int): void
-  # onDraw(Canvas): void
 }
 class EditAreaActivity {
+  - building: Building
+  - west: ImageButton
+  - addWeather: Boolean
+  - requestPermissionLauncher: ActivityResultLauncher<String>
+  - south: ImageButton
+  - lastWeatherUpdate: Date
+  - area: Area
+  - weather: String[]
+  - saved: boolean
+  - newArea: boolean
+  - takePhotoLauncher: ActivityResultLauncher<Intent>
   - oldArea: Area
   - east: ImageButton
-  - saved: boolean
-  - requestPermissionLauncher: ActivityResultLauncher<String>
-  - area: Area
-  - newArea: boolean
-  - south: ImageButton
-  - weather: String[]
-  - addWeather: Boolean
-  - lastWeatherUpdate: Date
   - north: ImageButton
-  - takePhotoLauncher: ActivityResultLauncher<Intent>
-  - west: ImageButton
-  - building: Building
-  - afterWeatherLoad(): void
-  + getWeather(): void
-  + onCreateOptionsMenu(Menu): boolean
-  - applyPhotos(): void
-  # onCreate(Bundle): void
-  + save(MenuItem): void
-  + setWeather(): void
   - beforeWeatherLoad(): void
+  # onCreate(Bundle): void
+  + getWeather(): void
+  + setWeather(): void
   # onDestroy(): void
+  + onCreateOptionsMenu(Menu): boolean
+  - afterWeatherLoad(): void
+  + save(MenuItem): void
+  - applyPhotos(): void
 }
 class EditBuildingActivity {
-  - building: Building
-  - takePhotoLauncher: ActivityResultLauncher<Intent>
-  - requestPermissionGalleryLauncher: ActivityResultLauncher<String>
-  - requestPermissionCameraLauncher: ActivityResultLauncher<String>
-  - chooseFromGalleryLauncher: ActivityResultLauncher<Intent>
-  - lastPhotoSelected: File
-  - photo: ImageButton
-  - photoChanged: boolean
   - initPhoto: File
   - editMode: boolean
+  - chooseFromGalleryLauncher: ActivityResultLauncher<Intent>
+  - takePhotoLauncher: ActivityResultLauncher<Intent>
+  - photo: ImageButton
   - pathPhotoFromCamera: String
-  - createImageFile(): File
-  - selectImage(Context): void
-  - applyPhoto(String): void
-  - applyMode(boolean): void
-  + onCreateOptionsMenu(Menu): boolean
-  - startIntentTakePhoto(Context): void
-  - startIntentSelectPhoto(): void
-  # onDestroy(): void
-  + editOrSaveBuilding(MenuItem): void
-  + onOptionsItemSelected(MenuItem): boolean
+  - photoChanged: boolean
+  - lastPhotoSelected: File
+  - building: Building
+  - requestPermissionCameraLauncher: ActivityResultLauncher<String>
+  - requestPermissionGalleryLauncher: ActivityResultLauncher<String>
   # onCreate(Bundle): void
+  - startIntentSelectPhoto(): void
+  - createImageFile(): File
+  + onCreateOptionsMenu(Menu): boolean
+  - applyMode(boolean): void
+  + editOrSaveBuilding(MenuItem): void
+  - selectImage(Context): void
+  - startIntentTakePhoto(Context): void
+  + onOptionsItemSelected(MenuItem): boolean
+  # onDestroy(): void
   + onPrepareOptionsMenu(Menu): boolean
+  - applyPhoto(String): void
 }
 interface ItemClickListener << interface >> {
-  + onItemLongClick(View, int): void
   + onItemClick(View, int): void
+  + onItemLongClick(View, int): void
 }
 interface ItemClickListener << interface >> {
-  + onItemLongClick(View, int): void
   + onItemClick(View, int): void
+  + onItemLongClick(View, int): void
 }
 class MainActivity {
-  - selectFileToImport: ActivityResultLauncher<Intent>
-  - buildings: List<Building>
+  - adapter: BuildingRecyclerViewAdapter
   - searchContent: String
   - recyclerView: RecyclerView
-  - adapter: BuildingRecyclerViewAdapter
-  + onCreateOptionsMenu(Menu): boolean
+  - selectFileToImport: ActivityResultLauncher<Intent>
+  - buildings: List<Building>
+  - beforeImport(): void
   + update(): void
-  # onResume(): void
-  + onItemClick(View, int): void
-  + createBuilding(MenuItem): void
-  # onCreate(Bundle): void
-  + updateSearchResults(): void
-  + updateData(): void
   + saveBuildings(): void
-  # onPause(): void
+  # onResume(): void
+  # onCreate(Bundle): void
+  - afterImport(): void
+  + onCreateOptionsMenu(Menu): boolean
   + onItemLongClick(View, int): void
+  + onItemClick(View, int): void
+  # onPause(): void
+  + updateSearchResults(): void
+  + createBuilding(MenuItem): void
+  + updateData(): void
 }
 class MyActivity {
   - showNavigationIcon: boolean
-  - downX: int
   # toolbar: MaterialToolbar
+  - downX: int
+  # initAppBar(String, String, boolean): void
+  + dispatchTouchEvent(MotionEvent): boolean
   + onOptionsItemSelected(MenuItem): boolean
   # initAppBar(String, String, boolean, int, int): void
   # blockOrientation(): void
-  + dispatchTouchEvent(MotionEvent): boolean
   # setAppBarNavigation(int, int): void
-  # initAppBar(String, String, boolean): void
 }
 interface OnSelectedAreaListener << interface >> {
-  + beforeDismiss(): void
   + onSelect(Area): void
+  + beforeDismiss(): void
   + onCancel(DialogInterface): void
 }
 interface OnTouchListner << interface >> {
+  + onPassageClick(SurfaceHolder, Context, Passage): void
   + onSelection(SurfaceHolder, Context, double[], double[]): void
   + afterSelection(SurfaceHolder, Context, double[], SimpleClickEnabler): void
-  + onPassageClick(SurfaceHolder, Context, Passage): void
 }
 class PassageViewActivity {
+  # area: Area
+  # building: Building
   - previousSelection: double[]
-  - allowSimpleClick: boolean
-  # imageView: ImageView
+  - sholder: SurfaceHolder
   - previousNumberOfPointers: int
-  - resource: Drawable
+  # imageView: ImageView
   # direction: Direction
   # pathPassages: List<Passage>
-  - sholder: SurfaceHolder
-  # building: Building
-  # area: Area
-  # draw(SurfaceHolder, List<Passage>): void
+  - resource: Drawable
+  - allowSimpleClick: boolean
   - getTextHeight(String, Paint): int
+  # draw(SurfaceHolder, List<Passage>, int): void
   # onCreate(Bundle): void
-  # getPassages(): List<Passage>
+  # draw(SurfaceHolder, List<Passage>): void
+  - drawPassages(Canvas, List<Passage>, int): void
   + initSurface(OnTouchListner, Drawable): void
   # selectArea(String, OnSelectedAreaListener): void
+  # getPassages(): List<Passage>
   # draw(SurfaceHolder): void
-  - drawPassages(Canvas, List<Passage>, int): void
   # applyImage(File, OnTouchListner): void
-  # draw(SurfaceHolder, List<Passage>, int): void
 }
 class PassagesActivity {
   - editPassage(SurfaceHolder, Passage): void
   - deletePassage(SurfaceHolder, Passage): void
-  # onCreate(Bundle): void
   - savePassages(): void
+  # onCreate(Bundle): void
 }
 interface SimpleClickEnabler << interface >> {
   + enable(): void
 }
 class ViewHolder {
   ~ areaName: TextView
-  + onClick(View): void
   + onLongClick(View): boolean
+  + onClick(View): void
 }
 class ViewHolder {
-  ~ descriptionBatiment: TextView
   ~ nomBatiment: TextView
+  ~ descriptionBatiment: TextView
   ~ photoBatiment: ImageView
   + onClick(View): void
   + onLongClick(View): boolean
 }
 
 AreaActivity                 -[#000082,plain]-^  PassageViewActivity         
+AreaRecyclerViewAdapter     "1" *-[#595959,plain]-> "mClickListener\n1" ItemClickListener           
+AreaRecyclerViewAdapter      -[#595959,dashed]->  ViewHolder                  : "«create»"
+BuildingActivity             -[#595959,dashed]->  AreaRecyclerViewAdapter     : "«create»"
+BuildingActivity            "1" *-[#595959,plain]-> "adapter\n1" AreaRecyclerViewAdapter     
 BuildingActivity             -[#008200,dashed]-^  ItemClickListener           
 BuildingActivity             -[#000082,plain]-^  MyActivity                  
+BuildingRecyclerViewAdapter "1" *-[#595959,plain]-> "mClickListener\n1" ItemClickListener           
+BuildingRecyclerViewAdapter  -[#595959,dashed]->  ViewHolder                  : "«create»"
 CameraActivity               -[#000082,plain]-^  MyActivity                  
 EditAreaActivity             -[#000082,plain]-^  MyActivity                  
 EditBuildingActivity         -[#000082,plain]-^  MyActivity                  
 ItemClickListener            +-[#820000,plain]-  AreaRecyclerViewAdapter     
 ItemClickListener            +-[#820000,plain]-  BuildingRecyclerViewAdapter 
+MainActivity                "1" *-[#595959,plain]-> "adapter\n1" BuildingRecyclerViewAdapter 
+MainActivity                 -[#595959,dashed]->  BuildingRecyclerViewAdapter : "«create»"
 MainActivity                 -[#008200,dashed]-^  ItemClickListener           
 MainActivity                 -[#000082,plain]-^  MyActivity                  
 PassageViewActivity          -[#000082,plain]-^  MyActivity                  
