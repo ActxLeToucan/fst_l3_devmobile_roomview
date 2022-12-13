@@ -103,28 +103,15 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/layout_loading_edit_area"
+    <include
+        android:id="@+id/loadingLayout_editArea"
+        layout="@layout/loading"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:alpha="0.7"
-        android:animateLayoutChanges="true"
-        android:background="?attr/colorOnBackground"
-        android:clickable="true"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/materialToolbar">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true" />
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

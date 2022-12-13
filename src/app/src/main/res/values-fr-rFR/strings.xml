@@ -71,4 +71,5 @@
     <string name="yes">Oui</string>
     <string name="weather">Météo</string>
     <string name="weather_add_message">Voulez-vous enregistrer la météo actuelle ?</string>
+    <string name="error_location">Quelque chose s\'est mal passé. Vérifiez que la localisation est activée.</string>
 </resources>

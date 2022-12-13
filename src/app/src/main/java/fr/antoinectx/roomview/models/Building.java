@@ -250,11 +250,11 @@ public class Building extends ManipulateFiles {
      * @return Whether the import was successful
      */
     public static boolean importFrom(Context context, Uri uri) {
-        try (ParcelFileDescriptor pfd = context.getContentResolver().
-                openFileDescriptor(uri, "r")) {
+        File dir = new File(context.getFilesDir(), UUID.randomUUID().toString());
+
+        try (ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r")) {
             if (pfd == null) return false;
 
-            File dir = new File(context.getFilesDir(), UUID.randomUUID().toString());
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
                     Log.e("Building", "Failed to create directory " + dir.getAbsolutePath());
@@ -271,8 +271,11 @@ public class Building extends ManipulateFiles {
             }
             building.save(context);
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            if (dir.exists()) {
+                deleteRecursive(dir, "Building.importFrom");
+            }
             return false;
         }
     }
@@ -442,6 +445,7 @@ public class Building extends ManipulateFiles {
 
     /**
      * Get the graph corresponding to the building
+     *
      * @return The graph
      */
     public DirectedMultigraph<Area, Passage> getGraph() {

@@ -71,4 +71,5 @@
     <string name="yes">Yes</string>
     <string name="weather">Weather</string>
     <string name="weather_add_message">Do you want to store the current weather?</string>
+    <string name="error_location">Something went wrong. Make sure that location is enabled.</string>
 </resources>

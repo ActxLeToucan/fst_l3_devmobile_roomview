@@ -11,6 +11,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -267,7 +268,7 @@ public class EditAreaActivity extends MyActivity {
 
     private void beforeWeatherLoad() {
         runOnUiThread(() -> {
-            FrameLayout loading = findViewById(R.id.layout_loading_edit_area);
+            FrameLayout loading = findViewById(R.id.loadingLayout_editArea);
             if (loading.getVisibility() == View.GONE) {
                 AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
                 inAnimation.setDuration(200);
@@ -279,7 +280,7 @@ public class EditAreaActivity extends MyActivity {
 
     private void afterWeatherLoad() {
         runOnUiThread(() -> {
-            FrameLayout loading = findViewById(R.id.layout_loading_edit_area);
+            FrameLayout loading = findViewById(R.id.loadingLayout_editArea);
             if (loading.getVisibility() == View.VISIBLE) {
                 AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
                 outAnimation.setDuration(200);
@@ -311,6 +312,7 @@ public class EditAreaActivity extends MyActivity {
                 .addOnSuccessListener(this, location -> {
                     if (location == null) {
                         afterWeatherLoad();
+                        Toast.makeText(this, R.string.error_location, Toast.LENGTH_LONG).show();
                         return;
                     }
 
@@ -339,6 +341,11 @@ public class EditAreaActivity extends MyActivity {
                 .addOnFailureListener(this, e -> {
                     afterWeatherLoad();
                     e.printStackTrace();
+                    Toast.makeText(this, R.string.error_location, Toast.LENGTH_LONG).show();
+                })
+                .addOnCanceledListener(this, () -> {
+                    afterWeatherLoad();
+                    Toast.makeText(this, R.string.error_location, Toast.LENGTH_LONG).show();
                 });
     }
 

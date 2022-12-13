@@ -9,6 +9,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -37,28 +39,38 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
                         Uri uri = data.getData();
 
                         new Thread(() -> {
-                            AlertDialog.Builder dialogError = new AlertDialog.Builder(this)
+                            beforeImport();
+                            AlertDialog.Builder dialogError = new AlertDialog.Builder(MainActivity.this)
                                     .setTitle(R.string.error)
                                     .setMessage(R.string.error_import)
                                     .setIcon(R.drawable.ic_baseline_error_24)
                                     .setPositiveButton("OK", null);
                             try {
-                                if (!Building.importFrom(this, uri))
-                                    runOnUiThread(dialogError::show);
+                                if (!Building.importFrom(MainActivity.this, uri)) {
+                                    MainActivity.this.runOnUiThread(dialogError::show);
+                                    afterImport();
+                                    return;
+                                }
 
-                                runOnUiThread(() -> {
-                                    update();
-                                    new AlertDialog.Builder(this)
-                                            .setTitle(R.string.import_success_title)
-                                            .setMessage(R.string.import_success_message)
-                                            .setIcon(R.drawable.ic_baseline_check_circle_24)
-                                            .setPositiveButton("OK", null)
-                                            .show();
+                                MainActivity.this.runOnUiThread(() -> {
+                                    try {
+                                        MainActivity.this.update();
+                                        new AlertDialog.Builder(MainActivity.this)
+                                                .setTitle(R.string.import_success_title)
+                                                .setMessage(R.string.import_success_message)
+                                                .setIcon(R.drawable.ic_baseline_check_circle_24)
+                                                .setPositiveButton("OK", null)
+                                                .show();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        dialogError.show();
+                                    }
                                 });
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                runOnUiThread(dialogError::show);
+                                MainActivity.this.runOnUiThread(dialogError::show);
                             }
+                            afterImport();
                         }).start();
                     }
                 }
@@ -188,5 +200,29 @@ public class MainActivity extends MyActivity implements BuildingRecyclerViewAdap
         });
 
         builder.show();
+    }
+
+    private void beforeImport() {
+        runOnUiThread(() -> {
+            FrameLayout loading = findViewById(R.id.loadingLayout_import);
+            if (loading.getVisibility() == View.GONE) {
+                AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+                inAnimation.setDuration(200);
+                loading.setAnimation(inAnimation);
+                loading.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void afterImport() {
+        runOnUiThread(() -> {
+            FrameLayout loading = findViewById(R.id.loadingLayout_import);
+            if (loading.getVisibility() == View.VISIBLE) {
+                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+                outAnimation.setDuration(200);
+                loading.setAnimation(outAnimation);
+                loading.setVisibility(View.GONE);
+            }
+        });
     }
 }

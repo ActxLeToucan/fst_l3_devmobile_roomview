@@ -9,6 +9,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -33,6 +35,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
                         Uri uri = data.getData();
 
                         new Thread(() -> {
+                            beforeExport();
                             AlertDialog.Builder dialogError = new AlertDialog.Builder(this)
                                     .setTitle(R.string.error)
                                     .setMessage(R.string.error_export)
@@ -52,6 +55,7 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
                                 e.printStackTrace();
                                 runOnUiThread(dialogError::show);
                             }
+                            afterExport();
                         }).start();
                     }
                 }
@@ -171,6 +175,30 @@ public class BuildingActivity extends MyActivity implements AreaRecyclerViewAdap
         intent.setType("application/zip");
         intent.putExtra(Intent.EXTRA_TITLE, building.getName() + ".building");
         selectFileToExportTo.launch(intent);
+    }
+
+    private void beforeExport() {
+        runOnUiThread(() -> {
+            FrameLayout loading = findViewById(R.id.loadingLayout_export);
+            if (loading.getVisibility() == View.GONE) {
+                AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+                inAnimation.setDuration(200);
+                loading.setAnimation(inAnimation);
+                loading.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void afterExport() {
+        runOnUiThread(() -> {
+            FrameLayout loading = findViewById(R.id.loadingLayout_export);
+            if (loading.getVisibility() == View.VISIBLE) {
+                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+                outAnimation.setDuration(200);
+                loading.setAnimation(outAnimation);
+                loading.setVisibility(View.GONE);
+            }
+        });
     }
 
     public void deleteBuilding(MenuItem item) {
